@@ -4,7 +4,7 @@ const addProduct = new mongoose.Schema(
     {
         vendor: { 
             type: mongoose.Schema.Types.ObjectId, 
-            ref: "vendor",      
+            ref: "Vendor",      
             required: true
         },
         name: {

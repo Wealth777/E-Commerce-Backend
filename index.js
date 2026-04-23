@@ -5,26 +5,22 @@ const mongoose = require('mongoose')
 dotenv.config()
 
 const port = process.env.PORT
-const mongodb_url = process.env.MONGO_URL
-
-if (!mongodb_url) {
-    console.log('❌ MongoDB uri not configured');
-    process.exit(1);
-}
 
 async function startServer() {
     try{
-        await mongoose.connect(mongodb_url, {
+        await mongoose.connect(process.env.MONGO_URL, {
             retryWrites: true,
             serverSelectionTimeoutMS: 5000,
         })
 
+        // console.log(process.env.MONGO_URL)
         console.log(`✅ Database Connected Successfully`)
 
         app.listen(port, ()=>{
             console.log(`🚀 Server running on port ${port}`)
         })
     }catch(err){
+        console.log(process.env.MONGO_URL)
         console.log(`❌ Failed to start server: ${err.message}`)
         process.exit(1)
     }

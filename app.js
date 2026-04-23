@@ -10,10 +10,10 @@ app.use(cors({
 }))
 
 // Body parsing
-// app.use(express.json({ limit: '10mb' }))
 app.use(express.json());
+app.use(express.json({ limit: '10mb' }))
 // app.use(express.raw({ type: 'application/json' }))
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 const buyerRoutes = require('./routes/buyer.route')
 const vendorRoutes = require('./routes/vendor.route')
