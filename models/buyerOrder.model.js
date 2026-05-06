@@ -79,8 +79,56 @@ const buyerOrderSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
     },
+
+    cancelledBy: {
+      role: {
+        type: String,
+        enum: ["buyer", "vendor", "admin"],
+      },
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Buyer",
+      },
+      cancelledAt: Date,
+    },
+
+    refundRequest: {
+      requested: { type: Boolean, default: false },
+      status: {
+        type: String,
+        enum: ["none", "pending", "approved", "rejected", "completed"],
+        default: "none",
+      },
+      reason: String,
+      details: String,
+      requestedAt: Date,
+      reviewedAt: Date,
+      reviewedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Vendor",
+      },
+      response: String,
+    },
+
+    returnRequest: {
+      requested: { type: Boolean, default: false },
+      status: {
+        type: String,
+        enum: ["none", "pending", "approved", "rejected", "completed"],
+        default: "none",
+      },
+      reason: String,
+      details: String,
+      requestedAt: Date,
+      reviewedAt: Date,
+      reviewedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Vendor",
+      },
+      response: String,
+    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('BuyerOrder', buyerOrderSchema);
+module.exports = mongoose.model('Order', buyerOrderSchema);

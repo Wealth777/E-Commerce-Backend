@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, loginUser, getUsersDetails, updateBuyerProfile, addToCart, getCart, updateCartItem, removeFromCart, createBuyerOrder, logoutUser, getBuyerOrders, getSingleBuyerOrder, getBuyerActivities, getWishlist, addToWishlist, removeFromWishlist, clearWishlist, buyerConfirmDelivery, buyerCancelOrder } = require('../controllers/buyer.controller');
+const { createUser, loginUser, getUsersDetails, updateBuyerProfile, addToCart, getCart, updateCartItem, removeFromCart, createBuyerOrder, logoutUser, getBuyerOrders, getSingleBuyerOrder, getBuyerActivities, getWishlist, addToWishlist, removeFromWishlist, clearWishlist, buyerConfirmDelivery, buyerCancelOrder, requestRefund, requestReturn } = require('../controllers/buyer.controller');
 const verifyUser = require('../middleware/verifyUser');
 const imageUpload = require('../middleware/imageUpload');
 const router = express.Router();
@@ -33,6 +33,11 @@ router.get("/orders/:orderId", verifyUser, getSingleBuyerOrder);
 router.post('/orders/action/confirmdelivered', verifyUser, buyerConfirmDelivery);
 
 router.post('/orders/action/cancelorder', verifyUser, buyerCancelOrder);
+
+// Refund and Return Request routes
+router.post('/orders/:orderId/refund-request', verifyUser, requestRefund);
+
+router.post('/orders/:orderId/return-request', verifyUser, requestReturn);
 
 router.get('/wishlist', verifyUser, getWishlist);
 

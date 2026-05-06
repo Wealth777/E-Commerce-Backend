@@ -335,6 +335,7 @@ exports.addToCart = async (req, res) => {
       data: cart,
     });
   } catch (err) {
+    console.log(err)
     return res.status(500).json({
       success: false,
       message: "Error adding to cart",
@@ -736,7 +737,6 @@ exports.getSingleBuyerOrder = async (req, res) => {
   }
 };
 
-// confirm delivery (shipped → delivered)
 exports.buyerConfirmDelivery = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -748,6 +748,7 @@ exports.buyerConfirmDelivery = async (req, res) => {
       return res.status(400).json({ message: "Order not yet shipped" });
     }
 
+    const previousStatus = order.status;
     order.status = "delivered";
 
     await order.save();
@@ -759,7 +760,7 @@ exports.buyerConfirmDelivery = async (req, res) => {
       entity: "ORDER",
       entityId: orderId,
       metadata: {
-        previousStatus: order.status,
+        previousStatus,
         newStatus: "delivered",
         timestamp: Date.now()
       },
@@ -776,7 +777,6 @@ exports.buyerConfirmDelivery = async (req, res) => {
   }
 };
 
-// cancel order (pending only)
 exports.buyerCancelOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -788,7 +788,13 @@ exports.buyerCancelOrder = async (req, res) => {
       return res.status(400).json({ message: "Order cannot be cancelled now" });
     }
 
+    const previousStatus = order.status;
     order.status = "cancelled";
+    order.cancelledBy = {
+      role: "buyer",
+      user: req.user._id,
+      cancelledAt: new Date(),
+    };
 
     await order.save();
 
@@ -799,8 +805,9 @@ exports.buyerCancelOrder = async (req, res) => {
       entity: "ORDER",
       entityId: orderId,
       metadata: {
-        previousStatus: order.status,
+        previousStatus,
         newStatus: "cancelled",
+        cancelledBy: "buyer",
         timestamp: Date.now()
       },
     });
@@ -811,6 +818,204 @@ exports.buyerCancelOrder = async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ message: err.message });
+  }
+};
+
+exports.requestRefund = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { orderId } = req.params;
+    const { reason, details } = req.body;
+
+    // Validation
+    if (!reason || reason.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Reason is required for refund request",
+      });
+    }
+
+    const order = await BuyerOrder.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify ownership
+    if (order.buyer.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only request refund for your own orders",
+      });
+    }
+
+    // Check if order is cancelled
+    if (order.status !== "cancelled") {
+      return res.status(400).json({
+        success: false,
+        message: "Refund request can only be made for cancelled orders",
+      });
+    }
+
+    // Check if cancelled by buyer
+    if (!order.cancelledBy || order.cancelledBy.role !== "buyer") {
+      return res.status(400).json({
+        success: false,
+        message: "Refund request can only be made for orders cancelled by you",
+      });
+    }
+
+    // Check if refund request already exists and is pending/approved/completed
+    if (
+      order.refundRequest.requested &&
+      ["pending", "approved", "completed"].includes(order.refundRequest.status)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: `A refund request already exists with status: ${order.refundRequest.status}`,
+      });
+    }
+
+    // Create/Update refund request
+    order.refundRequest = {
+      requested: true,
+      status: "pending",
+      reason,
+      details: details || "",
+      requestedAt: new Date(),
+      reviewedAt: null,
+      reviewedBy: null,
+      response: "",
+    };
+
+    await order.save();
+
+    await AuditLog.create({
+      user: userId,
+      role: "buyer",
+      action: "REFUND_REQUEST_CREATED",
+      entity: "ORDER",
+      entityId: orderId,
+      metadata: {
+        reason,
+        orderStatus: order.status,
+        totalAmount: order.pricing.total,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Refund request submitted successfully",
+      data: {
+        orderId: order._id,
+        refundRequest: order.refundRequest,
+      },
+    });
+  } catch (error) {
+    console.error("Request Refund Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error submitting refund request",
+      error: error.message,
+    });
+  }
+};
+
+exports.requestReturn = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { orderId } = req.params;
+    const { reason, details } = req.body;
+
+    // Validation
+    if (!reason || reason.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Reason is required for return request",
+      });
+    }
+
+    const order = await BuyerOrder.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Verify ownership
+    if (order.buyer.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only request return for your own orders",
+      });
+    }
+
+    // Check if order is delivered
+    if (order.status !== "delivered") {
+      return res.status(400).json({
+        success: false,
+        message: "Return request can only be made for delivered orders",
+      });
+    }
+
+    // Check if return request already exists and is pending/approved/completed
+    if (
+      order.returnRequest.requested &&
+      ["pending", "approved", "completed"].includes(order.returnRequest.status)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: `A return request already exists with status: ${order.returnRequest.status}`,
+      });
+    }
+
+    // Create/Update return request
+    order.returnRequest = {
+      requested: true,
+      status: "pending",
+      reason,
+      details: details || "",
+      requestedAt: new Date(),
+      reviewedAt: null,
+      reviewedBy: null,
+      response: "",
+    };
+
+    await order.save();
+
+    await AuditLog.create({
+      user: userId,
+      role: "buyer",
+      action: "RETURN_REQUEST_CREATED",
+      entity: "ORDER",
+      entityId: orderId,
+      metadata: {
+        reason,
+        orderStatus: order.status,
+        totalAmount: order.pricing.total,
+      },
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Return request submitted successfully",
+      data: {
+        orderId: order._id,
+        returnRequest: order.returnRequest,
+      },
+    });
+  } catch (error) {
+    console.error("Request Return Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error submitting return request",
+      error: error.message,
+    });
   }
 };
 

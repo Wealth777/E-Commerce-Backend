@@ -128,6 +128,67 @@ const groupByVendor = async (items) => {
   return grouped;
 };
 
+// Helper function to reduce vendor stock after order confirmed
+const updateProductStockAfterOrder = async (items) => {
+  for (const item of items) {
+    const product = await AddProduct.findById(item.productId);
+
+    if (!product) {
+      throw new Error(`Product not found for item: ${item.name}`);
+    }
+
+    if (product.stock < item.quantity) {
+      throw new Error(
+        `Insufficient stock for ${product.name}. Available: ${product.stock}, Requested: ${item.quantity}`
+      );
+    }
+
+    const newStock = product.stock - item.quantity;
+
+    let newStatus = "in-stock";
+
+    if (newStock === 0) {
+      newStatus = "out-of-stock";
+    } else if (newStock <= 5) {
+      newStatus = "low-in-stock";
+    }
+
+    product.stock = newStock;
+    product.status = newStatus;
+
+    await product.save();
+  }
+};
+
+// Date range for vendor analyics
+const getDateRange = (range) => {
+  const now = new Date();
+  let startDate = new Date();
+
+  switch (range) {
+    case "24h":
+      startDate.setDate(now.getDate() - 1);
+      break;
+
+    case "7days":
+      startDate.setDate(now.getDate() - 7);
+      break;
+
+    case "30days":
+      startDate.setDate(now.getDate() - 30);
+      break;
+
+    case "90days":
+      startDate.setDate(now.getDate() - 90);
+      break;
+
+    default:
+      startDate.setDate(now.getDate() - 7);
+  }
+
+  return startDate;
+};
+
 // Export all functions for use in controllers
 module.exports = {
   groupProductsByVendor,
@@ -135,5 +196,7 @@ module.exports = {
   buildInterleavedFeed,
   getVendorMultiplier,
   validateLimit,
-  groupByVendor
+  groupByVendor,
+  updateProductStockAfterOrder,
+  getDateRange
 };
