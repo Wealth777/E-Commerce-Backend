@@ -10,7 +10,7 @@ function groupProductsByVendor(products) {
 }
 
 function shuffleArray(array) {
-  const arr = [...array]; 
+  const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -114,16 +114,29 @@ const AddProduct = require('../models/addproduct.model')
 const groupByVendor = async (items) => {
   const grouped = {};
 
-  for (const item of items) {
-    const product = await AddProduct.findById(item.id).populate("vendor", "_id");
-    if (product && product.vendor) {
-      const vendorId = product.vendor._id.toString();
-      if (!grouped[vendorId]) {
-        grouped[vendorId] = [];
-      }
-      grouped[vendorId].push(item);
+  const itemIds = items.map((item) => item.id);
+
+  const products = await AddProduct.find({
+    _id: { $in: itemIds },
+  }).populate("vendor", "_id");
+
+  const productMap = new Map(
+    products.map((product) => [product._id.toString(), product])
+  );
+
+  items.forEach((item) => {
+    const product = productMap.get(item.id.toString());
+
+    if (!product || !product.vendor) return;
+
+    const vendorId = product.vendor._id.toString();
+
+    if (!grouped[vendorId]) {
+      grouped[vendorId] = [];
     }
-  }
+
+    grouped[vendorId].push(item);
+  });
 
   return grouped;
 };
@@ -185,7 +198,8 @@ const getDateRange = (range) => {
     default:
       startDate.setDate(now.getDate() - 7);
   }
-
+  
+  startDate.setHours(0, 0, 0, 0);
   return startDate;
 };
 

@@ -31,12 +31,21 @@ const buyerOrderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Buyer",
       required: true,
+      index: true
     },
 
     vendor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Vendor",
       required: true,
+      index: true
+    },
+
+    checkoutRef: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+      index: true,
+      index: true
     },
 
     items: [orderItemSchema],
@@ -78,6 +87,7 @@ const buyerOrderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending",
+      index: true
     },
 
     cancelledBy: {

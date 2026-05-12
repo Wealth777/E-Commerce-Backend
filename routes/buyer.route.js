@@ -1,12 +1,21 @@
 const express = require('express');
-const { createUser, loginUser, getUsersDetails, updateBuyerProfile, addToCart, getCart, updateCartItem, removeFromCart, createBuyerOrder, logoutUser, getBuyerOrders, getSingleBuyerOrder, getBuyerActivities, getWishlist, addToWishlist, removeFromWishlist, clearWishlist, buyerConfirmDelivery, buyerCancelOrder, requestRefund, requestReturn } = require('../controllers/buyer.controller');
-const verifyUser = require('../middleware/verifyUser');
-const imageUpload = require('../middleware/imageUpload');
 const router = express.Router();
 
-router.post('/auth/register', createUser);
+const { verifyUser, requireRole, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
+const imageUpload = require('../middleware/imageUpload');
 
-router.post('/auth/login', loginUser);
+const { createUser, loginUser, logoutUser, getUsersDetails, updateBuyerProfile } = require('../controllers/Buyer/auth.controller');
+const { addToCart, getCart, updateCartItem, removeFromCart } = require('../controllers/Buyer/cart.controller');
+const { createBuyerOrder, getBuyerOrders, getSingleBuyerOrder, buyerConfirmDelivery, buyerCancelOrder, requestRefund, requestReturn } = require('../controllers/Buyer/order.controller');
+const { getWishlist, addToWishlist, removeFromWishlist, clearWishlist } = require('../controllers/Buyer/wishlist.controller');
+const { getUsersActivities } = require('../controllers/auditlog.controller');
+const { validateRegister } = require('../middleware/validateRegister');
+
+router.use(apiLimiter);
+
+router.post('/auth/register', validateRegister, createUser);
+
+router.post('/auth/login', loginLimiter, loginUser);
 
 router.post('/auth/logout', verifyUser, logoutUser);
 
@@ -26,7 +35,7 @@ router.delete("/cart/:productId", verifyUser, removeFromCart);
 
 router.post("/checkout", verifyUser, imageUpload.paymentProofUpload.any(), createBuyerOrder);
 
-router.get("/orders", verifyUser, getBuyerOrders);
+router.get("/orders", verifyUser, requireRole(['buyer']), getBuyerOrders);
 
 router.get("/orders/:orderId", verifyUser, getSingleBuyerOrder);
 
@@ -34,7 +43,6 @@ router.post('/orders/action/confirmdelivered', verifyUser, buyerConfirmDelivery)
 
 router.post('/orders/action/cancelorder', verifyUser, buyerCancelOrder);
 
-// Refund and Return Request routes
 router.post('/orders/:orderId/refund-request', verifyUser, requestRefund);
 
 router.post('/orders/:orderId/return-request', verifyUser, requestReturn);
@@ -47,6 +55,6 @@ router.delete('/wishlist/:productId', verifyUser, removeFromWishlist);
 
 router.delete('/wishlist', verifyUser, clearWishlist);
 
-router.get('/activity', verifyUser, getBuyerActivities);
+router.get('/activity', verifyUser, getUsersActivities);
 
 module.exports  = router;

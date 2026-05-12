@@ -6,6 +6,7 @@ const vendor = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phoneNo: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  role: { type: String, enum: ['vendor'], default: 'vendor' },
 
   username: String,
   profilePhoto: String,

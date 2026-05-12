@@ -1,24 +1,41 @@
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const cloudinary = require("../config/cloudinary");
+const crypto = require('crypto');
 
 const imageStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => ({
-    folder: "gmc/product/image",
-    resource_type: "image",
-    format: "png",
-    public_id: Date.now() + "-" + file.originalname
-  })
+  params: async (req, file) => {
+    const ext = file.originalname.split('.').pop();
+    const sanitizedName = crypto.randomBytes(16).toString('hex');
+
+    return {
+      folder: "gmc/product/image",
+      public_id: sanitizedName,
+      format: ext,
+    };
+  }
 });
 
 const paymentProofStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => ({
-    folder: "gmc/payment/proof",
-    resource_type: "auto",
-    public_id: Date.now() + "-" + file.originalname
-  })
+  params: async (req, file) => {
+    const allowedMimes = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (!allowedMimes.includes(file.mimetype)) {
+      throw new Error('Invalid file type');
+    }
+
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = file.originalname.split('.').pop().toLowerCase();
+
+    return {
+      folder: "gmc/payment/proof",
+      resource_type: "auto",
+      format: ext === 'pdf' ? 'pdf' : undefined,
+      public_id: `proof_${uniqueSuffix}`,
+      type: 'authenticated'
+    };
+  }
 });
 
 
@@ -41,13 +58,17 @@ const imageUpload = multer({
 const paymentProofUpload = multer({
   storage: paymentProofStorage,
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10MB limit for proofs
+    fileSize: 5 * 1024 * 1024 // 5MB limit for proofs
   },
   fileFilter: (req, file, cb) => {
     const allowed = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
 
     if (!allowed.includes(file.mimetype)) {
       return cb(new Error("Only JPG, JPEG, PNG, PDF allowed"), false);
+    }
+
+    if (!/\.(jpg|jpeg|png|pdf)$/i.test(file.originalname)) {
+      return cb(new Error("File extension doesn't match mime type"), false);
     }
 
     cb(null, true);

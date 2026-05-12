@@ -1,7 +1,7 @@
-const founderModel = require('../models/founder.model');
+const founderModel = require('../models(Copy)/founder.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const{ generateSerialNumber } = require('../utils/generateSerial');
+const{ generateSerialNumber } = require('../utils(copy)/generateSerial');
 
 const saltRounds = 10;
 

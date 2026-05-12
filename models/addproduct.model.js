@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
+const { softDeletePlugin } = require('./base.schema')
 
 const addProduct = new mongoose.Schema(
     {
-        vendor: { 
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: "Vendor",      
+        vendor: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Vendor",
             required: true
         },
         name: {
@@ -22,21 +23,21 @@ const addProduct = new mongoose.Schema(
             required: true
         },
         category: {
-            type: String, 
+            type: String,
             required: true
         },
         status: {
-            type: String, 
-            enum: ['in-stock', 'low-in-stock', 'out-of-stock'], 
+            type: String,
+            enum: ['in-stock', 'low-in-stock', 'out-of-stock'],
             default: 'in-stock'
         },
         price: {
-            type: Number, 
+            type: Number,
             required: true,
             min: 0
         },
-        originalPrice:{
-            type: Number, 
+        originalPrice: {
+            type: Number,
             required: true,
             min: 0
         },
@@ -45,10 +46,17 @@ const addProduct = new mongoose.Schema(
             required: true,
             min: 0
         },
+        sold: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
     },
     {
         timestamps: true,
     }
 )
+
+addProduct.plugin(softDeletePlugin)
 
 module.exports = mongoose.model('AddProduct', addProduct)

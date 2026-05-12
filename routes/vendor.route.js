@@ -1,12 +1,23 @@
 const express = require('express');
-const { createUser, loginUser, getUsersDetails, addProduct, getVendorProducts, getAllProducts, updateProduct, deleteProduct, updateVendorProfile, saveVendorPayout, getVendorActivities, getVendorAnalytics, logoutUser, getVendorOrders, getSingleVendorOrder, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, exportVendorAnalyticsPDF, getProductDetails, getVendorDetails, getVendorProductsByCategory, getRefundRequests, getReturnRequests, reviewRefundRequest, reviewReturnRequest } = require('../controllers/vendor.controller');
-const imageUpload = require('../middleware/imageUpload');
-const verifyUser = require('../middleware/verifyUser');
 const router = express.Router();
 
-router.post('/auth/register', createUser);
+const imageUpload = require('../middleware/imageUpload');
+const { verifyUser, requireRole, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
 
-router.post('/auth/login', loginUser);
+const { createUser, loginUser, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails } = require('../controllers/Vendor/auth.controller');
+const { addProduct, getVendorProducts, getAllProducts, getProductDetails, updateProduct, deleteProduct, getVendorProductsByCategory } = require('../controllers/Vendor/product.controller');
+const { saveVendorPayout } = require('../controllers/Vendor/payout.controller');
+const { getVendorOrders, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, getRefundRequests, getReturnRequests, getSingleVendorOrder, reviewRefundRequest, reviewReturnRequest } = require('../controllers/Vendor/order.controller');
+const { getVendorAnalytics, exportVendorAnalyticsPDF } = require('../controllers/Vendor/analytics.controller');
+const { getUsersActivities } = require('../controllers/auditlog.controller');
+const asyncHandler = require('../utils(copy)/asyncHandler');
+const { validateRegister } = require('../middleware/validateRegister');
+
+router.use(apiLimiter);
+
+router.post('/auth/register', validateRegister, createUser);
+
+router.post('/auth/login', loginLimiter, loginUser);
 
 router.post('/auth/logout', verifyUser, logoutUser);
 
@@ -19,7 +30,7 @@ router.put('/profile/me', verifyUser, imageUpload.fields([
 
 router.put('/profile/me/change-password', verifyUser, updateVendorProfile);
 
-router.post('/product/add', verifyUser, imageUpload.single("image"), addProduct)
+router.post('/product/add', verifyUser, requireRole(['vendor']), imageUpload.single("image"), addProduct)
 
 router.get('/product/me', verifyUser, getVendorProducts);
 
@@ -35,16 +46,15 @@ router.post('/orders/action/confirmorder', verifyUser, vendorConfirmOrder);
 
 router.post('/orders/action/confirmshipped', verifyUser, vendorShipOrder);
 
-// Refund and Return Request routes
 router.get('/orders/refund-requests', verifyUser, getRefundRequests);
 
 router.get('/orders/return-requests', verifyUser, getReturnRequests);
 
-router.get('/analytics', verifyUser, getVendorAnalytics);
+router.get('/analytics', verifyUser, requireRole(['vendor']), asyncHandler(getVendorAnalytics));
 
-router.get("/analytics/export/pdf", verifyUser, exportVendorAnalyticsPDF);
+router.get("/analytics/export/pdf", verifyUser, asyncHandler(exportVendorAnalyticsPDF));
 
-router.get('/activity', verifyUser, getVendorActivities);
+router.get('/activity', verifyUser, getUsersActivities);
 
 // Dynamic routes
 router.get("/product/:productId", getProductDetails);
