@@ -10,7 +10,7 @@ const { saveVendorPayout } = require('../controllers/Vendor/payout.controller');
 const { getVendorOrders, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, getRefundRequests, getReturnRequests, getSingleVendorOrder, reviewRefundRequest, reviewReturnRequest } = require('../controllers/Vendor/order.controller');
 const { getVendorAnalytics, exportVendorAnalyticsPDF } = require('../controllers/Vendor/analytics.controller');
 const { getUsersActivities } = require('../controllers/auditlog.controller');
-const asyncHandler = require('../utils(copy)/asyncHandler');
+const asyncHandler = require('../utils/asyncHandler');
 const { validateRegister } = require('../middleware/validateRegister');
 
 router.use(apiLimiter);
@@ -30,7 +30,7 @@ router.put('/profile/me', verifyUser, imageUpload.fields([
 
 router.put('/profile/me/change-password', verifyUser, updateVendorProfile);
 
-router.post('/product/add', verifyUser, requireRole(['vendor']), imageUpload.single("image"), addProduct)
+router.post('/product/add', verifyUser, requireRole(['vendor']), imageUpload.single('image'), addProduct)
 
 router.get('/product/me', verifyUser, getVendorProducts);
 

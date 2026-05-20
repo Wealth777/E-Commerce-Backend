@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const { sendError } = require('../utils/responseStruture');
 
 const verifyUser = (req, res, next) => {
   try {
@@ -14,10 +15,7 @@ const verifyUser = (req, res, next) => {
     }
 
     if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "No token provided"
-      });
+      return sendError(res, 401, 'No token provided');
     }
 
     // Verify token
@@ -34,19 +32,13 @@ const verifyUser = (req, res, next) => {
     next();
 
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token"
-    });
+    return sendError(res, 401, 'Invalid or expired token');
   }
 };
 
 const requireRole = (roles) => (req, res, next) => {
   if (!req.user || !roles.includes(req.user.role)) {
-    return res.status(403).json({
-      success: false,
-      message: "Access denied"
-    });
+    return sendError(res, 403, 'Access denied');
   }
   next();
 };
@@ -54,7 +46,7 @@ const requireRole = (roles) => (req, res, next) => {
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,  // 15 minutes
   max: 5,  // Max 5 requests per windowMs
-  message: 'Too many login attempts, please try again later',
+  handler: (req, res) => sendError(res, 429, 'Too many login attempts, please try again later'),
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -62,7 +54,8 @@ const loginLimiter = rateLimit({
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,  // 100 requests per 15 min
-  skip: (req) => req.user && req.user.role === 'founder'  // Skip for founders
+  skip: (req) => req.user && req.user.role === 'founder',
+  handler: (req, res) => sendError(res, 429, 'Too many requests, please try again later')
 });
 
 

@@ -45,7 +45,6 @@ const buyerOrderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: false,
       index: true,
-      index: true
     },
 
     items: [orderItemSchema],
@@ -78,7 +77,7 @@ const buyerOrderSchema = new mongoose.Schema(
         enum: ["pending", "paid", "failed"],
         default: "pending",
       },
-      proofs: [paymentProofSchema], 
+      proofs: [paymentProofSchema],
     },
 
     note: String,
@@ -97,44 +96,97 @@ const buyerOrderSchema = new mongoose.Schema(
       },
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Buyer",
+        refPath: "cancelledBy.userModel",
+      },
+      userModel: {
+        type: String,
+        enum: ["Buyer", "Vendor", "Founder"],
       },
       cancelledAt: Date,
     },
 
     refundRequest: {
-      requested: { type: Boolean, default: false },
+      requested: {
+        type: Boolean,
+        default: false,
+      },
+
       status: {
         type: String,
-        enum: ["none", "pending", "approved", "rejected", "completed"],
-        default: "none",
+        enum: [
+          "none",
+          "pending_review",
+          "approved",
+          "processing",
+          "refunded",
+          "completed",
+          "rejected"
+        ],
+        default: "none"
       },
+
+      triggeredByReturn: {
+        type: Boolean,
+        default: false,
+      },
+
       reason: String,
       details: String,
+
+      refundAmount: Number,
+
+      accountNumber: String,
+      bankName: String,
+      accountName: String,
+
+      refundReference: String,
+
       requestedAt: Date,
       reviewedAt: Date,
+      refundedAt: Date,
+
       reviewedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vendor",
       },
+
       response: String,
     },
 
     returnRequest: {
-      requested: { type: Boolean, default: false },
+      requested: {
+        type: Boolean,
+        default: false,
+      },
+
       status: {
         type: String,
-        enum: ["none", "pending", "approved", "rejected", "completed"],
-        default: "none",
+        enum: [
+          "none",
+          "pending_review",
+          "approved",
+          "buyer_shipping",
+          "returned",
+          "inspection",
+          "completed",
+          "rejected"
+        ],
+        default: "none"
       },
+
       reason: String,
       details: String,
+
       requestedAt: Date,
       reviewedAt: Date,
+      returnedAt: Date,
+
       reviewedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Vendor",
       },
+
+      inspectionNote: String,
       response: String,
     },
   },

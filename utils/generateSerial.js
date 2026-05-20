@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Counter = require("../models/serialCounter.model.js");
 
 const generateSerialNumber = async (role) => {

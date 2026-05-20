@@ -1,12 +1,14 @@
 const logger = require('../../logger');
 const vendorModel = require('../../models/vendor.model');
-const AuditLog = require('../../models/auditLog')
+const AuditLog = require('../../models/auditLog.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { generateSerialNumber } = require('../../utils(copy)/generateSerial');
-const { westAfricaCountries, nigeriaStates } = require("../../utils(copy)/location");
+const { generateSerialNumber } = require('../../utils/generateSerial');
+const { westAfricaCountries, nigeriaStates } = require("../../utils/location");
 const { validationResult } = require('express-validator');
 const VendorDTO = require('../../dtos/vendor.dto');
+const AddProduct = require('../../models/addproduct.model');
+const { sendSuccess, sendError } = require('../../utils/responseStruture');
 
 const saltRounds = 10;
 
@@ -14,17 +16,17 @@ exports.createUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return sendError(res, 400, 'Validation failed', errors.array());
     }
     const { fullName, email, phoneNo, password } = req.body;
 
     if (!fullName || !email || !phoneNo || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+      return sendError(res, 400, 'All fields are required');
     }
 
     const existingUser = await vendorModel.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return sendError(res, 400, 'User already exists');
     }
 
     const hashPassword = await bcrypt.hash(password, saltRounds);
@@ -52,14 +54,11 @@ exports.createUser = async (req, res) => {
     });
 
 
-    return res.status(201).json({
-      success: true,
-      message: 'User Account Created Successfully'
-    });
+    return sendSuccess(res, 201, 'User Account Created Successfully');
 
   } catch (err) {
     logger.error(err);
-    return res.status(500).send('Internal Server Error');
+    return sendError(res, 500, 'Internal Server Error');
   }
 };
 
@@ -68,19 +67,19 @@ exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return sendError(res, 400, 'Email and password are required');
     }
 
     const user = await vendorModel.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return sendError(res, 400, 'Invalid credentials');
     }
 
     const confirmPassword = await bcrypt.compare(password, user.password);
 
     if (!confirmPassword) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return sendError(res, 400, 'Invalid credentials');
     }
 
     const token = jwt.sign(
@@ -106,19 +105,17 @@ exports.loginUser = async (req, res) => {
       }
     });
 
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
+    return sendSuccess(res, 200, 'Login successful', {
       user: VendorDTO.authUser(user),
       accessToken: token,
-      refreshToken: refreshToken,
-      expiresIn: 86400  // 24 hours in seconds
+      refreshToken,
+      expiresIn: 86400
     });
 
 
   } catch (err) {
     logger.error(err);
-    return res.status(500).send('Internal Server Error');
+    return sendError(res, 500, 'Internal Server Error');
   }
 };
 
@@ -140,17 +137,11 @@ exports.logoutUser = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Logout successful"
-    });
+    return sendSuccess(res, 200, 'Logout successful');
 
 
   } catch (err) {
-    return res.status(500).json({
-      success: false,
-      message: "Logout failed"
-    });
+    return sendError(res, 500, 'Logout failed');
   }
 };
 
@@ -181,23 +172,14 @@ exports.getUsersDetails = async (req, res) => {
       `);
 
     if (!vendor) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
+      return sendError(res, 404, 'User not found');
     }
 
-    return res.status(200).json({
-      success: true,
-      data: VendorDTO.fromModel(vendor)
-    });
+    return sendSuccess(res, 200, 'Vendor profile fetched successfully', VendorDTO.fromModel(vendor));
 
   } catch (err) {
     logger.error(err);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error"
-    });
+    return sendError(res, 500, 'Internal Server Error');
   }
 };
 
@@ -227,15 +209,15 @@ exports.updateVendorProfile = async (req, res) => {
     const vendor = await vendorModel.findById(vendorId);
 
     if (!vendor) {
-      return res.status(404).json({ message: 'Vendor not found' });
+      return sendError(res, 404, 'Vendor not found');
     }
 
     if (country && !westAfricaCountries.includes(country)) {
-      return res.status(400).json({ message: 'Invalid country' });
+      return sendError(res, 400, 'Invalid country');
     }
 
     if (country === 'Nigeria' && state && !nigeriaStates.includes(state)) {
-      return res.status(400).json({ message: 'Invalid Nigerian state' });
+      return sendError(res, 400, 'Invalid Nigerian state');
     }
 
     if (username) vendor.username = username;
@@ -288,14 +270,11 @@ exports.updateVendorProfile = async (req, res) => {
       }
     });
 
-    res.json({
-      message: 'Profile updated successfully',
-      data: VendorDTO.fromModel(vendor)
-    });
+    return sendSuccess(res, 200, 'Profile updated successfully', VendorDTO.fromModel(vendor));
 
   } catch (error) {
     logger.error(error);
-    res.status(500).json({ message: 'Server error' });
+    return sendError(res, 500, 'Server error');
   }
 };
 
@@ -321,10 +300,7 @@ exports.getVendorDetails = async (req, res) => {
     );
 
     if (!vendordetails) {
-      return res.status(404).json({
-        success: false,
-        message: "Vendor not found"
-      });
+      return sendError(res, 404, 'Vendor not found');
     }
 
     const products = await AddProduct.find(filterQuery).sort(sortQuery);
@@ -345,8 +321,7 @@ exports.getVendorDetails = async (req, res) => {
       createdAt: product.createdAt
     }));
 
-    return res.status(200).json({
-      success: true,
+    return sendSuccess(res, 200, 'Vendor details fetched successfully', {
       count: products.length,
       vendorInfo: {
         id: vendordetails._id,
@@ -367,10 +342,6 @@ exports.getVendorDetails = async (req, res) => {
 
   } catch (err) {
     logger.error("GET VENDOR PRODUCT DETAILS ERROR:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      error: err.message
-    });
+    return sendError(res, 500, 'Internal Server Error', err.message);
   }
 };

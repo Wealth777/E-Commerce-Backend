@@ -1,6 +1,6 @@
 const logger = require('../../logger');
 const buyerModel = require('../../models/buyer.model');
-const AuditLog = require('../../models/auditLog');
+const AuditLog = require('../../models/auditLog.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { westAfricaCountries, nigeriaStates } = require("../../utils/location");
@@ -8,7 +8,7 @@ const { generateSerialNumber } = require('../../utils/generateSerial');
 const { validationResult } = require('express-validator');
 
 const { default: mongoose } = require('mongoose');
-const { sendResponse } = require('../../utils/responseStruture');
+const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
 const BuyerDTO = require('../../dtos/buyer.dto');
 
 const saltRounds = 10;
@@ -32,7 +32,7 @@ exports.createUser = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return sendResponse(res, 400, false, {errors: errors.array()});
+      return sendError(res, 400, 'Validation failed', errors.array());
     }
     const { fullName, email, phoneNo, password } = req.body;
 
@@ -48,7 +48,7 @@ exports.createUser = async (req, res) => {
 
     const passwordErrors = validatePassword(password);
     if (passwordErrors.length > 0) {
-      sendResponse(res, 400, false, "Password does not meet requirements", passwordErrors);
+      return sendError(res, 400, 'Password does not meet requirements', passwordErrors);
     }
 
     const hashPassword = await bcrypt.hash(password, saltRounds);
@@ -88,6 +88,71 @@ exports.createUser = async (req, res) => {
   };
 };
 
+// exports.loginUser = async (req, res) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       return sendError(res, 400, 'Email and password are required')
+//     }
+
+//     const user = await buyerModel.findOne({ email });
+
+//     if (!user) {
+//       return sendError(res, 400, 'Invalid credentials');
+//     }
+
+//     const confirmPassword = await bcrypt.compare(password, user.password);
+
+//     if (!confirmPassword) {
+//       return sendError(res, 400, 'Invalid credentials');
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id, role: user.role },
+//       process.env.JWT_KEY,
+//       { expiresIn: "24h" }
+//     );
+
+//     const refreshToken = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_REFRESH_SECRET,
+//       { expiresIn: "7d" }
+//     );
+
+//     await AuditLog.create([{
+//       user: user._id,
+//       role: 'buyer',
+//       action: 'LOG_IN',
+//       entity: 'Buyer',
+//       entityId: user._id,
+//       metadata: {
+//         email: user.email
+//       }
+//     }], { session });
+
+//     await session.commitTransaction();
+
+//     return sendSuccess(res, 200, 'Login successful', {
+//       user: BuyerDTO.authUser(user),
+//       accessToken: token,
+//       refreshToken,
+//       expiresIn: 86400
+//     });
+
+
+//   } catch (err) {
+//     await session.abortTransaction();
+//     logger.error(err);
+//     return sendError(res, 500, 'Internal Server Error');
+//   } finally {
+//     session.endSession();
+//   };
+// };
+
 exports.loginUser = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -96,32 +161,42 @@ exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      sendResponse(res, 400, false, "Email and password are required")
+      await session.abortTransaction();
+      return sendError(res, 400, 'Email and password are required');
     }
 
     const user = await buyerModel.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      await session.abortTransaction();
+      return sendError(res, 400, 'Invalid credentials');
     }
 
     const confirmPassword = await bcrypt.compare(password, user.password);
 
     if (!confirmPassword) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      await session.abortTransaction();
+      return sendError(res, 400, 'Invalid credentials');
     }
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_KEY,
-      { expiresIn: "24h" }
+      { expiresIn: '24h' }
     );
 
     const refreshToken = jwt.sign(
       { id: user._id },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: '7d' }
     );
+
+    const responseData = {
+      user: BuyerDTO.fromModel(user),
+      accessToken: token,
+      refreshToken,
+      expiresIn: 86400,
+    };
 
     await AuditLog.create([{
       user: user._id,
@@ -130,29 +205,23 @@ exports.loginUser = async (req, res) => {
       entity: 'Buyer',
       entityId: user._id,
       metadata: {
-        email: user.email
-      }
+        email: user.email,
+      },
     }], { session });
 
     await session.commitTransaction();
 
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user: BuyerDTO.authUser(user),
-      accessToken: token,
-      refreshToken: refreshToken,
-      expiresIn: 86400  // 24 hours in seconds
-    });
-
-
+    return sendSuccess(res, 200, 'Login successful', responseData);
   } catch (err) {
-    await session.abortTransaction();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
     logger.error(err);
-    return res.status(500).send('Internal Server Error');
+    return sendError(res, 500, 'Internal Server Error');
   } finally {
     session.endSession();
-  };
+  }
 };
 
 exports.logoutUser = async (req, res) => {
@@ -178,19 +247,13 @@ exports.logoutUser = async (req, res) => {
 
     await session.commitTransaction();
 
-    return res.status(200).json({
-      success: true,
-      message: "Logout successful"
-    });
+    return sendSuccess(res, 200, 'Logout successful');
 
 
   } catch (err) {
     await session.abortTransaction();
     logger.error('Error occured', err)
-    return res.status(500).json({
-      success: false,
-      message: "Logout failed"
-    });
+    return sendError(res, 500, 'Logout failed');
   } finally {
     session.endSession();
   };
@@ -215,23 +278,14 @@ exports.getUsersDetails = async (req, res) => {
       `);
 
     if (!buyer) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found"
-      });
+      return sendError(res, 404, 'User not found');
     }
 
-    return res.status(200).json({
-      success: true,
-      data: BuyerDTO.fromModel(buyer)
-    });
+    return sendSuccess(res, 200, 'Buyer profile fetched successfully', BuyerDTO.fromModel(buyer));
 
   } catch (err) {
     logger.error(err);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error"
-    });
+    return sendError(res, 500, 'Internal Server Error');
   }
 };
 
@@ -251,21 +305,22 @@ exports.updateBuyerProfile = async (req, res) => {
       email,
       phoneNo,
       preferredLanguage,
-      notificationPreferences,
+      notificationPreference,
     } = req.body;
 
     const buyer = await buyerModel.findById(buyerId);
 
     if (!buyer) {
-      return res.status(404).json({ message: 'Buyer not found' });
+      await session.abortTransaction();
+      return sendError(res, 404, 'Buyer not found');
     }
 
     if (country && !westAfricaCountries.includes(country)) {
-      return res.status(400).json({ message: 'Invalid country' });
+      return sendError(res, 400, 'Invalid country');
     }
 
     if (country === 'Nigeria' && state && !nigeriaStates.includes(state)) {
-      return res.status(400).json({ message: 'Invalid Nigerian state' });
+      return sendError(res, 400, 'Invalid Nigerian state');
     }
 
     if (username) buyer.username = username;
@@ -279,7 +334,7 @@ exports.updateBuyerProfile = async (req, res) => {
     if (address) buyer.address = address;
 
     if (preferredLanguage) buyer.preferredLanguage = preferredLanguage;
-    if (notificationPreferences) buyer.notificationPreferences = notificationPreferences;
+    if (notificationPreference) buyer.notificationPreference = notificationPreference;
 
     if (req.files?.profilePhoto) {
       buyer.profilePhoto = req.files.profilePhoto[0].path;
@@ -302,15 +357,12 @@ exports.updateBuyerProfile = async (req, res) => {
 
     await session.commitTransaction();
 
-    res.json({
-      message: 'Profile updated successfully',
-      data: BuyerDTO.fromModel(buyer)
-    });
+    return sendSuccess(res, 200, 'Profile updated successfully', BuyerDTO.fromModel(buyer));
 
   } catch (error) {
     await session.abortTransaction();
     logger.error(error);
-    res.status(500).json({ message: 'Server error' });
+    return sendError(res, 500, 'Server error');
   } finally {
     session.endSession();
   }

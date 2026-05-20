@@ -1,80 +1,23 @@
 const logger = require('../../logger');
 const AddProduct = require('../../models/addproduct.model');
 const BuyerOrder = require("../../models/buyerOrder.model");
-const AuditLog = require('../../models/auditLog');
+const AuditLog = require('../../models/auditLog.model');
 const PDFDocument = require("pdfkit");
-const { getDateRange } = require("../../utils(copy)/feedAlgorithm");
+const { getDateRange } = require("../../utils/feedAlgorithm");
+const { sendSuccess, sendError } = require('../../utils/responseStruture');
+const analyticsService = require('../../services/vendor/analytics.service');
 
 exports.getVendorAnalytics = async (req, res) => {
   try {
-    const vendorId = req.user._id;
-    const range = req.query.range || "7days";
-
-    const startDate = getDateRange(range);
-
-    const orders = await BuyerOrder.find({
-      vendor: vendorId,
-      createdAt: { $gte: startDate },
-      "payment.status": "paid"
-    })
-      .populate("buyer", "username email")
-      .sort({ createdAt: -1 });
-
-    const totalSales = orders.reduce(
-      (sum, order) => sum + (order.pricing?.total || 0),
-      0
-    );
-    const totalOrders = orders.length;
-
-    const avgOrderValue =
-      totalOrders > 0
-        ? Math.round(totalSales / totalOrders)
-        : 0;
-
-    const recentOrders = orders.slice(0, 5);
-
-    const topProducts = await AddProduct.find({
-      vendor: vendorId
-    })
-      .sort({ sold: -1 })
-      .limit(5)
-      .select("name image price sold stock");
-
-    const salesOverviewMap = {};
-
-    orders.forEach((order) => {
-      const date = order.createdAt.toISOString().split("T")[0];
-
-      if (!salesOverviewMap[date]) {
-        salesOverviewMap[date] = 0;
-      }
-
-      salesOverviewMap[date] += (order.pricing?.total || 0);
+    const analytics = await analyticsService.getVendorAnalytics({
+      vendorId: req.user._id,
+      range: req.query.range || '7days',
     });
 
-    const salesOverview = Object.keys(salesOverviewMap).map((date) => ({
-      date,
-      sales: salesOverviewMap[date]
-    }));
-
-    res.status(200).json({
-      success: true,
-      summary: {
-        totalSales,
-        totalOrders,
-        avgOrderValue
-      },
-      salesOverview,
-      recentOrders,
-      topProducts
-    });
+    return sendSuccess(res, 200, 'Analytics fetched successfully', analytics);
   } catch (error) {
-    logger.error("Vendor Analytics Error:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch analytics"
-    });
+    logger.error('Vendor Analytics Error:', error);
+    return sendError(res, 500, 'Failed to fetch analytics');
   }
 };
 
@@ -255,9 +198,6 @@ exports.exportVendorAnalyticsPDF = async (req, res) => {
       error
     );
 
-    res.status(500).json({
-      success: false,
-      message: "Failed to export analytics PDF",
-    });
+    return sendError(res, 500, 'Failed to export analytics PDF');
   }
 };

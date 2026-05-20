@@ -1,64 +1,32 @@
-// const winston = require('winston');
-
-// const logger = winston.createLogger({
-//   level: process.env.LOG_LEVEL || 'info',
-//   format: winston.format.json(),
-//   transports: [
-//     new winston.transports.File({ filename: 'error.log', level: 'error' }),
-//     new winston.transports.File({ filename: 'combined.log' }),
-//     new winston.transports.Console({
-//       format: winston.format.combine(
-//         winston.format.colorize(),
-//         winston.format.simple()
-//       )
-//     })
-//   ]
-// });
-
-// module.exports = logger;
-
+const fs = require('fs');
 const path = require('path');
-const winston = require('winston');
 
-const logFormat = winston.format.combine(
-  winston.format.timestamp(),
-  winston.format.errors({ stack: true }),
-  winston.format.splat(),
-  winston.format.json()
-);
+const logsDir = path.join(process.cwd(), 'logs');
+if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
 
-const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  defaultMeta: { service: 'campustrade-backend' },
-  format: logFormat,
-  transports: [
-    new winston.transports.File({
-      filename: path.join(process.cwd(), 'logs', 'error.log'),
-      level: 'error',
-    }),
-    new winston.transports.File({
-      filename: path.join(process.cwd(), 'logs', 'combined.log'),
-    }),
-  ],
-  exceptionHandlers: [
-    new winston.transports.File({ filename: path.join(process.cwd(), 'logs', 'exceptions.log') }),
-  ],
-  rejectionHandlers: [
-    new winston.transports.File({ filename: path.join(process.cwd(), 'logs', 'rejections.log') }),
-  ],
-});
+const writeLog = (level, message, meta = null) => {
+  const payload = {
+    level,
+    service: 'campustrade-backend',
+    message: message instanceof Error ? message.message : message,
+    stack: message instanceof Error ? message.stack : undefined,
+    meta,
+    timestamp: new Date().toISOString(),
+  };
 
-if (process.env.NODE_ENV !== 'test') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-      winston.format.printf(({ timestamp, level, message, ...meta }) => {
-        const metaString = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
-        return `${timestamp} ${level}: ${message}${metaString}`;
-      })
-    ),
-  }));
-}
+  const line = `${JSON.stringify(payload)}\n`;
+  fs.appendFileSync(path.join(logsDir, `${level}.log`), line);
+  fs.appendFileSync(path.join(logsDir, 'combined.log'), line);
 
-module.exports = logger;
+  const stream = level === 'error' ? process.stderr : process.stdout;
+  if (process.env.NODE_ENV !== 'test') stream.write(line);
+};
+
+module.exports = {
+  info: (message, meta) => writeLog('info', message, meta),
+  warn: (message, meta) => writeLog('warn', message, meta),
+  error: (message, meta) => writeLog('error', message, meta),
+  debug: (message, meta) => {
+    if (process.env.LOG_LEVEL === 'debug') writeLog('debug', message, meta);
+  },
+};

@@ -1,9 +1,9 @@
 const logger = require('../../logger');
-const AuditLog = require('../../models/auditLog');
+const AuditLog = require('../../models/auditLog.model');
 const BuyerOrder = require("../../models/buyerOrder.model");
-const { updateProductStockAfterOrder } = require("../../utils(copy)/feedAlgorithm");
+const { updateProductStockAfterOrder } = require("../../utils/feedAlgorithm");
 const mongoose = require('mongoose');
-const { sendResponse } = require('../../utils(copy)/responseStruture');
+const { sendResponse, sendSuccess } = require('../../utils/responseStruture');
 
 
 exports.getVendorOrders = async (req, res) => {
@@ -22,8 +22,7 @@ exports.getVendorOrders = async (req, res) => {
       BuyerOrder.countDocuments({ vendor: vendorId })
     ]);
 
-    res.status(200).json({
-      success: true,
+    return sendSuccess(res, 200, 'Vendor orders fetched successfully', {
       pagination: {
         currentPage: page,
         pageSize: limit,
@@ -31,7 +30,7 @@ exports.getVendorOrders = async (req, res) => {
         totalPages: Math.ceil(totalCount / limit)
       },
       count: orders.length,
-      data: orders,
+      orders,
     });
 
   } catch (error) {
@@ -49,18 +48,17 @@ exports.getSingleVendorOrder = async (req, res) => {
       _id: orderId,
       vendor: vendorId,
     })
-      .populate("buyer", "username email")
-      .populate("items.productId", "name image");
+      .populate("buyer", "username fullName email")
+      .populate("items.vendor", "storeName");
 
     if (!order) {
-      return sendResponse(res, 404, false, "Order not found")
+      return sendError(res, 404, "Order not found");
     }
 
-    sendResponse(res, 200, true, { data: order })
-
+    return sendSuccess(res, 200, "Order fetched successfully", order);
   } catch (error) {
     logger.error("Fetch Single Vendor Order Error:", error);
-    sendResponse(res, 500, false, "Internal Server Error");
+    return sendError(res, 500, "Internal Server Error");
   }
 };
 
@@ -145,10 +143,7 @@ exports.vendorConfirmOrder = async (req, res) => {
       }
     });
 
-    return res.json({
-      message: "Order confirmed and stock updated",
-      status: order.status
-    });
+    return sendSuccess(res, 200, 'Order confirmed and stock updated', { status: order.status });
 
   } catch (err) {
     await session.abortTransaction();
@@ -232,8 +227,7 @@ exports.getRefundRequests = async (req, res) => {
         refundRequest: order.refundRequest,
       }));
 
-    return res.status(200).json({
-      success: true,
+    return sendSuccess(res, 200, 'Refund requests fetched successfully', {
       pagination: {
         currentPage: page,
         pageSize: limit,
@@ -241,7 +235,7 @@ exports.getRefundRequests = async (req, res) => {
         totalPages: Math.ceil(totalCount / limit)
       },
       count: refundRequests.length,
-      data: refundRequests,
+      refundRequests,
     });
   } catch (error) {
     logger.error("Get Refund Requests Error:", error);
@@ -280,8 +274,7 @@ exports.getReturnRequests = async (req, res) => {
         returnRequest: order.returnRequest,
       }));
 
-    return res.status(200).json({
-      success: true,
+    return sendSuccess(res, 200, 'Return requests fetched successfully', {
       pagination: {
         currentPage: page,
         pageSize: limit,
@@ -289,7 +282,7 @@ exports.getReturnRequests = async (req, res) => {
         totalPages: Math.ceil(totalCount / limit)
       },
       count: returnRequests.length,
-      data: returnRequests,
+      returnRequests,
     });
   } catch (error) {
     logger.error("Get Return Requests Error:", error);
@@ -297,19 +290,96 @@ exports.getReturnRequests = async (req, res) => {
   }
 };
 
+// exports.reviewRefundRequest = async (req, res) => {
+//   try {
+//     const vendorId = req.user._id;
+//     const { orderId } = req.params;
+//     const { action, response } = req.body;
+
+//     // Validation
+//     if (!action || !["approved", "rejected"].includes(action)) {
+//       return sendResponse(res, 400, false, "Action must be either 'approved' or 'rejected'");
+//     }
+
+//     if (action === "rejected" && (!response || response.trim() === "")) {
+//       return sendResponse(res, 400, false, "Response message is required when rejecting refund request");
+//     }
+
+//     const order = await BuyerOrder.findOne({
+//       _id: orderId,
+//       vendor: vendorId,
+//     });
+
+//     if (!order) {
+//       return sendResponse(res, 404, false, "Order not found or you do not have permission");
+//     }
+
+//     if (!order.refundRequest.requested) {
+//       return sendResponse(res, 400, false, "No refund request found for this order");
+//     }
+
+//     if (order.refundRequest.status !== "pending") {
+//       return sendResponse(res, 400, false, `Cannot review refund request with status: ${order.refundRequest.status}`);
+//     }
+
+//     // Update refund request
+//     order.refundRequest.status = action === "approved" ? "approved" : "rejected";
+//     order.refundRequest.reviewedAt = new Date();
+//     order.refundRequest.reviewedBy = vendorId;
+//     order.refundRequest.response = response || "";
+
+//     await order.save();
+
+//     await AuditLog.create({
+//       user: vendorId,
+//       role: "vendor",
+//       action: `REFUND_REQUEST_${action.toUpperCase()}`,
+//       entity: "ORDER",
+//       entityId: orderId,
+//       metadata: {
+//         buyerId: order.buyer,
+//         reason: order.refundRequest.reason,
+//         totalAmount: order.pricing.total,
+//         response,
+//       },
+//     });
+
+//     return sendResponse(res, 200, true, `Refund request ${action}`, {
+//       data: {
+//         orderId: order._id,
+//         refundRequest: order.refundRequest,
+//       }
+//     });
+//   } catch (error) {
+//     logger.error("Review Refund Request Error:", error);
+//     return sendResponse(res, 500, false, "Internal Server Error", {error: error.message});
+//   }
+// };
+
 exports.reviewRefundRequest = async (req, res) => {
   try {
     const vendorId = req.user._id;
     const { orderId } = req.params;
-    const { action, response } = req.body;
+    const { action, response, refundReference } = req.body;
 
-    // Validation
-    if (!action || !["approved", "rejected"].includes(action)) {
-      return sendResponse(res, 400, false, "Action must be either 'approved' or 'rejected'");
+    const allowedActions = [
+      "approved",
+      "processing",
+      "refunded",
+      "completed",
+      "rejected",
+    ];
+
+    if (!action || !allowedActions.includes(action)) {
+      return sendResponse(res, 400, false, "Invalid refund action");
     }
 
     if (action === "rejected" && (!response || response.trim() === "")) {
-      return sendResponse(res, 400, false, "Response message is required when rejecting refund request");
+      return sendResponse(res, 400, false, "Response is required when rejecting refund request");
+    }
+
+    if (action === "refunded" && (!refundReference || refundReference.trim() === "")) {
+      return sendResponse(res, 400, false, "Refund reference is required when marking as refunded");
     }
 
     const order = await BuyerOrder.findOne({
@@ -321,19 +391,44 @@ exports.reviewRefundRequest = async (req, res) => {
       return sendResponse(res, 404, false, "Order not found or you do not have permission");
     }
 
-    if (!order.refundRequest.requested) {
+    if (!order.refundRequest?.requested) {
       return sendResponse(res, 400, false, "No refund request found for this order");
     }
 
-    if (order.refundRequest.status !== "pending") {
-      return sendResponse(res, 400, false, `Cannot review refund request with status: ${order.refundRequest.status}`);
+    const currentStatus = order.refundRequest.status;
+
+    const allowedTransitions = {
+      pending_review: ["approved", "rejected"],
+      approved: ["processing", "rejected"],
+      processing: ["refunded", "rejected"],
+      refunded: ["completed"],
+      completed: [],
+      rejected: [],
+    };
+
+    if (!allowedTransitions[currentStatus]?.includes(action)) {
+      return sendResponse(
+        res,
+        400,
+        false,
+        `Cannot move refund request from ${currentStatus} to ${action}`
+      );
     }
 
-    // Update refund request
-    order.refundRequest.status = action === "approved" ? "approved" : "rejected";
-    order.refundRequest.reviewedAt = new Date();
+    const previousStatus = currentStatus;
+
+    order.refundRequest.status = action;
     order.refundRequest.reviewedBy = vendorId;
-    order.refundRequest.response = response || "";
+    order.refundRequest.response = response || order.refundRequest.response || "";
+
+    if (["approved", "rejected"].includes(action)) {
+      order.refundRequest.reviewedAt = new Date();
+    }
+
+    if (action === "refunded") {
+      order.refundRequest.refundReference = refundReference;
+      order.refundRequest.refundedAt = new Date();
+    }
 
     await order.save();
 
@@ -345,21 +440,25 @@ exports.reviewRefundRequest = async (req, res) => {
       entityId: orderId,
       metadata: {
         buyerId: order.buyer,
+        previousStatus,
+        newStatus: action,
         reason: order.refundRequest.reason,
         totalAmount: order.pricing.total,
         response,
       },
     });
 
-    return sendResponse(res, 200, true, `Refund request ${action}`, {
+    return sendResponse(res, 200, true, `Refund request updated to ${action}`, {
       data: {
         orderId: order._id,
         refundRequest: order.refundRequest,
-      }
+      },
     });
   } catch (error) {
     logger.error("Review Refund Request Error:", error);
-    return sendResponse(res, 500, false, "Internal Server Error", {error: error.message});
+    return sendResponse(res, 500, false, "Internal Server Error", {
+      error: error.message,
+    });
   }
 };
 
@@ -367,15 +466,23 @@ exports.reviewReturnRequest = async (req, res) => {
   try {
     const vendorId = req.user._id;
     const { orderId } = req.params;
-    const { action, response } = req.body;
+    const { action, response, inspectionNote } = req.body;
 
-    // Validation
-    if (!action || !["approved", "rejected"].includes(action)) {
-      return sendResponse(res, 400, false, "Action must be either 'approved' or 'rejected'");
+    const allowedActions = [
+      "approved",
+      "buyer_shipping",
+      "returned",
+      "inspection",
+      "completed",
+      "rejected",
+    ];
+
+    if (!action || !allowedActions.includes(action)) {
+      return sendResponse(res, 400, false, "Invalid return action");
     }
 
     if (action === "rejected" && (!response || response.trim() === "")) {
-      return sendResponse(res, 400, false, "Response message is required when rejecting return request");
+      return sendResponse(res, 400, false, "Response is required when rejecting return request");
     }
 
     const order = await BuyerOrder.findOne({
@@ -387,19 +494,48 @@ exports.reviewReturnRequest = async (req, res) => {
       return sendResponse(res, 404, false, "Order not found or you do not have permission");
     }
 
-    if (!order.returnRequest.requested) {
+    if (!order.returnRequest?.requested) {
       return sendResponse(res, 400, false, "No return request found for this order");
     }
 
-    if (order.returnRequest.status !== "pending") {
-      return sendResponse(res, 400, false, `Cannot review return request with status: ${order.returnRequest.status}`);
+    const currentStatus = order.returnRequest.status;
+
+    const allowedTransitions = {
+      pending_review: ["approved", "rejected"],
+      approved: ["buyer_shipping", "rejected"],
+      buyer_shipping: ["returned", "rejected"],
+      returned: ["inspection", "rejected"],
+      inspection: ["completed", "rejected"],
+      completed: [],
+      rejected: [],
+    };
+
+    if (!allowedTransitions[currentStatus]?.includes(action)) {
+      return sendResponse(
+        res,
+        400,
+        false,
+        `Cannot move return request from ${currentStatus} to ${action}`
+      );
     }
 
-    // Update return request
-    order.returnRequest.status = action === "approved" ? "approved" : "rejected";
-    order.returnRequest.reviewedAt = new Date();
+    const previousStatus = currentStatus;
+
+    order.returnRequest.status = action;
     order.returnRequest.reviewedBy = vendorId;
-    order.returnRequest.response = response || "";
+    order.returnRequest.response = response || order.returnRequest.response || "";
+
+    if (["approved", "rejected"].includes(action)) {
+      order.returnRequest.reviewedAt = new Date();
+    }
+
+    if (action === "returned") {
+      order.returnRequest.returnedAt = new Date();
+    }
+
+    if (action === "inspection" && inspectionNote) {
+      order.returnRequest.inspectionNote = inspectionNote;
+    }
 
     await order.save();
 
@@ -411,20 +547,91 @@ exports.reviewReturnRequest = async (req, res) => {
       entityId: orderId,
       metadata: {
         buyerId: order.buyer,
+        previousStatus,
+        newStatus: action,
         reason: order.returnRequest.reason,
         totalAmount: order.pricing.total,
         response,
+        inspectionNote,
       },
     });
 
-    return sendResponse(res, 200, true, `Return request ${action}`, {
+    return sendResponse(res, 200, true, `Return request updated to ${action}`, {
       data: {
         orderId: order._id,
         returnRequest: order.returnRequest,
-      }
+      },
     });
   } catch (error) {
     logger.error("Review Return Request Error:", error);
-    return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
+    return sendResponse(res, 500, false, "Internal Server Error", {
+      error: error.message,
+    });
   }
 };
+
+// exports.reviewReturnRequest = async (req, res) => {
+//   try {
+//     const vendorId = req.user._id;
+//     const { orderId } = req.params;
+//     const { action, response } = req.body;
+
+//     // Validation
+//     if (!action || !["approved", "rejected"].includes(action)) {
+//       return sendResponse(res, 400, false, "Action must be either 'approved' or 'rejected'");
+//     }
+
+//     if (action === "rejected" && (!response || response.trim() === "")) {
+//       return sendResponse(res, 400, false, "Response message is required when rejecting return request");
+//     }
+
+//     const order = await BuyerOrder.findOne({
+//       _id: orderId,
+//       vendor: vendorId,
+//     });
+
+//     if (!order) {
+//       return sendResponse(res, 404, false, "Order not found or you do not have permission");
+//     }
+
+//     if (!order.returnRequest.requested) {
+//       return sendResponse(res, 400, false, "No return request found for this order");
+//     }
+
+//     if (order.returnRequest.status !== "pending") {
+//       return sendResponse(res, 400, false, `Cannot review return request with status: ${order.returnRequest.status}`);
+//     }
+
+//     // Update return request
+//     order.returnRequest.status = action === "approved" ? "approved" : "rejected";
+//     order.returnRequest.reviewedAt = new Date();
+//     order.returnRequest.reviewedBy = vendorId;
+//     order.returnRequest.response = response || "";
+
+//     await order.save();
+
+//     await AuditLog.create({
+//       user: vendorId,
+//       role: "vendor",
+//       action: `RETURN_REQUEST_${action.toUpperCase()}`,
+//       entity: "ORDER",
+//       entityId: orderId,
+//       metadata: {
+//         buyerId: order.buyer,
+//         reason: order.returnRequest.reason,
+//         totalAmount: order.pricing.total,
+//         response,
+//       },
+//     });
+
+//     return sendResponse(res, 200, true, `Return request ${action}`, {
+//       data: {
+//         orderId: order._id,
+//         returnRequest: order.returnRequest,
+//       }
+//     });
+//   } catch (error) {
+//     logger.error("Review Return Request Error:", error);
+//     return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
+//   }
+// };

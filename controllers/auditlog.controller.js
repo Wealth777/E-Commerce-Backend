@@ -1,26 +1,13 @@
-const AuditLog = require('../models(Copy)/auditLog')
+const logger = require('../logger');
+const auditLogService = require('../services/auditlog.service');
+const { sendSuccess, sendError } = require('../utils/responseStruture');
 
 exports.getUsersActivities = async (req, res) => {
   try {
-    const logs = await AuditLog.find({ user: req.user._id })
-      .sort({ createdAt: -1 })
-      .limit(3);
-
-    if (!logs || logs.length === 0) {
-      return res.status(200).json({
-        success: true,
-        data: logs || []
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: logs
-    });
-
+    const logs = await auditLogService.getUserActivities({ userId: req.user._id });
+    return sendSuccess(res, 200, 'Activities fetched successfully', logs || []);
   } catch (error) {
-    res.status(500).json({
-      message: 'Failed to fetch activities'
-    });
+    logger.error(error);
+    return sendError(res, 500, 'Failed to fetch activities');
   }
 };

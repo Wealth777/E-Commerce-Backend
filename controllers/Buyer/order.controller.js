@@ -1,44 +1,44 @@
 const logger = require('../../logger');
 const buyerModel = require('../../models/buyer.model');
-const AuditLog = require('../../models/auditLog');
+const AuditLog = require('../../models/auditLog.model');
 const AddProduct = require('../../models/addproduct.model');
 const BuyerOrder = require("../../models/buyerOrder.model");
 const Cart = require("../../models/addToCart.model");
 
 // const { getTaxRate } = require('../../config/taxRate');
 const mongoose = require("mongoose");
-const { sendResponse } = require('../../utils/responseStruture');
+const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
 
-const validateOrderCreation = (body) => {
-  const errors = [];
+// const validateOrderCreation = (body) => {
+//   const errors = [];
 
-  if (!Array.isArray(body.items) || body.items.length === 0) {
-    errors.push('Items array is required and must not be empty');
-  }
+//   if (!Array.isArray(body.items) || body.items.length === 0) {
+//     errors.push('Items array is required and must not be empty');
+//   }
 
-  if (typeof body.subtotal !== 'number' || body.subtotal <= 0) {
-    errors.push('Subtotal must be a positive number');
-  }
+//   if (typeof body.subtotal !== 'number' || body.subtotal <= 0) {
+//     errors.push('Subtotal must be a positive number');
+//   }
 
-  if (typeof body.deliveryFee !== 'number' || body.deliveryFee < 0) {
-    errors.push('Delivery fee must be a non-negative number');
-  }
+//   if (typeof body.deliveryFee !== 'number' || body.deliveryFee < 0) {
+//     errors.push('Delivery fee must be a non-negative number');
+//   }
 
-  if (typeof body.orderTotal !== 'number' || body.orderTotal <= 0) {
-    errors.push('Order total must be a positive number');
-  }
+//   if (typeof body.orderTotal !== 'number' || body.orderTotal <= 0) {
+//     errors.push('Order total must be a positive number');
+//   }
 
-  // Validate address fields
-  if (!body.address || body.address.trim() === '') {
-    errors.push('Delivery address is required');
-  }
+//   // Validate address fields
+//   if (!body.address || body.address.trim() === '') {
+//     errors.push('Delivery address is required');
+//   }
 
-  if (!body.state || body.state.trim() === '') {
-    errors.push('State is required');
-  }
+//   if (!body.state || body.state.trim() === '') {
+//     errors.push('State is required');
+//   }
 
-  return errors;
-};
+//   return errors;
+// };
 
 exports.createBuyerOrder = async (req, res) => {
   const session = await mongoose.startSession();
@@ -60,14 +60,14 @@ exports.createBuyerOrder = async (req, res) => {
       address,
     } = req.body;
 
-    const validationErrors = validateOrderCreation(req.body);
+    // const validationErrors = validateOrderCreation(req.body);
 
-    if (validationErrors.length > 0) {
-      await session.abortTransaction();
-      return sendResponse(res, 400, false, "Validation failed", {
-        errors: validationErrors,
-      });
-    }
+    // if (validationErrors.length > 0) {
+    //   await session.abortTransaction();
+    //   return sendResponse(res, 400, false, "Validation failed", {
+    //     errors: validationErrors,
+    //   });
+    // }
 
     try {
       items = typeof items === "string" ? JSON.parse(items) : items;
@@ -275,8 +275,7 @@ exports.getBuyerOrders = async (req, res) => {
       BuyerOrder.countDocuments({ buyer: userId })
     ]);
 
-    res.status(200).json({
-      success: true,
+    return sendSuccess(res, 200, 'Orders fetched successfully', {
       pagination: {
         currentPage: page,
         pageSize: limit,
@@ -284,7 +283,7 @@ exports.getBuyerOrders = async (req, res) => {
         totalPages: Math.ceil(totalCount / limit)
       },
       count: orders.length,
-      data: orders,
+      orders,
     });
 
   } catch (error) {
@@ -301,18 +300,16 @@ exports.getSingleBuyerOrder = async (req, res) => {
     const order = await BuyerOrder.findOne({
       _id: orderId,
       buyer: userId,
-    })
-      .populate("items.vendor", "storeName");
+    }).populate("items.vendor", "storeName");
 
     if (!order) {
-      return sendResponse(res, 404, false, "Order not found")
-    };
+      return sendError(res, 404, "Order not found");
+    }
 
-    return sendResponse(res, 201, true, { data: order })
-
+    return sendSuccess(res, 200, "Order fetched successfully", order);
   } catch (error) {
-    logger.error("Fetch Single Order Error:", error);
-    sendResponse(res, 500, false, "Internal Server Error")
+    logger.error("Fetch Single Buyer Order Error:", error);
+    return sendError(res, 500, "Internal Server Error");
   }
 };
 
@@ -418,14 +415,21 @@ exports.requestRefund = async (req, res) => {
   try {
     const userId = req.user._id;
     const { orderId } = req.params;
-    const { reason, details } = req.body;
+
+    const {
+      reason,
+      details,
+      accountNumber,
+      bankName,
+      accountName,
+    } = req.body;
 
     // Validation
     if (!reason || reason.trim() === "") {
       return sendResponse(res, 400, false, "Reason is required for refund request");
     }
 
-    const order = await BuyerOrder.findById(orderId);
+    const order = await BuyerOrder.findById(orderId).session(session);
 
     if (!order) {
       return sendResponse(res, 404, false, "Order not found");
@@ -437,22 +441,40 @@ exports.requestRefund = async (req, res) => {
     }
 
     // Check if order is cancelled
-    if (order.status !== "cancelled") {
-      return res.status(400).json({
-        success: false,
-        message: "Refund request can only be made for cancelled orders",
-      });
+    const canRefundCancelledOrder =
+      order.status === "cancelled" &&
+      order.cancelledBy?.role === "buyer";
+
+    const canRefundReturnedOrder =
+      order.returnRequest?.requested &&
+      ["approved", "returned", "completed"].includes(
+        order.returnRequest.status
+      );
+
+    if (!canRefundCancelledOrder && !canRefundReturnedOrder) {
+      return sendError(
+        res,
+        400,
+        "Refund request not allowed for this order"
+      );
     }
 
-    // Check if cancelled by buyer
-    if (!order.cancelledBy || order.cancelledBy.role !== "buyer") {
-      return sendResponse(res, 400, false, "Refund request can only be made for orders cancelled by you");
+    if (canRefundCancelledOrder) {
+      if (!order.cancelledBy || order.cancelledBy.role !== "buyer") {
+        return sendResponse(res, 400, false, "Refund request can only be made for orders cancelled by you");
+      }
     }
 
     // Check if refund request already exists and is pending/approved/completed
     if (
       order.refundRequest.requested &&
-      ["pending", "approved", "completed"].includes(order.refundRequest.status)
+      [
+        "pending_review",
+        "approved",
+        "processing",
+        "refunded",
+        "completed"
+      ].includes(order.refundRequest.status)
     ) {
       return sendResponse(res, 400, false, `A refund request already exists with status: ${order.refundRequest.status}`);
     }
@@ -460,18 +482,23 @@ exports.requestRefund = async (req, res) => {
     // Create/Update refund request
     order.refundRequest = {
       requested: true,
-      status: "pending",
+      status: "pending_review",
       reason,
       details: details || "",
+      accountNumber: accountNumber,
+      bankName: bankName,
+      accountName: accountName,
+      refundAmount: order.pricing.total,
+      triggeredByReturn: canRefundReturnedOrder,
       requestedAt: new Date(),
       reviewedAt: null,
       reviewedBy: null,
       response: "",
     };
 
-    await order.save();
+    await order.save({ session });
 
-    await AuditLog.create({
+    await AuditLog.create([{
       user: userId,
       role: "buyer",
       action: "REFUND_REQUEST_CREATED",
@@ -482,7 +509,7 @@ exports.requestRefund = async (req, res) => {
         orderStatus: order.status,
         totalAmount: order.pricing.total,
       },
-    });
+    }], { session });
 
     await session.commitTransaction();
 
@@ -515,7 +542,7 @@ exports.requestReturn = async (req, res) => {
       return sendResponse(res, 400, false, "Reason is required for return request");
     }
 
-    const order = await BuyerOrder.findById(orderId);
+    const order = await BuyerOrder.findById(orderId).session(session);
 
     if (!order) {
       return sendResponse(res, 404, false, "Order not found");
@@ -534,7 +561,14 @@ exports.requestReturn = async (req, res) => {
     // Check if return request already exists and is pending/approved/completed
     if (
       order.returnRequest.requested &&
-      ["pending", "approved", "completed"].includes(order.returnRequest.status)
+      [
+        "pending_review",
+        "approved",
+        "buyer_shipping",
+        "returned",
+        "inspection",
+        "completed"
+      ].includes(order.returnRequest.status)
     ) {
       return sendResponse(res, 400, false, `A return request already exists with status: ${order.returnRequest.status}`);
     }
@@ -542,7 +576,7 @@ exports.requestReturn = async (req, res) => {
     // Create/Update return request
     order.returnRequest = {
       requested: true,
-      status: "pending",
+      status: "pending_review",
       reason,
       details: details || "",
       requestedAt: new Date(),
@@ -551,9 +585,9 @@ exports.requestReturn = async (req, res) => {
       response: "",
     };
 
-    await order.save();
+    await order.save({ session });
 
-    await AuditLog.create({
+    await AuditLog.create([{
       user: userId,
       role: "buyer",
       action: "RETURN_REQUEST_CREATED",
@@ -564,7 +598,7 @@ exports.requestReturn = async (req, res) => {
         orderStatus: order.status,
         totalAmount: order.pricing.total,
       },
-    });
+    }], { session });
 
     await session.commitTransaction();
 
@@ -578,7 +612,7 @@ exports.requestReturn = async (req, res) => {
   } catch (error) {
     await session.abortTransaction();
     logger.error("Request Return Error:", error);
-    return sendResponse(res, 500, false, "Internal Server Error", {error: error.message});
+    return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
   } finally {
     session.endSession();
   }

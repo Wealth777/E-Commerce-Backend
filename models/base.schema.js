@@ -25,25 +25,37 @@ const softDeleteFields = {
 function softDeletePlugin(schema) {
   schema.add(softDeleteFields);
 
-  function excludeDeleted(next) {
+  function excludeDeleted() {
     const options = this.getOptions ? this.getOptions() : {};
-    if (!options.withDeleted && !this.getQuery().deleted) {
+    const query = this.getQuery ? this.getQuery() : {};
+
+    if (!options.withDeleted && query.deleted === undefined) {
       this.where({ deleted: { $ne: true } });
     }
-    next();
+  }
+
+  function excludeDeletedFromAggregate() {
+    const options = this.options || {};
+
+    if (!options.withDeleted) {
+      const pipeline = this.pipeline();
+
+      const firstStage = pipeline[0];
+
+      const hasGeoNearFirst =
+        firstStage && Object.prototype.hasOwnProperty.call(firstStage, '$geoNear');
+
+      if (!hasGeoNearFirst) {
+        pipeline.unshift({ $match: { deleted: { $ne: true } } });
+      }
+    }
   }
 
   schema.pre('find', excludeDeleted);
   schema.pre('findOne', excludeDeleted);
   schema.pre('findOneAndUpdate', excludeDeleted);
   schema.pre('countDocuments', excludeDeleted);
-  schema.pre('aggregate', function excludeDeletedFromAggregate(next) {
-    const options = this.options || {};
-    if (!options.withDeleted) {
-      this.pipeline().unshift({ $match: { deleted: { $ne: true } } });
-    }
-    next();
-  });
+  schema.pre('aggregate', excludeDeletedFromAggregate);
 
   schema.methods.softDelete = function softDelete(deletedBy, deletedByModel) {
     this.deleted = true;

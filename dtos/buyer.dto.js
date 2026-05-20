@@ -1,11 +1,30 @@
 class BuyerDTO {
   constructor(buyer) {
     this.id = buyer._id;
-    this.serialNumber = buyer.serialNumber;
-    this.fullName = buyer.fullName;
-    this.email = buyer.email;
-    this.profilePhoto = buyer.profilePhoto;
-    // Never include password!
+    this.role = 'buyer';
+
+    this.identity = {
+      serialNumber: buyer.serialNumber || '',
+      username: buyer.username || '',
+      fullName: buyer.fullName || '',
+      profilePhoto: buyer.profilePhoto || '',
+    };
+
+    this.contact = {
+      email: buyer.email || '',
+      phoneNo: buyer.phoneNo || '',
+    };
+
+    this.location = {
+      country: buyer.country || '',
+      state: buyer.state || '',
+      address: buyer.address || '',
+    };
+
+    this.preferences = {
+      preferredLanguage: buyer.preferredLanguage || '',
+      notificationPreference: buyer.notificationPreference || 'email',
+    };
   }
 
   static fromModel(buyer) {
@@ -13,7 +32,7 @@ class BuyerDTO {
   }
 
   static fromList(buyers) {
-    return buyers.map(b => this.fromModel(b));
+    return buyers.map((buyer) => BuyerDTO.fromModel(buyer));
   }
 }
 
