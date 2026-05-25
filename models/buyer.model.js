@@ -20,6 +20,8 @@ const buyer = new mongoose.Schema({
     type: String,
     enum: ['whatsapp', 'email', 'both']
   },
+  profileUpdateNotificationSent: { type: Boolean, default: false },
+  
   // isVerified: { type: Boolean, default: false },
   updatedAt: Date
 })

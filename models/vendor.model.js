@@ -34,6 +34,8 @@ const vendor = new mongoose.Schema({
   bankName: String,
   accountName: String,
   accountNumber: String,
+  profileUpdateNotificationSent: { type: Boolean, default: false },
+  
   // isVerified: { type: Boolean, default: false },
   updatedAt: Date
 

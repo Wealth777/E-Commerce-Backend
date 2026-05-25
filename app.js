@@ -17,13 +17,15 @@ app.use(express.json());
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
-const buyerRoutes = require('./routes/buyer.route')
-const vendorRoutes = require('./routes/vendor.route')
+const buyerRoutes = require('./routes/buyer.route');
+const vendorRoutes = require('./routes/vendor.route');
 const founderRoutes = require('./routes/founder.route');
+const notificationRoutes = require('./routes/notification.route');
 
-app.use('/api/buyer', buyerRoutes)
-app.use('/api/vendor', vendorRoutes)
-app.use('/api/founder', founderRoutes)
+app.use('/api/buyer', buyerRoutes);
+app.use('/api/vendor', vendorRoutes);
+app.use('/api/founder', founderRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 const requestLogger = require('./middleware/requestLogger');
 

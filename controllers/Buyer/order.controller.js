@@ -4,10 +4,39 @@ const AuditLog = require('../../models/auditLog.model');
 const AddProduct = require('../../models/addproduct.model');
 const BuyerOrder = require("../../models/buyerOrder.model");
 const Cart = require("../../models/addToCart.model");
+const notificationService = require("../../services/notification/notification.service");
 
 // const { getTaxRate } = require('../../config/taxRate');
 const mongoose = require("mongoose");
 const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
+
+const notifyAfterOrderPlaced = async ({ buyerId, orders }) => {
+  for (const order of orders) {
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: buyerId,
+      recipientRole: "buyer",
+      type: "ORDER_PLACED",
+      title: "Order placed",
+      message: `Your order ${orderRef} has been placed successfully.`,
+      metadata: { orderId: order._id, vendorId: order.vendor, orderRef },
+      dedupeKey: `buyer:${buyerId}:BUYER_ORDER_PLACED:${order._id}`,
+    });
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.vendor,
+      recipientRole: "vendor",
+      type: "ORDER_PLACED",
+      title: "New order received",
+      message: `A buyer placed a new order ${orderRef}.`,
+      metadata: { orderId: order._id, buyerId, orderRef },
+      dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_PLACED:${order._id}`,
+    });
+  }
+};
 
 // const validateOrderCreation = (body) => {
 //   const errors = [];
@@ -72,19 +101,25 @@ exports.createBuyerOrder = async (req, res) => {
     try {
       items = typeof items === "string" ? JSON.parse(items) : items;
     } catch (error) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "Invalid items format");
     }
 
     if (!Array.isArray(items) || items.length === 0) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "Cart is empty");
     }
 
     const buyer = await buyerModel.findById(userId).session(session);
 
     if (!buyer) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 404, false, "User not found");
     }
 
@@ -97,7 +132,9 @@ exports.createBuyerOrder = async (req, res) => {
       .session(session);
 
     if (products.length !== productIds.length) {
-      await session.abortTransaction();
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "One or more products do not exist");
     }
 
@@ -244,11 +281,18 @@ exports.createBuyerOrder = async (req, res) => {
 
     await session.commitTransaction();
 
+    await notifyAfterOrderPlaced({
+      buyerId: userId,
+      orders: createdOrders
+    });
+
     return sendResponse(res, 201, true, "Orders created per vendor", {
       data: createdOrders,
     });
   } catch (error) {
-    await session.abortTransaction();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     logger.error("Create Order Error:", error);
 
     return sendResponse(res, 500, false, "Internal Server Error", {
@@ -320,41 +364,83 @@ exports.buyerConfirmDelivery = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    const order = await BuyerOrder.findById(orderId);
-    if (!order) return sendResponse(res, 404, "Order not found");
+    const order = await BuyerOrder.findById(orderId).session(session);
+
+    if (!order) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      return sendResponse(res, 404, false, "Order not found");
+    }
+
+    if (order.buyer.toString() !== req.user._id.toString()) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      return sendResponse(res, 403, false, "You can only confirm your own order");
+    }
 
     if (order.status !== "shipped") {
-      return sendResponse(res, 400, false, "Order not yet shipped");
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      return sendResponse(res, 400, false, "Order is not yet shipped");
     }
 
     const previousStatus = order.status;
+
     order.status = "delivered";
+    order.deliveredAt = new Date();
 
-    await order.save();
+    await order.save({ session });
 
-    await AuditLog.create({
-      user: req.user._id,
-      role: "buyer",
-      action: "ORDER_DELIVERED",
-      entity: "ORDER",
-      entityId: orderId,
-      metadata: {
-        previousStatus,
-        newStatus: "delivered",
-        timestamp: Date.now()
-      },
-    });
+    await AuditLog.create(
+      [
+        {
+          user: req.user._id,
+          role: "buyer",
+          action: "ORDER_DELIVERED",
+          entity: "ORDER",
+          entityId: orderId,
+          metadata: {
+            previousStatus,
+            newStatus: "delivered",
+            deliveredAt: order.deliveredAt,
+          },
+        },
+      ],
+      { session }
+    );
 
     await session.commitTransaction();
 
-    return sendResponse(res, 200, true, "Order marked as delivered", { status: order.status });
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
 
+    await notificationService.safeCreateNotification({
+      recipientId: order.vendor,
+      recipientRole: "vendor",
+      type: "ORDER_CONFIRMED_DELIVERY",
+      title: "Buyer confirmed delivery",
+      message: `The buyer confirmed delivery for order ${orderRef}.`,
+      metadata: { orderId: order._id, buyerId: order.buyer },
+      dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_CONFIRMED_DELIVERY:${order._id}`,
+    });
+
+    return sendResponse(res, 200, true, "Order marked as delivered", {
+      status: order.status,
+      deliveredAt: order.deliveredAt,
+    });
   } catch (err) {
-    await session.abortTransaction();
-    logger.error('Error occur', err)
-    return sendResponse(res, 500, 'Internal Server Error');
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    logger.error("Buyer Confirm Delivery Error:", err);
+
+    return sendResponse(res, 500, false, "Internal Server Error");
   } finally {
-    session.endSession()
+    session.endSession();
   }
 };
 
@@ -365,10 +451,18 @@ exports.buyerCancelOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    const order = await BuyerOrder.findById(orderId);
-    if (!order) return sendResponse(res, 404, false, "Ordre not found");
+    const order = await BuyerOrder.findById(orderId).session;
+    if (!order) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      return sendResponse(res, 404, false, "Ordre not found");
+    }
 
     if (order.status !== "pending") {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "Order cannot be cancelled now");
     }
 
@@ -380,27 +474,45 @@ exports.buyerCancelOrder = async (req, res) => {
       cancelledAt: new Date(),
     };
 
-    await order.save();
+    await order.save({ session });
 
-    await AuditLog.create({
-      user: req.user._id,
-      role: "buyer",
-      action: "ORDER_CANCELLED",
-      entity: "ORDER",
-      entityId: orderId,
-      metadata: {
-        previousStatus,
-        newStatus: "cancelled",
-        cancelledBy: "buyer",
-        timestamp: Date.now()
-      },
-    });
+    await AuditLog.create([
+      {
+        user: req.user._id,
+        role: "buyer",
+        action: "ORDER_CANCELLED",
+        entity: "ORDER",
+        entityId: orderId,
+        metadata: {
+          previousStatus,
+          newStatus: "cancelled",
+          cancelledBy: "buyer",
+          timestamp: Date.now()
+        },
+      }
+    ], { session });
 
     await session.commitTransaction();
 
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.vendor,
+      recipientRole: "vendor",
+      type: "ORDER_CANCELLED",
+      title: "Order cancelled",
+      message: `A buyer cancelled order ${orderRef}.`,
+      metadata: { orderId: order._id, buyerId: order.buyer },
+      dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_CANCELLED:${order._id}`,
+    });
+
     return sendResponse(res, 200, true, "Order cancelled", { status: order.status });
   } catch (err) {
-    await session.abortTransaction();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     logger.error("Error happended", err)
     return sendResponse(res, 500, false, "Internal Server Error");
   } finally {
@@ -426,17 +538,26 @@ exports.requestRefund = async (req, res) => {
 
     // Validation
     if (!reason || reason.trim() === "") {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "Reason is required for refund request");
     }
 
     const order = await BuyerOrder.findById(orderId).session(session);
 
     if (!order) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 404, false, "Order not found");
     }
 
     // Verify ownership
     if (order.buyer.toString() !== userId.toString()) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 403, false, "You can only request refund for your own orders");
     }
 
@@ -452,6 +573,9 @@ exports.requestRefund = async (req, res) => {
       );
 
     if (!canRefundCancelledOrder && !canRefundReturnedOrder) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendError(
         res,
         400,
@@ -461,6 +585,9 @@ exports.requestRefund = async (req, res) => {
 
     if (canRefundCancelledOrder) {
       if (!order.cancelledBy || order.cancelledBy.role !== "buyer") {
+        if (session.inTransaction()) {
+          await session.abortTransaction();
+        }
         return sendResponse(res, 400, false, "Refund request can only be made for orders cancelled by you");
       }
     }
@@ -476,6 +603,9 @@ exports.requestRefund = async (req, res) => {
         "completed"
       ].includes(order.refundRequest.status)
     ) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, `A refund request already exists with status: ${order.refundRequest.status}`);
     }
 
@@ -513,6 +643,20 @@ exports.requestRefund = async (req, res) => {
 
     await session.commitTransaction();
 
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.vendor,
+      recipientRole: "vendor",
+      type: "ORDER_REFUND_REQUEST",
+      title: "Refund request received",
+      message: `A buyer requested a refund for order ${orderRef}.`,
+      metadata: { orderId: order._id, buyerId: order.buyer, reason },
+      dedupeKey: `vendor:${order.vendor}:VENDOR_REFUND_REQUEST:${order._id}`,
+    });
+
     return sendResponse(res, 201, true, "Refund request submitted successfully", {
       data: {
         orderId: order._id,
@@ -520,7 +664,9 @@ exports.requestRefund = async (req, res) => {
       }
     });
   } catch (error) {
-    await session.abortTransaction()
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     logger.error("Request Refund Error:", error);
     return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
   } finally {
@@ -539,23 +685,54 @@ exports.requestReturn = async (req, res) => {
 
     // Validation
     if (!reason || reason.trim() === "") {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "Reason is required for return request");
     }
 
     const order = await BuyerOrder.findById(orderId).session(session);
 
     if (!order) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 404, false, "Order not found");
     }
 
     // Verify ownership
     if (order.buyer.toString() !== userId.toString()) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 403, false, "You can only request return for your own orders");
     }
 
     // Check if order is delivered
     if (order.status !== "delivered") {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
       return sendResponse(res, 400, false, "Return request can only be made for delivered orders");
+    }
+
+    const RETURN_WINDOW_HOURS = 72;
+    const deliveredAt = order.deliveredAt || order.updatedAt;
+
+    const returnDeadline = new Date(
+      deliveredAt.getTime() + RETURN_WINDOW_HOURS * 60 * 60 * 1000
+    );
+
+    if (Date.now() > returnDeadline.getTime()) {
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Return window has expired. Returns are only allowed within 72 hours after delivery confirmation."
+      );
     }
 
     // Check if return request already exists and is pending/approved/completed
@@ -570,7 +747,11 @@ exports.requestReturn = async (req, res) => {
         "completed"
       ].includes(order.returnRequest.status)
     ) {
-      return sendResponse(res, 400, false, `A return request already exists with status: ${order.returnRequest.status}`);
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      return sendResponse(res, 400, false, `A return request already exists with status: ${order.returnRequest.status}`
+      );
     }
 
     // Create/Update return request
@@ -602,6 +783,20 @@ exports.requestReturn = async (req, res) => {
 
     await session.commitTransaction();
 
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.vendor,
+      recipientRole: "vendor",
+      type: "ORDER_RETURN_REQUEST",
+      title: "Return request received",
+      message: `A buyer requested a return for order ${orderRef}.`,
+      metadata: { orderId: order._id, buyerId: order.buyer, reason },
+      dedupeKey: `vendor:${order.vendor}:VENDOR_RETURN_REQUEST:${order._id}`,
+    });
+
     return sendResponse(res, 201, true, "Return request submitted successfully",
       {
         data: {
@@ -610,7 +805,9 @@ exports.requestReturn = async (req, res) => {
         }
       });
   } catch (error) {
-    await session.abortTransaction();
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
     logger.error("Request Return Error:", error);
     return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
   } finally {

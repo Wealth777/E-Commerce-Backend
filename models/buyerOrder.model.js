@@ -89,6 +89,11 @@ const buyerOrderSchema = new mongoose.Schema(
       index: true
     },
 
+    deliveredAt: {
+      type: Date,
+      default: null,
+    },
+
     cancelledBy: {
       role: {
         type: String,

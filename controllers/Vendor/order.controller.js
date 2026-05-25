@@ -1,10 +1,31 @@
 const logger = require('../../logger');
 const AuditLog = require('../../models/auditLog.model');
 const BuyerOrder = require("../../models/buyerOrder.model");
-const { updateProductStockAfterOrder } = require("../../utils/feedAlgorithm");
+const notificationService = require("../../services/notification/notification.service");
+const { updateProductStockAfterOrder, restoreProductStockAfterReturn } = require("../../utils/feedAlgorithm");
 const mongoose = require('mongoose');
 const { sendResponse, sendSuccess } = require('../../utils/responseStruture');
 
+const sendLowStockNotifications = async ({ vendorId, order }) => {
+  const productIds = order.items.map((item) => item.productId);
+  const lowStockProducts = await AddProduct.find({
+    _id: { $in: productIds },
+    vendor: vendorId,
+    stock: { $lte: 5 },
+  }).select('name stock status');
+
+  for (const product of lowStockProducts) {
+    await notificationService.safeCreateNotification({
+      recipientId: vendorId,
+      recipientRole: 'vendor',
+      type: 'VENDOR_LOW_STOCK',
+      title: 'Low stock alert',
+      message: `${product.name} is low in stock. Current stock: ${product.stock}.`,
+      metadata: { productId: product._id, orderId: order._id, stock: product.stock, status: product.status },
+      dedupeKey: `vendor:${vendorId}:VENDOR_LOW_STOCK:${product._id}:${product.stock}`,
+    });
+  }
+};
 
 exports.getVendorOrders = async (req, res) => {
   try {
@@ -52,33 +73,56 @@ exports.getSingleVendorOrder = async (req, res) => {
       .populate("items.vendor", "storeName");
 
     if (!order) {
-      return sendError(res, 404, "Order not found");
+      return sendResponse(res, 404, "Order not found");
     }
 
     return sendSuccess(res, 200, "Order fetched successfully", order);
   } catch (error) {
     logger.error("Fetch Single Vendor Order Error:", error);
-    return sendError(res, 500, "Internal Server Error");
+    return sendResponse(res, 500, "Internal Server Error");
   }
 };
 
 exports.vendorConfirmPayment = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { orderId, status } = req.body;
 
     const allowed = ["paid", "failed"];
     if (!allowed.includes(status)) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Invalid payment status");
     }
 
-    const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id })
-    if (!order) return sendResponse(res, 404, false, "Order not found");
+    const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id }).session(session)
+    if (!order){
+      await session.commitTransaction();
+      return sendResponse(res, 404, false, "Order not found")
+    };
 
     const previousStatus = order.payment.status;
 
     order.payment.status = status;
 
-    await order.save();
+    await order.save({ session });
+
+    await session.commitTransaction();
+
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.buyer,
+      recipientRole: "buyer",
+      type: "ORDER_PAYMENT_CONFIRMED",
+      title: "Order payment confirmed",
+      message: `Your payment for order ${orderRef} has been confirmed by the vendor.`,
+      metadata: { orderId: order._id, vendorId: order.vendor },
+      dedupeKey: `buyer:${order.buyer}:BUYER_ORDER_PAYMENT_CONFIRMED:${order._id}`,
+    });
 
     await AuditLog.create({
       user: req.user._id,
@@ -95,8 +139,11 @@ exports.vendorConfirmPayment = async (req, res) => {
 
     return sendResponse(res, 200, true, "Payment status updated", { payment: order.payment.status })
   } catch (err) {
+    await session.abortTransaction();
     logger.error('Error Occured', err.message)
     return sendResponse(res, 500, false, "Internal Server Error");
+  } finally {
+    session.endSession();
   }
 };
 
@@ -107,21 +154,24 @@ exports.vendorConfirmOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id });
+    const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id }).session(session);
 
     if (!order) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Order not found");
     }
 
     if (order.status !== "pending") {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Order already processed");
     }
 
     if (order.payment.method === "pay_now" && order.payment.status !== "paid") {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Payment must be confirmed first");
     }
 
-    await updateProductStockAfterOrder(order.items);
+    await updateProductStockAfterOrder(order.items, session);
 
     const previousStatus = order.status;
     order.status = "confirmed";
@@ -129,6 +179,22 @@ exports.vendorConfirmOrder = async (req, res) => {
     await order.save({ session });
 
     await session.commitTransaction();
+
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.buyer,
+      recipientRole: "buyer",
+      type: "ORDER_CONFIRMED",
+      title: "Order confirmed",
+      message: `Your order ${orderRef} has been confirmed by the vendor.`,
+      metadata: { orderId: order._id, vendorId: order.vendor },
+      dedupeKey: `buyer:${order.buyer}:BUYER_ORDER_CONFIRMED:${order._id}`,
+    });
+
+    await sendLowStockNotifications({ vendorId: req.user._id, order });
 
     await AuditLog.create({
       user: req.user._id,
@@ -161,17 +227,37 @@ exports.vendorShipOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
 
-    const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id });
-    if (!order) return sendResponse(res, 400, false, "Order not found");
+    const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id }).session(session);
+    if (!order){
+      await session.abortTransaction();
+      return sendResponse(res, 400, false, "Order not found")
+    };
 
     if (order.status !== "confirmed") {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Order must be confirmed firsr");
     }
 
     const previousStatus = order.status;
     order.status = "shipped";
 
-    await order.save();
+    await order.save({ session });
+
+    await session.commitTransaction();
+
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.buyer,
+      recipientRole: "buyer",
+      type: "ORDER_SHIPPED",
+      title: "Order shipped",
+      message: `Your order ${orderRef} has been shipped by the vendor.`,
+      metadata: { orderId: order._id, vendorId: order.vendor },
+      dedupeKey: `buyer:${order.buyer}:BUYER_ORDER_SHIPPED:${order._id}`,
+    });
 
     await AuditLog.create({
       user: req.user._id,
@@ -290,73 +376,10 @@ exports.getReturnRequests = async (req, res) => {
   }
 };
 
-// exports.reviewRefundRequest = async (req, res) => {
-//   try {
-//     const vendorId = req.user._id;
-//     const { orderId } = req.params;
-//     const { action, response } = req.body;
-
-//     // Validation
-//     if (!action || !["approved", "rejected"].includes(action)) {
-//       return sendResponse(res, 400, false, "Action must be either 'approved' or 'rejected'");
-//     }
-
-//     if (action === "rejected" && (!response || response.trim() === "")) {
-//       return sendResponse(res, 400, false, "Response message is required when rejecting refund request");
-//     }
-
-//     const order = await BuyerOrder.findOne({
-//       _id: orderId,
-//       vendor: vendorId,
-//     });
-
-//     if (!order) {
-//       return sendResponse(res, 404, false, "Order not found or you do not have permission");
-//     }
-
-//     if (!order.refundRequest.requested) {
-//       return sendResponse(res, 400, false, "No refund request found for this order");
-//     }
-
-//     if (order.refundRequest.status !== "pending") {
-//       return sendResponse(res, 400, false, `Cannot review refund request with status: ${order.refundRequest.status}`);
-//     }
-
-//     // Update refund request
-//     order.refundRequest.status = action === "approved" ? "approved" : "rejected";
-//     order.refundRequest.reviewedAt = new Date();
-//     order.refundRequest.reviewedBy = vendorId;
-//     order.refundRequest.response = response || "";
-
-//     await order.save();
-
-//     await AuditLog.create({
-//       user: vendorId,
-//       role: "vendor",
-//       action: `REFUND_REQUEST_${action.toUpperCase()}`,
-//       entity: "ORDER",
-//       entityId: orderId,
-//       metadata: {
-//         buyerId: order.buyer,
-//         reason: order.refundRequest.reason,
-//         totalAmount: order.pricing.total,
-//         response,
-//       },
-//     });
-
-//     return sendResponse(res, 200, true, `Refund request ${action}`, {
-//       data: {
-//         orderId: order._id,
-//         refundRequest: order.refundRequest,
-//       }
-//     });
-//   } catch (error) {
-//     logger.error("Review Refund Request Error:", error);
-//     return sendResponse(res, 500, false, "Internal Server Error", {error: error.message});
-//   }
-// };
-
 exports.reviewRefundRequest = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const vendorId = req.user._id;
     const { orderId } = req.params;
@@ -371,27 +394,32 @@ exports.reviewRefundRequest = async (req, res) => {
     ];
 
     if (!action || !allowedActions.includes(action)) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Invalid refund action");
     }
 
     if (action === "rejected" && (!response || response.trim() === "")) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Response is required when rejecting refund request");
     }
 
     if (action === "refunded" && (!refundReference || refundReference.trim() === "")) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Refund reference is required when marking as refunded");
     }
 
     const order = await BuyerOrder.findOne({
       _id: orderId,
       vendor: vendorId,
-    });
+    }).session(session);
 
     if (!order) {
+      await session.abortTransaction();
       return sendResponse(res, 404, false, "Order not found or you do not have permission");
     }
 
     if (!order.refundRequest?.requested) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "No refund request found for this order");
     }
 
@@ -430,7 +458,23 @@ exports.reviewRefundRequest = async (req, res) => {
       order.refundRequest.refundedAt = new Date();
     }
 
-    await order.save();
+    await order.save({ session });
+
+    await session.commitTransaction();
+
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.buyer,
+      recipientRole: "buyer",
+      type: `REFUND_${action.toUpperCase()}`,
+      title: "Refund request updated",
+      message: `Your refund request for order ${orderRef} was updated to ${action}.`,
+      metadata: { orderId: order._id, vendorId, status: action, previousStatus },
+      dedupeKey: `buyer:${order.buyer}:BUYER_REFUND_${action.toUpperCase()}:${order._id}`,
+    });
 
     await AuditLog.create({
       user: vendorId,
@@ -455,14 +499,20 @@ exports.reviewRefundRequest = async (req, res) => {
       },
     });
   } catch (error) {
+    await session.abortTransaction();
     logger.error("Review Refund Request Error:", error);
     return sendResponse(res, 500, false, "Internal Server Error", {
       error: error.message,
     });
+  } finally {
+    session.endSession();
   }
 };
 
 exports.reviewReturnRequest = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const vendorId = req.user._id;
     const { orderId } = req.params;
@@ -478,23 +528,27 @@ exports.reviewReturnRequest = async (req, res) => {
     ];
 
     if (!action || !allowedActions.includes(action)) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Invalid return action");
     }
 
     if (action === "rejected" && (!response || response.trim() === "")) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "Response is required when rejecting return request");
     }
 
     const order = await BuyerOrder.findOne({
       _id: orderId,
       vendor: vendorId,
-    });
+    }).session(session);
 
     if (!order) {
+      await session.abortTransaction();
       return sendResponse(res, 404, false, "Order not found or you do not have permission");
     }
 
     if (!order.returnRequest?.requested) {
+      await session.abortTransaction();
       return sendResponse(res, 400, false, "No return request found for this order");
     }
 
@@ -511,6 +565,7 @@ exports.reviewReturnRequest = async (req, res) => {
     };
 
     if (!allowedTransitions[currentStatus]?.includes(action)) {
+      await session.abortTransaction();
       return sendResponse(
         res,
         400,
@@ -537,7 +592,31 @@ exports.reviewReturnRequest = async (req, res) => {
       order.returnRequest.inspectionNote = inspectionNote;
     }
 
-    await order.save();
+    if (action === "completed") {
+      if (currentStatus === "completed") {
+        await session.abortTransaction();
+        return sendResponse(res, 400, false, "Return request is already completed");
+      }
+      await restoreProductStockAfterReturn(order.items, session);
+    }
+
+    await order.save({ session });
+
+    await session.commitTransaction();
+
+    const orderRef = order._id
+      ? `#${order._id.toString().slice(-8).toUpperCase()}`
+      : "N/A";
+
+    await notificationService.safeCreateNotification({
+      recipientId: order.buyer,
+      recipientRole: "buyer",
+      type: `RETURN_${action.toUpperCase()}`,
+      title: "Return request updated",
+      message: `Your return request for order ${orderRef} was updated to ${action}.`,
+      metadata: { orderId: order._id, vendorId, status: action, previousStatus },
+      dedupeKey: `buyer:${order.buyer}:BUYER_RETURN_${action.toUpperCase()}:${order._id}`,
+    });
 
     await AuditLog.create({
       user: vendorId,
@@ -563,75 +642,12 @@ exports.reviewReturnRequest = async (req, res) => {
       },
     });
   } catch (error) {
+    await session.abortTransaction();
     logger.error("Review Return Request Error:", error);
     return sendResponse(res, 500, false, "Internal Server Error", {
       error: error.message,
     });
+  } finally {
+    session.endSession();
   }
 };
-
-// exports.reviewReturnRequest = async (req, res) => {
-//   try {
-//     const vendorId = req.user._id;
-//     const { orderId } = req.params;
-//     const { action, response } = req.body;
-
-//     // Validation
-//     if (!action || !["approved", "rejected"].includes(action)) {
-//       return sendResponse(res, 400, false, "Action must be either 'approved' or 'rejected'");
-//     }
-
-//     if (action === "rejected" && (!response || response.trim() === "")) {
-//       return sendResponse(res, 400, false, "Response message is required when rejecting return request");
-//     }
-
-//     const order = await BuyerOrder.findOne({
-//       _id: orderId,
-//       vendor: vendorId,
-//     });
-
-//     if (!order) {
-//       return sendResponse(res, 404, false, "Order not found or you do not have permission");
-//     }
-
-//     if (!order.returnRequest.requested) {
-//       return sendResponse(res, 400, false, "No return request found for this order");
-//     }
-
-//     if (order.returnRequest.status !== "pending") {
-//       return sendResponse(res, 400, false, `Cannot review return request with status: ${order.returnRequest.status}`);
-//     }
-
-//     // Update return request
-//     order.returnRequest.status = action === "approved" ? "approved" : "rejected";
-//     order.returnRequest.reviewedAt = new Date();
-//     order.returnRequest.reviewedBy = vendorId;
-//     order.returnRequest.response = response || "";
-
-//     await order.save();
-
-//     await AuditLog.create({
-//       user: vendorId,
-//       role: "vendor",
-//       action: `RETURN_REQUEST_${action.toUpperCase()}`,
-//       entity: "ORDER",
-//       entityId: orderId,
-//       metadata: {
-//         buyerId: order.buyer,
-//         reason: order.returnRequest.reason,
-//         totalAmount: order.pricing.total,
-//         response,
-//       },
-//     });
-
-//     return sendResponse(res, 200, true, `Return request ${action}`, {
-//       data: {
-//         orderId: order._id,
-//         returnRequest: order.returnRequest,
-//       }
-//     });
-//   } catch (error) {
-//     logger.error("Review Return Request Error:", error);
-//     return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
-//   }
-// };

@@ -142,9 +142,9 @@ const groupByVendor = async (items) => {
 };
 
 // Helper function to reduce vendor stock after order confirmed
-const updateProductStockAfterOrder = async (items) => {
+const updateProductStockAfterOrder = async (items, session) => {
   for (const item of items) {
-    const product = await AddProduct.findById(item.productId);
+    const product = await AddProduct.findById(item.productId).session(session);
 
     if (!product) {
       throw new Error(`Product not found for item: ${item.name}`);
@@ -169,7 +169,29 @@ const updateProductStockAfterOrder = async (items) => {
     product.stock = newStock;
     product.status = newStatus;
 
-    await product.save();
+    await product.save({ session });
+  }
+};
+
+const restoreProductStockAfterReturn = async (items, session) => {
+  for (const item of items) {
+    const product = await AddProduct.findById(item.productId).session(session);
+
+    if (!product) {
+      throw new Error(`Product not found for returned item: ${item.name}`);
+    }
+
+    product.stock += item.quantity;
+
+    if (product.stock === 0) {
+      product.status = "out-of-stock";
+    } else if (product.stock <= 5) {
+      product.status = "low-in-stock";
+    } else {
+      product.status = "in-stock";
+    }
+
+    await product.save({ session });
   }
 };
 
@@ -212,5 +234,6 @@ module.exports = {
   validateLimit,
   groupByVendor,
   updateProductStockAfterOrder,
+  restoreProductStockAfterReturn,
   getDateRange
 };

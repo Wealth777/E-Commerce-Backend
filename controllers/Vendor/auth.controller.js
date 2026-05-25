@@ -8,24 +8,32 @@ const { westAfricaCountries, nigeriaStates } = require("../../utils/location");
 const { validationResult } = require('express-validator');
 const VendorDTO = require('../../dtos/vendor.dto');
 const AddProduct = require('../../models/addproduct.model');
+const notificationService = require('../../services/notification/notification.service');
 const { sendSuccess, sendError } = require('../../utils/responseStruture');
+const mongoose = require("mongoose");
 
 const saltRounds = 10;
 
 exports.createUser = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Validation failed', errors.array());
     }
     const { fullName, email, phoneNo, password } = req.body;
 
     if (!fullName || !email || !phoneNo || !password) {
+      await session.abortTransaction();
       return sendError(res, 400, 'All fields are required');
     }
 
     const existingUser = await vendorModel.findOne({ email });
     if (existingUser) {
+      await session.abortTransaction();
       return sendError(res, 400, 'User already exists');
     }
 
@@ -40,9 +48,10 @@ exports.createUser = async (req, res) => {
       password: hashPassword
     });
 
-    await createAcc.save();
+    await createAcc.save({ session });
 
-    await AuditLog.create({
+    await AuditLog.create([
+      {
       user: createAcc._id,
       role: 'vendor',
       action: 'REGISTER_ACCOUNT',
@@ -51,18 +60,24 @@ exports.createUser = async (req, res) => {
       metadata: {
         email: createAcc.email
       }
-    });
+    }
+    ], { session });
 
+    await session.commitTransaction();
 
     return sendSuccess(res, 201, 'User Account Created Successfully');
-
   } catch (err) {
+    await session.abortTransaction();
     logger.error(err);
     return sendError(res, 500, 'Internal Server Error');
+  } finally {
+    session.endSession();
   }
 };
 
 exports.loginUser = async (req, res) => {
+  const session = await mongoose.startSession();
+
   try {
     const { email, password } = req.body;
 
@@ -70,40 +85,60 @@ exports.loginUser = async (req, res) => {
       return sendError(res, 400, 'Email and password are required');
     }
 
-    const user = await vendorModel.findOne({ email });
+    session.startTransaction();
+
+    const user = await vendorModel.findOne({ email }).session(session);
 
     if (!user) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Invalid credentials');
     }
 
     const confirmPassword = await bcrypt.compare(password, user.password);
 
     if (!confirmPassword) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Invalid credentials');
     }
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_KEY,
-      { expiresIn: "24h" }
+      { expiresIn: '24h' }
     );
 
     const refreshToken = jwt.sign(
       { id: user._id },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: '7d' }
     );
 
-    await AuditLog.create({
-      user: user._id,
-      role: 'vendor',
-      action: 'LOG_IN',
-      entity: 'Vendor',
-      entityId: user._id,
-      metadata: {
-        email: user.email
+    await AuditLog.create([
+      {
+        user: user._id,
+        role: 'vendor',
+        action: 'LOG_IN',
+        entity: 'Vendor',
+        entityId: user._id,
+        metadata: {
+          email: user.email
+        }
       }
-    });
+    ], { session });
+
+    await session.commitTransaction();
+
+    if (!user.profileUpdateNotificationSent) {
+      await notificationService.safeCreateProfileUpdateNotification({
+        userId: user._id,
+        role: 'vendor'
+      });
+
+      await vendorModel.updateOne(
+        { _id: user._id },
+        { $set: { profileUpdateNotificationSent: true } }
+      );
+    }
 
     return sendSuccess(res, 200, 'Login successful', {
       user: VendorDTO.authUser(user),
@@ -112,20 +147,28 @@ exports.loginUser = async (req, res) => {
       expiresIn: 86400
     });
 
-
   } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
     logger.error(err);
     return sendError(res, 500, 'Internal Server Error');
+  } finally {
+    session.endSession();
   }
 };
 
 exports.logoutUser = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
 
     if (req.user?._id) {
-      const user = await vendorModel.findById(req.user._id).select('email');
+      const user = await vendorModel.findById(req.user._id).select('email').session(session);
 
-      await AuditLog.create({
+      await AuditLog.create([
+        {
         user: req.user._id,
         role: 'vendor',
         action: 'LOG_OUT',
@@ -134,14 +177,19 @@ exports.logoutUser = async (req, res) => {
         metadata: {
           email: user.email
         }
-      });
+      }
+      ], { session });
     }
+
+    await session.commitTransaction();
 
     return sendSuccess(res, 200, 'Logout successful');
 
-
   } catch (err) {
+    await session.abortTransaction();
     return sendError(res, 500, 'Logout failed');
+  } finally {
+    session.endSession()
   }
 };
 
@@ -184,6 +232,9 @@ exports.getUsersDetails = async (req, res) => {
 };
 
 exports.updateVendorProfile = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const vendorId = req.user._id;
 
@@ -206,17 +257,20 @@ exports.updateVendorProfile = async (req, res) => {
       x
     } = req.body;
 
-    const vendor = await vendorModel.findById(vendorId);
+    const vendor = await vendorModel.findById(vendorId).session(session);
 
     if (!vendor) {
+      await session.abortTransaction();
       return sendError(res, 404, 'Vendor not found');
     }
 
     if (country && !westAfricaCountries.includes(country)) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Invalid country');
     }
 
     if (country === 'Nigeria' && state && !nigeriaStates.includes(state)) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Invalid Nigerian state');
     }
 
@@ -255,9 +309,10 @@ exports.updateVendorProfile = async (req, res) => {
       vendor.bannerImage = req.files.bannerImage[0].path;
     }
 
-    await vendor.save();
+    await vendor.save({ session });
 
-    await AuditLog.create({
+    await AuditLog.create([
+      {
       user: vendor._id,
       role: 'vendor',
       action: 'UPDATE_ACCOUNT',
@@ -268,13 +323,19 @@ exports.updateVendorProfile = async (req, res) => {
         email: vendor.email,
         phoneNo: vendor.phoneNo
       }
-    });
+    }
+    ], { session });
+
+    await session.commitTransaction();
 
     return sendSuccess(res, 200, 'Profile updated successfully', VendorDTO.fromModel(vendor));
 
   } catch (error) {
+    await session.abortTransaction();
     logger.error(error);
     return sendError(res, 500, 'Server error');
+  } finally {
+    session.endSession()
   }
 };
 
