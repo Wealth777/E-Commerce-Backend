@@ -1,31 +1,280 @@
+// const Cart = require('../../models/addToCart.model');
+// const AuditLog = require('../../models/auditLog.model');
+// const AppError = require('../common/AppError');
+
+// const formatCartItems = (cart) => cart.items.map((item) => ({
+//   id: item.product._id,
+//   name: item.product.name,
+//   price: item.product.price,
+//   image: item.product.image,
+//   quantity: item.quantity,
+//   vendorId: item.product.vendor?._id,
+//   vendorName: item.product.vendor?.storeName,
+//   vendorBankName: item.product.vendor?.bankName,
+//   vendorAccountName: item.product.vendor?.accountName,
+//   vendorAccountNumber: item.product.vendor?.accountNumber,
+// }));
+
+// const addToCart = async ({ userId, productId, quantity = 1 }) => {
+//   if (!productId) throw new AppError('Product ID is required', 400);
+
+//   let cart = await Cart.findOne({ user: userId });
+
+//   if (!cart) {
+//     cart = new Cart({ user: userId, items: [{ product: productId, quantity }] });
+//   } else {
+//     const existingItem = cart.items.find((item) => item.product.toString() === productId);
+//     if (existingItem) existingItem.quantity += quantity;
+//     else cart.items.push({ product: productId, quantity });
+//   }
+
+//   await cart.save();
+
+//   await AuditLog.create({
+//     user: userId,
+//     role: 'buyer',
+//     action: 'ADD_TO_CART',
+//     entity: 'Cart',
+//     entityId: cart._id,
+//     metadata: { productId, quantity },
+//   });
+
+//   return cart;
+// };
+
+// const getCart = async ({ userId }) => {
+//   const cart = await Cart.findOne({ user: userId }).populate({
+//     path: 'items.product',
+//     populate: { path: 'vendor', select: '_id storeName bankName accountName accountNumber' },
+//   });
+
+//   return { items: cart ? formatCartItems(cart) : [] };
+// };
+
+// const updateCartItem = async ({ userId, productId, quantity }) => {
+//   if (!productId) throw new AppError('Product ID is required', 400);
+
+//   const cart = await Cart.findOne({ user: userId });
+//   if (!cart) throw new AppError('Cart not found', 404);
+
+//   const item = cart.items.find((i) => i.product.toString() === productId);
+//   if (!item) throw new AppError('Item not found', 404);
+
+//   if (quantity <= 0) cart.items = cart.items.filter((i) => i.product.toString() !== productId);
+//   else item.quantity = quantity;
+
+//   await cart.save();
+
+//   await AuditLog.create({
+//     user: userId,
+//     role: 'buyer',
+//     action: 'UPDATE_CART_ITEM',
+//     entity: 'Cart',
+//     entityId: cart._id,
+//     metadata: { productId, quantity },
+//   });
+
+//   return cart;
+// };
+
+// const removeFromCart = async ({ userId, productId }) => {
+//   if (!productId) throw new AppError('Product ID is required', 400);
+
+//   const cart = await Cart.findOne({ user: userId });
+//   if (!cart) throw new AppError('Cart not found', 404);
+
+//   const initialLength = cart.items.length;
+//   cart.items = cart.items.filter((item) => item.product.toString() !== productId);
+//   if (cart.items.length === initialLength) throw new AppError('Item not found', 404);
+
+//   await cart.save();
+
+//   await AuditLog.create({
+//     user: userId,
+//     role: 'buyer',
+//     action: 'REMOVE_FROM_CART',
+//     entity: 'Cart',
+//     entityId: cart._id,
+//     metadata: { productId },
+//   });
+
+//   return cart;
+// };
+
+// module.exports = { addToCart, getCart, updateCartItem, removeFromCart };
+
+const mongoose = require('mongoose');
+
 const Cart = require('../../models/addToCart.model');
+const AddProduct = require('../../models/addproduct.model');
 const AuditLog = require('../../models/auditLog.model');
 const AppError = require('../common/AppError');
 
-const formatCartItems = (cart) => cart.items.map((item) => ({
-  id: item.product._id,
-  name: item.product.name,
-  price: item.product.price,
-  image: item.product.image,
-  quantity: item.quantity,
-  vendorId: item.product.vendor?._id,
-  vendorName: item.product.vendor?.storeName,
-  vendorBankName: item.product.vendor?.bankName,
-  vendorAccountName: item.product.vendor?.accountName,
-  vendorAccountNumber: item.product.vendor?.accountNumber,
-}));
+const toObjectIdString = (value) => {
+  if (!value) return '';
+  return value.toString();
+};
+
+const normalizeQuantity = (quantity) => {
+  const parsedQuantity = Number(quantity || 1);
+
+  if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
+    throw new AppError('Quantity must be a positive whole number', 400);
+  }
+
+  return parsedQuantity;
+};
+
+const validateProductId = (productId) => {
+  if (!productId) {
+    throw new AppError('Product ID is required', 400);
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new AppError('Invalid product ID', 400);
+  }
+};
+
+const getAvailableProduct = async (productId) => {
+  const product = await AddProduct.findById(productId)
+    .populate('vendor', '_id storeName businessName fullName bankName accountName accountNumber')
+    .populate('category', 'name slug')
+    .populate('subCategory', 'name slug');
+
+  if (!product) {
+    throw new AppError('Product not found', 404);
+  }
+
+  if (Number(product.stock || 0) <= 0) {
+    throw new AppError('Product is out of stock', 400);
+  }
+
+  return product;
+};
+
+const formatCartItems = (cart) => {
+  if (!cart || !Array.isArray(cart.items)) {
+    return [];
+  }
+
+  return cart.items
+    .filter((item) => item.product)
+    .map((item) => {
+      const product = item.product;
+      const vendor = product.vendor;
+
+      return {
+        id: product._id,
+        _id: product._id,
+
+        name: product.name,
+        price: Number(product.price || 0),
+        image: product.image,
+
+        stock: Number(product.stock || 0),
+        quantity: Number(item.quantity || 1),
+
+        category: product.category || null,
+        subCategory: product.subCategory || null,
+
+        categoryName:
+          product.category?.name || 'General',
+
+        subCategoryName:
+          product.subCategory?.name || '',
+
+        vendorId:
+          vendor?._id || '',
+
+        vendorName:
+          vendor?.storeName ||
+          vendor?.businessName ||
+          vendor?.fullName ||
+          'Unknown Vendor',
+
+        vendorBankName:
+          vendor?.bankName || '',
+
+        vendorAccountName:
+          vendor?.accountName || '',
+
+        vendorAccountNumber:
+          vendor?.accountNumber || '',
+      };
+    });
+};
+
+const populateCart = async (cartId) => {
+  return Cart.findById(cartId).populate({
+    path: 'items.product',
+    populate: [
+      {
+        path: 'vendor',
+        select: '_id storeName businessName fullName bankName accountName accountNumber',
+      },
+      {
+        path: 'category',
+        select: 'name slug',
+      },
+      {
+        path: 'subCategory',
+        select: 'name slug',
+      },
+    ],
+  });
+};
 
 const addToCart = async ({ userId, productId, quantity = 1 }) => {
-  if (!productId) throw new AppError('Product ID is required', 400);
+  validateProductId(productId);
+
+  const safeQuantity = normalizeQuantity(quantity);
+  const product = await getAvailableProduct(productId);
+
+  const availableStock = Number(product.stock || 0);
 
   let cart = await Cart.findOne({ user: userId });
 
   if (!cart) {
-    cart = new Cart({ user: userId, items: [{ product: productId, quantity }] });
+    const quantityToAdd = Math.min(safeQuantity, availableStock);
+
+    cart = new Cart({
+      user: userId,
+      items: [
+        {
+          product: productId,
+          quantity: quantityToAdd,
+        },
+      ],
+    });
   } else {
-    const existingItem = cart.items.find((item) => item.product.toString() === productId);
-    if (existingItem) existingItem.quantity += quantity;
-    else cart.items.push({ product: productId, quantity });
+    const existingItem = cart.items.find(
+      (item) => toObjectIdString(item.product) === toObjectIdString(productId)
+    );
+
+    if (existingItem) {
+      const nextQuantity = Number(existingItem.quantity || 0) + safeQuantity;
+
+      if (nextQuantity > availableStock) {
+        throw new AppError(
+          `Only ${availableStock} item${availableStock > 1 ? 's' : ''} available in stock`,
+          400
+        );
+      }
+
+      existingItem.quantity = nextQuantity;
+    } else {
+      if (safeQuantity > availableStock) {
+        throw new AppError(
+          `Only ${availableStock} item${availableStock > 1 ? 's' : ''} available in stock`,
+          400
+        );
+      }
+
+      cart.items.push({
+        product: productId,
+        quantity: safeQuantity,
+      });
+    }
   }
 
   await cart.save();
@@ -36,32 +285,83 @@ const addToCart = async ({ userId, productId, quantity = 1 }) => {
     action: 'ADD_TO_CART',
     entity: 'Cart',
     entityId: cart._id,
-    metadata: { productId, quantity },
+    metadata: {
+      productId,
+      quantity: safeQuantity,
+    },
   });
 
-  return cart;
+  const populatedCart = await populateCart(cart._id);
+
+  return {
+    items: formatCartItems(populatedCart),
+  };
 };
 
 const getCart = async ({ userId }) => {
   const cart = await Cart.findOne({ user: userId }).populate({
     path: 'items.product',
-    populate: { path: 'vendor', select: '_id storeName bankName accountName accountNumber' },
+    populate: [
+      {
+        path: 'vendor',
+        select: '_id storeName businessName fullName bankName accountName accountNumber',
+      },
+      {
+        path: 'category',
+        select: 'name slug',
+      },
+      {
+        path: 'subCategory',
+        select: 'name slug',
+      },
+    ],
   });
 
-  return { items: cart ? formatCartItems(cart) : [] };
+  return {
+    items: formatCartItems(cart),
+  };
 };
 
 const updateCartItem = async ({ userId, productId, quantity }) => {
-  if (!productId) throw new AppError('Product ID is required', 400);
+  validateProductId(productId);
+
+  const safeQuantity = Number(quantity || 0);
+
+  if (!Number.isInteger(safeQuantity) || safeQuantity < 0) {
+    throw new AppError('Quantity must be a valid whole number', 400);
+  }
 
   const cart = await Cart.findOne({ user: userId });
-  if (!cart) throw new AppError('Cart not found', 404);
 
-  const item = cart.items.find((i) => i.product.toString() === productId);
-  if (!item) throw new AppError('Item not found', 404);
+  if (!cart) {
+    throw new AppError('Cart not found', 404);
+  }
 
-  if (quantity <= 0) cart.items = cart.items.filter((i) => i.product.toString() !== productId);
-  else item.quantity = quantity;
+  const item = cart.items.find(
+    (cartItem) => toObjectIdString(cartItem.product) === toObjectIdString(productId)
+  );
+
+  if (!item) {
+    throw new AppError('Item not found', 404);
+  }
+
+  if (safeQuantity <= 0) {
+    cart.items = cart.items.filter(
+      (cartItem) => toObjectIdString(cartItem.product) !== toObjectIdString(productId)
+    );
+  } else {
+    const product = await getAvailableProduct(productId);
+    const availableStock = Number(product.stock || 0);
+
+    if (safeQuantity > availableStock) {
+      throw new AppError(
+        `Only ${availableStock} item${availableStock > 1 ? 's' : ''} available in stock`,
+        400
+      );
+    }
+
+    item.quantity = safeQuantity;
+  }
 
   await cart.save();
 
@@ -71,21 +371,37 @@ const updateCartItem = async ({ userId, productId, quantity }) => {
     action: 'UPDATE_CART_ITEM',
     entity: 'Cart',
     entityId: cart._id,
-    metadata: { productId, quantity },
+    metadata: {
+      productId,
+      quantity: safeQuantity,
+    },
   });
 
-  return cart;
+  const populatedCart = await populateCart(cart._id);
+
+  return {
+    items: formatCartItems(populatedCart),
+  };
 };
 
 const removeFromCart = async ({ userId, productId }) => {
-  if (!productId) throw new AppError('Product ID is required', 400);
+  validateProductId(productId);
 
   const cart = await Cart.findOne({ user: userId });
-  if (!cart) throw new AppError('Cart not found', 404);
+
+  if (!cart) {
+    throw new AppError('Cart not found', 404);
+  }
 
   const initialLength = cart.items.length;
-  cart.items = cart.items.filter((item) => item.product.toString() !== productId);
-  if (cart.items.length === initialLength) throw new AppError('Item not found', 404);
+
+  cart.items = cart.items.filter(
+    (item) => toObjectIdString(item.product) !== toObjectIdString(productId)
+  );
+
+  if (cart.items.length === initialLength) {
+    throw new AppError('Item not found', 404);
+  }
 
   await cart.save();
 
@@ -95,10 +411,21 @@ const removeFromCart = async ({ userId, productId }) => {
     action: 'REMOVE_FROM_CART',
     entity: 'Cart',
     entityId: cart._id,
-    metadata: { productId },
+    metadata: {
+      productId,
+    },
   });
 
-  return cart;
+  const populatedCart = await populateCart(cart._id);
+
+  return {
+    items: formatCartItems(populatedCart),
+  };
 };
 
-module.exports = { addToCart, getCart, updateCartItem, removeFromCart };
+module.exports = {
+  addToCart,
+  getCart,
+  updateCartItem,
+  removeFromCart,
+};

@@ -344,65 +344,135 @@ exports.getVendorDetails = async (req, res) => {
     const { id: vendorId } = req.params;
     const { category, status, sortBy } = req.query;
 
-    const filterQuery = { vendor: vendorId };
+    if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+      return sendError(res, 400, 'Invalid vendor ID');
+    }
 
-    if (category) filterQuery.category = category;
-    if (status) filterQuery.status = status;
+    const vendorDetails = await vendorModel
+      .findById(vendorId)
+      .select(
+        'serialNumber fullName storeName storeDescription profilePhoto bannerImage country state email phoneNo socialLinks rating reviews isVerified'
+      )
+      .lean();
 
-    let sortQuery = { createdAt: -1 };
-
-    if (sortBy === 'price-asc') sortQuery = { price: 1 };
-    if (sortBy === 'price-desc') sortQuery = { price: -1 };
-    if (sortBy === 'newest') sortQuery = { createdAt: -1 };
-    if (sortBy === 'stock') sortQuery = { stock: -1 };
-
-    const vendordetails = await vendorModel.findById(vendorId).select(
-      "serialNumber fullName storeName storeDescription profilePhoto bannerImage country state email phoneNo socialLinks rating reviews isVerified"
-    );
-
-    if (!vendordetails) {
+    if (!vendorDetails) {
       return sendError(res, 404, 'Vendor not found');
     }
 
-    const products = await AddProduct.find(filterQuery).sort(sortQuery);
+    const filterQuery = {
+      vendor: vendorId,
+    };
 
-    const productList = products.map(product => ({
-      id: product._id,
-      name: product.name,
-      description: product.description,
-      image: product.image,
-      category: product.category,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      discount: product.originalPrice
-        ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-        : 0,
-      stock: product.stock,
-      status: product.status,
-      createdAt: product.createdAt
-    }));
+    if (category) {
+      if (!mongoose.Types.ObjectId.isValid(category)) {
+        return sendError(res, 400, 'Invalid category ID');
+      }
 
-    return sendSuccess(res, 200, 'Vendor details fetched successfully', {
-      count: products.length,
-      vendorInfo: {
-        id: vendordetails._id,
-        serialNumber: vendordetails.serialNumber,
-        fullName: vendordetails.fullName,
-        storeName: vendordetails.storeName,
-        storeDescription: vendordetails.storeDescription,
-        profilePhoto: vendordetails.profilePhoto,
-        bannerImage: vendordetails.bannerImage,
-        country: vendordetails.country,
-        state: vendordetails.state,
-        email: vendordetails.email,
-        phoneNo: vendordetails.phoneNo,
-        socialLinks: vendordetails.socialLinks
-      },
-      products: productList
+      filterQuery.$or = [
+        { category },
+        { subCategory: category },
+      ];
+    }
+
+    if (status) {
+      filterQuery.status = status;
+    }
+
+    let sortQuery = { createdAt: -1 };
+
+    if (sortBy === 'price-asc') {
+      sortQuery = { price: 1 };
+    }
+
+    if (sortBy === 'price-desc') {
+      sortQuery = { price: -1 };
+    }
+
+    if (sortBy === 'stock') {
+      sortQuery = { stock: -1 };
+    }
+
+    const products = await AddProduct.find(filterQuery)
+      .populate(
+        'vendor',
+        'storeName businessName fullName profilePhoto country state'
+      )
+      .populate('category', 'name slug')
+      .populate('subCategory', 'name slug')
+      .sort(sortQuery)
+      .lean();
+
+    const productList = products.map((product) => {
+      const originalPrice = Number(product.originalPrice || 0);
+      const price = Number(product.price || 0);
+
+      return {
+        _id: product._id,
+        id: product._id,
+
+        name: product.name,
+        description: product.description,
+        image: product.image,
+
+        category: product.category || null,
+        subCategory: product.subCategory || null,
+
+        categoryName:
+          product.category?.name || 'General',
+
+        subCategoryName:
+          product.subCategory?.name || '',
+
+        vendor: product.vendor || null,
+
+        vendorName:
+          product.vendor?.storeName ||
+          product.vendor?.businessName ||
+          product.vendor?.fullName ||
+          vendorDetails.storeName ||
+          'Unknown vendor',
+
+        price,
+        originalPrice,
+
+        discount:
+          originalPrice > price && originalPrice > 0
+            ? Math.round(((originalPrice - price) / originalPrice) * 100)
+            : 0,
+
+        stock: Number(product.stock || 0),
+        status: product.status,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      };
     });
 
+    return sendSuccess(res, 200, 'Vendor details fetched successfully', {
+      count: productList.length,
+
+      vendorInfo: {
+        id: vendorDetails._id,
+        _id: vendorDetails._id,
+        serialNumber: vendorDetails.serialNumber,
+        fullName: vendorDetails.fullName,
+        storeName: vendorDetails.storeName,
+        storeDescription: vendorDetails.storeDescription,
+        profilePhoto: vendorDetails.profilePhoto,
+        bannerImage: vendorDetails.bannerImage,
+        country: vendorDetails.country,
+        state: vendorDetails.state,
+        email: vendorDetails.email,
+        phoneNo: vendorDetails.phoneNo,
+        socialLinks: vendorDetails.socialLinks,
+        rating: vendorDetails.rating,
+        reviews: vendorDetails.reviews,
+        isVerified: vendorDetails.isVerified,
+      },
+
+      products: productList,
+    });
   } catch (err) {
-    logger.error("GET VENDOR PRODUCT DETAILS ERROR:", err);
+    logger.error('GET VENDOR DETAILS ERROR:', err);
     return sendError(res, 500, 'Internal Server Error', err.message);
   }
 };

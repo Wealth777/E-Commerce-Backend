@@ -12,12 +12,12 @@ exports.addToCart = async (req, res) => {
     const cart = await cartService.addToCart({
       userId: req.user._id,
       productId: req.body.productId,
-      quantity: req.body.quantity || 1,
+      quantity: req.body.quantity,
     });
 
-    return sendSuccess(res, 200, 'Product added to cart', cart);
+    return sendSuccess(res, 200, 'Cart added successfully', cart);
   } catch (error) {
-    return handleError(res, error, 'Error adding to cart');
+    return sendError(res, error.statusCode || 500, error.message || 'Failed to add to cart');
   }
 };
 

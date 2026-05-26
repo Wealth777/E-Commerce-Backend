@@ -105,10 +105,17 @@ const addProduct = async ({ vendorId, body, file, session }) => {
   return product;
 };
 
-const getVendorProducts = async ({ vendorId }) =>
-  AddProduct.find({ vendor: vendorId })
+const getVendorProducts = async ({ vendorId }) => {
+  if (!mongoose.Types.ObjectId.isValid(vendorId)) {
+    throw new AppError('Invalid vendor ID', 400);
+  }
+
+  return AddProduct.find({ vendor: vendorId })
+    .populate('vendor', 'storeName businessName fullName profilePhoto country state')
     .populate('category', 'name slug')
-    .populate('subCategory', 'name slug');
+    .populate('subCategory', 'name slug')
+    .sort({ createdAt: -1 });
+};
 
 const getAllProducts = async ({ limitParam, user }) => {
   const limit = validateLimit(limitParam);
