@@ -69,7 +69,11 @@ const clearWishlist = async ({ userId }) => {
 const getWishlist = async ({ userId }) => {
   const wishlist = await Wishlist.findOne({ user: userId }).populate({
     path: 'items.product',
-    populate: { path: 'vendor', select: 'storeName profilePhoto country state' },
+    populate: [
+      { path: 'vendor', select: 'storeName businessName fullName' },
+      { path: 'category', select: 'name slug' },
+      { path: 'subCategory', select: 'name slug' },
+    ],
   });
 
   return { items: wishlist?.items || [] };

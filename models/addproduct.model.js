@@ -23,8 +23,17 @@ const addProduct = new mongoose.Schema(
             required: true
         },
         category: {
-            type: String,
-            required: true
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category",
+            required: true,
+            index: true,
+        },
+
+        subCategory: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Category",
+            default: null,
+            index: true,
         },
         status: {
             type: String,

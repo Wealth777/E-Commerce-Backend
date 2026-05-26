@@ -13,6 +13,8 @@ const { getUsersActivities } = require('../controllers/auditlog.controller');
 const asyncHandler = require('../utils/asyncHandler');
 const { validateRegister } = require('../middleware/validateRegister');
 
+const { createVendorCategory, getCategories, rejectCategory, approveCategory } = require('../controllers/Vendor/category.controller');
+
 router.use(apiLimiter);
 
 router.post('/auth/register', validateRegister, createUser);
@@ -35,6 +37,10 @@ router.post('/product/add', verifyUser, requireRole(['vendor']), imageUpload.sin
 router.get('/product/me', verifyUser, getVendorProducts);
 
 router.get('/product/all', getAllProducts);
+
+router.get("/categories", getCategories);
+
+router.post("/categories", verifyUser, requireRole(['vendor']), createVendorCategory);
 
 router.post('/payout', verifyUser, saveVendorPayout);
 
@@ -67,6 +73,10 @@ router.put('/product/:id', verifyUser, imageUpload.single("image"), updateProduc
 router.delete('/product/:id', verifyUser, deleteProduct);
 
 router.get('/vendor/products/:vendorId/category/:category', getVendorProductsByCategory)
+
+router.patch("/categories/:categoryId/approve", verifyUser, requireRole(['founder']), approveCategory);
+
+router.patch("/categories/:categoryId/reject", verifyUser, requireRole(['founder']), rejectCategory);
 
 router.get('/orders/:orderId', verifyUser, getSingleVendorOrder);
 
