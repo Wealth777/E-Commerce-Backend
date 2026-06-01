@@ -21,11 +21,13 @@ const buyerRoutes = require('./routes/buyer.route');
 const vendorRoutes = require('./routes/vendor.route');
 const founderRoutes = require('./routes/founder.route');
 const notificationRoutes = require('./routes/notification.route');
+const chatRoutes = require('./routes/chat.route');
 
 app.use('/api/buyer', buyerRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/founder', founderRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/chat', chatRoutes);
 
 const requestLogger = require('./middleware/requestLogger');
 

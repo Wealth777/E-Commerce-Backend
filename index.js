@@ -6,14 +6,17 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app');
 const { initializeSocket } = require('./sockets/notification.socket');
+const { connectChatDatabase } = require('./config/chatDatabase');
 
 const port = process.env.PORT;
+
 
 async function validateEnvironment() {
   const required = [
     'JWT_KEY',
     'JWT_REFRESH_SECRET',
     'MONGO_URL',
+    'CHAT_DB_URL',
     'PORT',
     'frontedURL',
     'CLOUDINARY_CLOUD_NAME',
@@ -42,25 +45,36 @@ async function startServer() {
     await validateEnvironment();
 
     await mongoose.connect(process.env.MONGO_URL, {
-      retryWrites: true,
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       maxPoolSize: 10,
       minPoolSize: 2,
       connectTimeoutMS: 10000,
-      appName: 'CampusTrade',
+      appName: 'CampusTradeMain',
     });
 
+    const chatDB = await connectChatDatabase();
+
     mongoose.connection.on('error', (err) => {
-      logger.error('MongoDB connection error:', err);
+      logger.error('Main MongoDB connection error:', err);
+      process.exit(1);
+    });
+
+    chatDB.on('error', (err) => {
+      logger.error('Chat MongoDB connection error:', err);
       process.exit(1);
     });
 
     mongoose.connection.on('disconnected', () => {
-      logger.warn('MongoDB disconnected');
+      logger.warn('Main MongoDB disconnected');
     });
 
-    logger.info('✅ Database Connected Successfully');
+    chatDB.on('disconnected', () => {
+      logger.warn('Chat MongoDB disconnected');
+    });
+
+    logger.info('✅ Main Database Connected Successfully');
+    logger.info('✅ Chat Database Connected Successfully');
 
     const server = http.createServer(app);
 
@@ -78,10 +92,6 @@ async function startServer() {
       logger.info(`🚀 Server running on port ${port}`);
     });
   } catch (err) {
-    logger.debug('MongoDB URL configured', {
-      configured: Boolean(process.env.MONGO_URL),
-    });
-
     logger.error(`Failed to start server: ${err.message}`, {
       stack: err.stack,
     });
