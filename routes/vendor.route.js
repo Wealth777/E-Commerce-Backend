@@ -12,6 +12,9 @@ const { getVendorAnalytics, exportVendorAnalyticsPDF } = require('../controllers
 const { getUsersActivities } = require('../controllers/auditlog.controller');
 const asyncHandler = require('../utils/asyncHandler');
 const { validateRegister } = require('../middleware/validateRegister');
+const ratingController = require('../controllers/common/rating.controller');
+const reviewController = require('../controllers/common/review.controller');
+const reportController = require('../controllers/common/report.controller');
 
 const { createVendorCategory, getCategories, rejectCategory, approveCategory } = require('../controllers/Vendor/category.controller');
 
@@ -62,6 +65,14 @@ router.get("/analytics/export/pdf", verifyUser, asyncHandler(exportVendorAnalyti
 
 router.get('/activity', verifyUser, getUsersActivities);
 
+router.get('/ratings/products', verifyUser, requireRole(['vendor']), ratingController.getVendorProductRatings);
+
+router.get('/reviews/me', verifyUser, requireRole(['vendor']), reviewController.getVendorReviews);
+
+router.post('/reports', verifyUser, reportController.createReport);
+
+router.get('/reports/me', verifyUser, reportController.getMyReports);
+
 // Dynamic routes
 router.get("/product/:productId", getProductDetails);
 
@@ -83,5 +94,7 @@ router.get('/orders/:orderId', verifyUser, getSingleVendorOrder);
 router.patch('/orders/:orderId/refund-request/review', verifyUser, reviewRefundRequest);
 
 router.patch('/orders/:orderId/return-request/review', verifyUser, reviewReturnRequest);
+
+router.get('/reviews/vendor/:vendorId', reviewController.getVendorReviews);
 
 module.exports  = router;

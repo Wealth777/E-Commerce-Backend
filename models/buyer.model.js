@@ -1,14 +1,43 @@
 const mongoose = require('mongoose')
+const { softDeletePlugin } = require('./base.schema')
 
 const buyer = new mongoose.Schema({
-  serialNumber: { type: String, unique: true },
-  fullName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phoneNo: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ['buyer'], default: 'buyer' },
+  serialNumber: { 
+    type: String, 
+    unique: true 
+  },
+  fullName: { 
+    type: String, 
+    required: true 
+  },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  phoneNo: { 
+    type: String, 
+    required: true, 
+    unique: true,
+    trim: true
+  },
+  password: { 
+    type: String, 
+    required: true,
+  },
+  role: { 
+    type: String, 
+    enum: ['buyer'], 
+    default: 'buyer'
+  },
 
-  username: String,
+  username: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
   profilePhoto: String,
   country: String,
   state: String,
@@ -21,9 +50,26 @@ const buyer = new mongoose.Schema({
     enum: ['whatsapp', 'email', 'both']
   },
   profileUpdateNotificationSent: { type: Boolean, default: false },
-  
-  // isVerified: { type: Boolean, default: false },
+
+  isActive: {
+    type: Boolean,
+    default: true
+  },
+
+
+
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+  deleteReason: String,
+
   updatedAt: Date
+}, {
+  timestamps: true
 })
+
+buyer.plugin(softDeletePlugin)
 
 module.exports = mongoose.model('Buyer', buyer)
