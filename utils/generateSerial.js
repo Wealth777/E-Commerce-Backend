@@ -1,25 +1,20 @@
 const mongoose = require('mongoose');
 const Counter = require("../models/serialCounter.model.js");
 
-const generateSerialNumber = async (role) => {
+const generateSerialNumber = async (role, session) => {
   const year = new Date().getFullYear();
 
   try {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
     const counter = await Counter.findOneAndUpdate(
       { role, year },
       { $inc: { sequence: 1 } },
       {
         returnDocument: 'after',
+        // new: true,
         upsert: true,
         session
       }
     );
-
-    await session.commitTransaction();
-    session.endSession();
 
     const paddedNumber = String(counter.sequence).padStart(4, "0");
     return `${role}/${year}/${paddedNumber}`;

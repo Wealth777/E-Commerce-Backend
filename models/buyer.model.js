@@ -2,34 +2,41 @@ const mongoose = require('mongoose')
 const { softDeletePlugin } = require('./base.schema')
 
 const buyer = new mongoose.Schema({
-  serialNumber: { 
-    type: String, 
-    unique: true 
+  serialNumber: {
+    type: String,
+    unique: true
   },
-  fullName: { 
-    type: String, 
-    required: true 
+  fullName: {
+    type: String,
+    required: true
   },
-  email: { 
-    type: String, 
-    required: true, 
+  email: {
+    type: String,
+    required: true,
     unique: true,
     lowercase: true,
     trim: true
   },
-  phoneNo: { 
-    type: String, 
-    required: true, 
+  googleId: {
+    type: String
+  },
+  phoneNo: {
+    type: String,
+    required: function () {
+      return !this.googleId;
+    },
     unique: true,
     trim: true
   },
-  password: { 
-    type: String, 
-    required: true,
+  password: {
+    type: String,
+    required: function () {
+      return !this.googleId;
+    }
   },
-  role: { 
-    type: String, 
-    enum: ['buyer'], 
+  role: {
+    type: String,
+    enum: ['buyer'],
     default: 'buyer'
   },
 

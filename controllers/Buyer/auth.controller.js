@@ -11,6 +11,7 @@ const notificationService = require('../../services/notification/notification.se
 const { default: mongoose } = require('mongoose');
 const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
 const BuyerDTO = require('../../dtos/buyer.dto');
+const { verifyGoogleToken } = require('../../services/googleAuth.service');
 
 const saltRounds = 10;
 
@@ -58,7 +59,7 @@ exports.createUser = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, saltRounds);
 
-    const serialNo = await generateSerialNumber("buyer").session(session);
+    const serialNo = await generateSerialNumber("buyer", session);
 
     const createAcc = new buyerModel({
       serialNumber: serialNo,
@@ -93,6 +94,82 @@ exports.createUser = async (req, res) => {
   };
 };
 
+// exports.loginUser = async (req, res) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//       await session.abortTransaction();
+//       return sendError(res, 400, 'Email and password are required');
+//     }
+
+//     const user = await buyerModel.findOne({ email });
+
+//     if (!user) {
+//       await session.abortTransaction();
+//       return sendError(res, 400, 'Invalid credentials');
+//     }
+
+//     const confirmPassword = await bcrypt.compare(password, user.password);
+
+//     if (!confirmPassword) {
+//       await session.abortTransaction();
+//       return sendError(res, 400, 'Invalid credentials');
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id, role: user.role },
+//       process.env.JWT_KEY,
+//       { expiresIn: '24h' }
+//     );
+
+//     const refreshToken = jwt.sign(
+//       { id: user._id },
+//       process.env.JWT_REFRESH_SECRET,
+//       { expiresIn: '7d' }
+//     );
+
+//     const responseData = {
+//       user: BuyerDTO.fromModel(user),
+//       accessToken: token,
+//       refreshToken,
+//       expiresIn: 86400,
+//     };
+
+//     await AuditLog.create([{
+//       user: user._id,
+//       role: 'buyer',
+//       action: 'LOG_IN',
+//       entity: 'Buyer',
+//       entityId: user._id,
+//       metadata: {
+//         email: user.email,
+//       },
+//     }], { session });
+
+//     await session.commitTransaction();
+
+//     if (!user.profileUpdateNotificationSent) {
+//       await notificationService.safeCreateProfileUpdateNotification({ userId: user._id, role: 'buyer' });
+//       await buyerModel.updateOne({ _id: user._id }, { $set: { profileUpdateNotificationSent: true } });
+//     }
+
+//     return sendSuccess(res, 200, 'Login successful', responseData);
+//   } catch (err) {
+//     if (session.inTransaction()) {
+//       await session.abortTransaction();
+//     }
+
+//     logger.error(err);
+//     return sendError(res, 500, 'Internal Server Error');
+//   } finally {
+//     session.endSession();
+//   }
+// };
+
 exports.loginUser = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -105,7 +182,7 @@ exports.loginUser = async (req, res) => {
       return sendError(res, 400, 'Email and password are required');
     }
 
-    const user = await buyerModel.findOne({ email });
+    const user = await buyerModel.findOne({ email }).session(session);
 
     if (!user) {
       await session.abortTransaction();
@@ -119,7 +196,7 @@ exports.loginUser = async (req, res) => {
       return sendError(res, 400, 'Invalid credentials');
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_KEY,
       { expiresIn: '24h' }
@@ -131,32 +208,44 @@ exports.loginUser = async (req, res) => {
       { expiresIn: '7d' }
     );
 
-    const responseData = {
-      user: BuyerDTO.fromModel(user),
-      accessToken: token,
-      refreshToken,
-      expiresIn: 86400,
-    };
-
     await AuditLog.create([{
       user: user._id,
       role: 'buyer',
       action: 'LOG_IN',
       entity: 'Buyer',
       entityId: user._id,
-      metadata: {
-        email: user.email,
-      },
+      metadata: { email: user.email },
     }], { session });
+
+    if (!user.profileUpdateNotificationSent) {
+      try {
+        await notificationService.safeCreateProfileUpdateNotification({
+          userId: user._id,
+          role: 'buyer'
+        });
+
+        await buyerModel.findByIdAndUpdate(
+          // user._id,
+          { id: user._id },
+          { $set: { profileUpdateNotificationSent: true } },
+          { session }
+        );
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+
+    const responseData = {
+      user: BuyerDTO.fromModel(user),
+      accessToken,
+      refreshToken,
+      expiresIn: 86400,
+    };
 
     await session.commitTransaction();
 
-    if (!user.profileUpdateNotificationSent) {
-      await notificationService.safeCreateProfileUpdateNotification({ userId: user._id, role: 'buyer' });
-      await buyerModel.updateOne({ _id: user._id }, { $set: { profileUpdateNotificationSent: true } });
-    }
-
     return sendSuccess(res, 200, 'Login successful', responseData);
+
   } catch (err) {
     if (session.inTransaction()) {
       await session.abortTransaction();
@@ -164,6 +253,107 @@ exports.loginUser = async (req, res) => {
 
     logger.error(err);
     return sendError(res, 500, 'Internal Server Error');
+  } finally {
+    session.endSession();
+  }
+};
+
+exports.googleLogin = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      await session.abortTransaction();
+      return sendError(res, 400, 'idToken required');
+    }
+
+    const payload = await verifyGoogleToken(idToken);
+
+    if (!payload) {
+      await session.abortTransaction();
+      return sendError(res, 401, 'Invalid Google token');
+    }
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    let user = await buyerModel.findOne({ email }).session(session);
+
+    if (!user) {
+      const serialNo = await generateSerialNumber("buyer", session);
+
+      user = await buyerModel.create([{
+        serialNumber: serialNo,
+        email,
+        fullName: name,
+        profilePhoto: picture,
+        googleId,
+        isEmailVerified: true,
+        role: 'buyer'
+      }], { session });
+
+      user = user[0];
+    }
+
+    const accessToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_KEY,
+      { expiresIn: '24h' }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    await AuditLog.create([{
+      user: user._id,
+      role: 'buyer',
+      action: 'GOOGLE_LOGIN',
+      entity: 'Buyer',
+      entityId: user._id,
+      metadata: { email: user.email }
+    }], { session });
+
+    if (!user.profileUpdateNotificationSent) {
+      try {
+        await notificationService.safeCreateProfileUpdateNotification({
+          userId: user._id,
+          role: 'buyer'
+        });
+
+        await buyerModel.findByIdAndUpdate(
+          // user._id,
+          { id: user._id },
+          { $set: { profileUpdateNotificationSent: true } },
+          { session }
+        );
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+
+    const responseData = {
+      user: BuyerDTO.fromModel(user),
+      accessToken,
+      refreshToken,
+      expiresIn: 86400,
+    };
+
+    await session.commitTransaction();
+
+    return sendSuccess(res, 200, 'Google login successful', responseData);
+
+  } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    logger.error(error);
+    return sendError(res, 401, 'Google authentication failed');
   } finally {
     session.endSession();
   }
@@ -259,10 +449,12 @@ exports.updateBuyerProfile = async (req, res) => {
     }
 
     if (country && !westAfricaCountries.includes(country)) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Invalid country');
     }
 
     if (country === 'Nigeria' && state && !nigeriaStates.includes(state)) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Invalid Nigerian state');
     }
 

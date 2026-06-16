@@ -11,6 +11,7 @@ const AddProduct = require('../../models/addproduct.model');
 const notificationService = require('../../services/notification/notification.service');
 const { sendSuccess, sendError } = require('../../utils/responseStruture');
 const mongoose = require("mongoose");
+const { verifyGoogleToken } = require('../../services/googleAuth.service');
 
 const saltRounds = 10;
 
@@ -31,14 +32,14 @@ exports.createUser = async (req, res) => {
       return sendError(res, 400, 'All fields are required');
     }
 
-    const existingUser = await vendorModel.findOne({ email });
+    const existingUser = await vendorModel.findOne({ email }).session(session);
     if (existingUser) {
       await session.abortTransaction();
       return sendError(res, 400, 'User already exists');
     }
 
     const hashPassword = await bcrypt.hash(password, saltRounds);
-    const serialNo = await generateSerialNumber("vendor");
+    const serialNo = await generateSerialNumber("vendor", session);
 
     const createAcc = new vendorModel({
       serialNumber: serialNo,
@@ -52,15 +53,15 @@ exports.createUser = async (req, res) => {
 
     await AuditLog.create([
       {
-      user: createAcc._id,
-      role: 'vendor',
-      action: 'REGISTER_ACCOUNT',
-      entity: 'Vendor',
-      entityId: createAcc._id,
-      metadata: {
-        email: createAcc.email
+        user: createAcc._id,
+        role: 'vendor',
+        action: 'REGISTER_ACCOUNT',
+        entity: 'Vendor',
+        entityId: createAcc._id,
+        metadata: {
+          email: createAcc.email
+        }
       }
-    }
     ], { session });
 
     await session.commitTransaction();
@@ -77,15 +78,15 @@ exports.createUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
   const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
+      await session.abortTransaction();
       return sendError(res, 400, 'Email and password are required');
     }
-
-    session.startTransaction();
 
     const user = await vendorModel.findOne({ email }).session(session);
 
@@ -101,7 +102,7 @@ exports.loginUser = async (req, res) => {
       return sendError(res, 400, 'Invalid credentials');
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_KEY,
       { expiresIn: '24h' }
@@ -121,12 +122,10 @@ exports.loginUser = async (req, res) => {
         entity: 'Vendor',
         entityId: user._id,
         metadata: {
-          email: user.email
+          email: user?.email || null
         }
       }
     ], { session });
-
-    await session.commitTransaction();
 
     if (!user.profileUpdateNotificationSent) {
       await notificationService.safeCreateProfileUpdateNotification({
@@ -134,15 +133,18 @@ exports.loginUser = async (req, res) => {
         role: 'vendor'
       });
 
-      await vendorModel.updateOne(
-        { _id: user._id },
-        { $set: { profileUpdateNotificationSent: true } }
+      await vendorModel.findByIdAndUpdate(
+        user._id,
+        { $set: { profileUpdateNotificationSent: true } },
+        { session }
       );
     }
 
+    await session.commitTransaction();
+
     return sendSuccess(res, 200, 'Login successful', {
       user: VendorDTO.authUser(user),
-      accessToken: token,
+      accessToken,
       refreshToken,
       expiresIn: 86400
     });
@@ -159,6 +161,106 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+exports.googleLogin = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      await session.abortTransaction();
+      return sendError(res, 400, 'idToken required');
+    }
+
+    const payload = await verifyGoogleToken(idToken);
+
+    if (!payload) {
+      await session.abortTransaction();
+      return sendError(res, 401, 'Invalid Google token');
+    }
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    let user = await vendorModel.findOne({ email }).session(session);
+
+    if (!user) {
+      const serialNo = await generateSerialNumber("vendor", session);
+
+      user = await vendorModel.create([{
+        serialNumber: serialNo,
+        email,
+        fullName: name,
+        profilePhoto: picture,
+        googleId,
+        isEmailVerified: true,
+        role: 'vendor'
+      }], { session });
+
+      user = user[0];
+    }
+
+    const accessToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_KEY,
+      { expiresIn: '24h' }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_REFRESH_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    await AuditLog.create([{
+      user: user._id,
+      role: 'vendor',
+      action: 'GOOGLE_LOGIN',
+      entity: 'Vendor',
+      entityId: user._id,
+      metadata: { email: user.email }
+    }], { session });
+
+    if (!user.profileUpdateNotificationSent) {
+      try {
+        await notificationService.safeCreateProfileUpdateNotification({
+          userId: user._id,
+          role: 'vendor'
+        });
+
+        await vendorModel.findByIdAndUpdate(
+          user._id,
+          { $set: { profileUpdateNotificationSent: true } },
+          { session }
+        );
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+
+    const responseData = {
+      user: VendorDTO.fromModel(user),
+      accessToken,
+      refreshToken,
+      expiresIn: 86400,
+    };
+
+    await session.commitTransaction();
+
+    return sendSuccess(res, 200, 'Google login successful', responseData);
+
+  } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    logger.error(error);
+    return sendError(res, 401, 'Google authentication failed');
+  } finally {
+    session.endSession();
+  }
+};
+
 exports.logoutUser = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -169,15 +271,15 @@ exports.logoutUser = async (req, res) => {
 
       await AuditLog.create([
         {
-        user: req.user._id,
-        role: 'vendor',
-        action: 'LOG_OUT',
-        entity: 'Vendor',
-        entityId: req.user._id,
-        metadata: {
-          email: user.email
+          user: req.user._id,
+          role: 'vendor',
+          action: 'LOG_OUT',
+          entity: 'Vendor',
+          entityId: req.user._id,
+          metadata: {
+            email: user.email
+          }
         }
-      }
       ], { session });
     }
 
@@ -213,7 +315,7 @@ exports.getUsersDetails = async (req, res) => {
         bannerImage
         socialLinks
         preferredLanguage
-        notificationPreferencess
+        notificationPreference
         bankName
         accountName
         accountNumber
@@ -251,7 +353,7 @@ exports.updateVendorProfile = async (req, res) => {
       storeName,
       storeDescription,
       preferredLanguage,
-      notificationPreferences,
+      notificationPreference,
       facebook,
       instagram,
       x
@@ -288,7 +390,7 @@ exports.updateVendorProfile = async (req, res) => {
     if (storeDescription) vendor.storeDescription = storeDescription;
 
     if (preferredLanguage) vendor.preferredLanguage = preferredLanguage;
-    if (notificationPreferences) vendor.notificationPreferences = notificationPreferences;
+    if (notificationPreference) vendor.notificationPreference = notificationPreference;
 
     vendor.socialLinks = {
       facebook: facebook || vendor.socialLinks?.facebook,
@@ -313,17 +415,17 @@ exports.updateVendorProfile = async (req, res) => {
 
     await AuditLog.create([
       {
-      user: vendor._id,
-      role: 'vendor',
-      action: 'UPDATE_ACCOUNT',
-      entity: 'Vendor',
-      entityId: vendor._id,
-      metadata: {
-        serialNumber: vendor.serialNumber,
-        email: vendor.email,
-        phoneNo: vendor.phoneNo
+        user: vendor._id,
+        role: 'vendor',
+        action: 'UPDATE_ACCOUNT',
+        entity: 'Vendor',
+        entityId: vendor._id,
+        metadata: {
+          serialNumber: vendor.serialNumber,
+          email: vendor.email,
+          phoneNo: vendor.phoneNo
+        }
       }
-    }
     ], { session });
 
     await session.commitTransaction();

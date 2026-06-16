@@ -67,3 +67,16 @@
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-02T12:51:02.247Z"}
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-02T12:51:02.251Z"}
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-02T13:43:10.744Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-03T08:57:03.924Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-03T08:57:03.958Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-06-03T08:57:04.157Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-03T11:45:40.308Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-03T11:45:40.805Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-06-03T11:45:44.985Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-03T11:46:35.382Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-03T11:46:35.449Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-06-03T11:46:42.147Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-06-15T14:26:35.914Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-06-15T14:58:38.219Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-16T09:11:25.894Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-06-16T09:11:25.983Z"}
