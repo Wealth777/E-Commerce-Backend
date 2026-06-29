@@ -18,7 +18,22 @@ const buyer = new mongoose.Schema({
     trim: true
   },
   googleId: {
-    type: String
+    type: String,
+    trim: true
+  },
+  school: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "School",
+    required: function () {
+      return !this.googleId;
+    }
+  },
+  state: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "School",
+    required: function () {
+      return !this.googleId;
+    }
   },
   phoneNo: {
     type: String,
@@ -32,29 +47,40 @@ const buyer = new mongoose.Schema({
     type: String,
     required: function () {
       return !this.googleId;
-    }
+    },
+    trim: true
   },
   role: {
     type: String,
     enum: ['buyer'],
-    default: 'buyer'
+    default: 'buyer',
+    trim: true
+  },
+  country: {
+    type: String,
+    enum: ['Nigeria'],
+    default: 'Nigeria',
+    trim: true
+  },
+
+  onboardingCompleted: {
+    type: Boolean,
+    default: false,
   },
 
   username: {
     type: String,
-    unique: true,
-    sparse: true
+    trim: true,
   },
   profilePhoto: String,
-  country: String,
-  state: String,
   address: String,
 
   preferredLanguage: String,
 
   notificationPreference: {
     type: String,
-    enum: ['whatsapp', 'email', 'both']
+    enum: ['whatsapp', 'email', 'both'],
+    trim: true
   },
   profileUpdateNotificationSent: { type: Boolean, default: false },
 
@@ -76,6 +102,27 @@ const buyer = new mongoose.Schema({
 }, {
   timestamps: true
 })
+
+buyer.index(
+  { "username": 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      "username": {
+        $exists: true,
+        $ne: null,
+      },
+    },
+  }
+);
+
+buyer.index(
+  { googleId: 1 },
+  {
+    unique: true,
+    sparse: true,
+  }
+);
 
 buyer.plugin(softDeletePlugin)
 

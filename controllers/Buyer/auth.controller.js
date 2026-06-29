@@ -3,10 +3,10 @@ const buyerModel = require('../../models/buyer.model');
 const AuditLog = require('../../models/auditLog.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { westAfricaCountries, nigeriaStates } = require("../../utils/location");
 const { generateSerialNumber } = require('../../utils/generateSerial');
 const { validationResult } = require('express-validator');
 const notificationService = require('../../services/notification/notification.service')
+const School = require("../../models/school.model");
 
 const { default: mongoose } = require('mongoose');
 const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
@@ -37,9 +37,9 @@ exports.createUser = async (req, res) => {
       await session.abortTransaction();
       return sendError(res, 400, 'Validation failed', errors.array());
     }
-    const { fullName, email, phoneNo, password } = req.body;
+    const { fullName, email, phoneNo, school, state, password } = req.body;
 
-    if (!fullName || !email || !phoneNo || !password) {
+    if (!fullName || !email || !phoneNo || !school || !state || !password) {
       await session.abortTransaction();
       return sendResponse(res, 400, false, "All fields are required");
     }
@@ -66,7 +66,10 @@ exports.createUser = async (req, res) => {
       fullName,
       email,
       phoneNo,
-      password: hashPassword
+      school,
+      state,
+      password: hashPassword,
+      onboardingCompleted: true
     });
 
     await createAcc.save({ session });
@@ -93,82 +96,6 @@ exports.createUser = async (req, res) => {
     session.endSession();
   };
 };
-
-// exports.loginUser = async (req, res) => {
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
-
-//   try {
-//     const { email, password } = req.body;
-
-//     if (!email || !password) {
-//       await session.abortTransaction();
-//       return sendError(res, 400, 'Email and password are required');
-//     }
-
-//     const user = await buyerModel.findOne({ email });
-
-//     if (!user) {
-//       await session.abortTransaction();
-//       return sendError(res, 400, 'Invalid credentials');
-//     }
-
-//     const confirmPassword = await bcrypt.compare(password, user.password);
-
-//     if (!confirmPassword) {
-//       await session.abortTransaction();
-//       return sendError(res, 400, 'Invalid credentials');
-//     }
-
-//     const token = jwt.sign(
-//       { id: user._id, role: user.role },
-//       process.env.JWT_KEY,
-//       { expiresIn: '24h' }
-//     );
-
-//     const refreshToken = jwt.sign(
-//       { id: user._id },
-//       process.env.JWT_REFRESH_SECRET,
-//       { expiresIn: '7d' }
-//     );
-
-//     const responseData = {
-//       user: BuyerDTO.fromModel(user),
-//       accessToken: token,
-//       refreshToken,
-//       expiresIn: 86400,
-//     };
-
-//     await AuditLog.create([{
-//       user: user._id,
-//       role: 'buyer',
-//       action: 'LOG_IN',
-//       entity: 'Buyer',
-//       entityId: user._id,
-//       metadata: {
-//         email: user.email,
-//       },
-//     }], { session });
-
-//     await session.commitTransaction();
-
-//     if (!user.profileUpdateNotificationSent) {
-//       await notificationService.safeCreateProfileUpdateNotification({ userId: user._id, role: 'buyer' });
-//       await buyerModel.updateOne({ _id: user._id }, { $set: { profileUpdateNotificationSent: true } });
-//     }
-
-//     return sendSuccess(res, 200, 'Login successful', responseData);
-//   } catch (err) {
-//     if (session.inTransaction()) {
-//       await session.abortTransaction();
-//     }
-
-//     logger.error(err);
-//     return sendError(res, 500, 'Internal Server Error');
-//   } finally {
-//     session.endSession();
-//   }
-// };
 
 exports.loginUser = async (req, res) => {
   const session = await mongoose.startSession();
@@ -291,7 +218,8 @@ exports.googleLogin = async (req, res) => {
         profilePhoto: picture,
         googleId,
         isEmailVerified: true,
-        role: 'buyer'
+        role: 'buyer',
+        onboardingCompleted: false,
       }], { session });
 
       user = user[0];
@@ -341,6 +269,7 @@ exports.googleLogin = async (req, res) => {
       accessToken,
       refreshToken,
       expiresIn: 86400,
+      onboardingCompleted: user.onboardingCompleted,
     };
 
     await session.commitTransaction();
@@ -405,6 +334,8 @@ exports.getUsersDetails = async (req, res) => {
         profilePhoto
         country
         state
+        school
+        state
         address
         preferredLanguage
         notificationPreference
@@ -441,21 +372,14 @@ exports.updateBuyerProfile = async (req, res) => {
       notificationPreference,
     } = req.body;
 
-    const buyer = await buyerModel.findById(buyerId);
+    const buyer = await buyerModel
+      .findById(buyerId)
+      .populate("school", "name type")
+      .populate("state", "name type");
 
     if (!buyer) {
       await session.abortTransaction();
       return sendError(res, 404, 'Buyer not found');
-    }
-
-    if (country && !westAfricaCountries.includes(country)) {
-      await session.abortTransaction();
-      return sendError(res, 400, 'Invalid country');
-    }
-
-    if (country === 'Nigeria' && state && !nigeriaStates.includes(state)) {
-      await session.abortTransaction();
-      return sendError(res, 400, 'Invalid Nigerian state');
     }
 
     if (username) buyer.username = username;
@@ -498,6 +422,159 @@ exports.updateBuyerProfile = async (req, res) => {
     await session.abortTransaction();
     logger.error(error);
     return sendError(res, 500, 'Server error');
+  } finally {
+    session.endSession();
+  }
+};
+
+exports.completeBuyerProfile = async (req, res) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const buyerId = req.user._id;
+
+    const {
+      school,
+      state,
+      phoneNo,
+    } = req.body;
+
+    if (!school || !state || !phoneNo) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        400,
+        "School, state and phone number are required"
+      );
+    }
+
+    const buyer = await buyerModel
+      .findById(buyerId)
+      .session(session);
+
+    if (!buyer) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        404,
+        "Buyer not found"
+      );
+    }
+
+    if (buyer.onboardingCompleted) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        400,
+        "Profile onboarding already completed"
+      );
+    }
+
+    const schoolRecord = await School.findOne({
+      _id: school,
+      type: "school",
+      isActive: true,
+      status: "approved",
+    }).session(session);
+
+    if (!schoolRecord) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        404,
+        "Selected school does not exist"
+      );
+    }
+
+    const stateRecord = await School.findOne({
+      _id: state,
+      type: "state",
+      isActive: true,
+      status: "approved",
+      parent: school,
+    }).session(session);
+
+    if (!stateRecord) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        400,
+        "Selected state does not belong to the selected school"
+      );
+    }
+
+    const existingPhone = await buyerModel.findOne({
+      phoneNo,
+      _id: { $ne: buyerId },
+    }).session(session);
+
+    if (existingPhone) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        409,
+        "Phone number already exists"
+      );
+    }
+
+    buyer.school = schoolRecord._id;
+    buyer.state = stateRecord._id;
+    buyer.phoneNo = phoneNo;
+    buyer.onboardingCompleted = true;
+
+    await buyer.save({ session });
+
+    await AuditLog.create(
+      [
+        {
+          user: buyer._id,
+          role: "buyer",
+          action: "COMPLETE_PROFILE",
+          entity: "Buyer",
+          entityId: buyer._id,
+          metadata: {
+            school: schoolRecord.name,
+            state: stateRecord.name,
+            phoneNo,
+          },
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    const populatedBuyer = await buyerModel
+      .findById(buyer._id)
+      .populate("school", "name type")
+      .populate("state", "name type");
+
+    return sendSuccess(
+      res,
+      200,
+      "Profile completed successfully",
+      BuyerDTO.fromModel(populatedBuyer)
+    );
+  } catch (error) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    console.error(error);
+
+    return sendError(
+      res,
+      500,
+      "Failed to complete profile"
+    );
   } finally {
     session.endSession();
   }

@@ -25,9 +25,9 @@ exports.createUser = async (req, res) => {
       await session.abortTransaction();
       return sendError(res, 400, 'Validation failed', errors.array());
     }
-    const { fullName, email, phoneNo, password } = req.body;
+    const { fullName, email, phoneNo, school, state, password } = req.body;
 
-    if (!fullName || !email || !phoneNo || !password) {
+    if (!fullName || !email || !phoneNo || !school || !state || !password) {
       await session.abortTransaction();
       return sendError(res, 400, 'All fields are required');
     }
@@ -46,6 +46,8 @@ exports.createUser = async (req, res) => {
       fullName,
       email,
       phoneNo,
+      school,
+      state,
       password: hashPassword
     });
 

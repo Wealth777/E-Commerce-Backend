@@ -61,7 +61,7 @@ const addProduct = new mongoose.Schema(
             min: 0
         },
         ratingSummary: {
-            averageRating: { type: Number, default: 0, min: 0, max: 5 },
+            averageRating: { type: Number, default: 0, min: 0, max: 1 },
             totalRatings: { type: Number, default: 0, min: 0 },
             breakdown: {
                 1: { type: Number, default: 0 },
@@ -71,6 +71,9 @@ const addProduct = new mongoose.Schema(
                 5: { type: Number, default: 0 }
             }
         },
+        reviewSummary: {
+            totalReviews: { type: Number, default: 0, min: 0 }
+        }
     },
     {
         timestamps: true,

@@ -59,8 +59,6 @@ const notificationSchema = new mongoose.Schema(
     dedupeKey: {
       type: String,
       trim: true,
-      index: true,
-      sparse: true,
     },
     deletedInAppAt: {
       type: Date,

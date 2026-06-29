@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { sendError } = require('../utils/responseStruture');
+const buyerModel = require('../models/buyer.model');
 
 const verifyUser = (req, res, next) => {
   try {
@@ -21,12 +22,9 @@ const verifyUser = (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_KEY);
 
-    // Attach vendor info to request
-    // req.user = {}; 
-    // req.user._id = decoded.id;
     req.user = {
       _id: decoded.id,
-      role: decoded.role  // ADD ROLE!
+      role: decoded.role
     };
 
     next();
@@ -59,4 +57,40 @@ const apiLimiter = rateLimit({
 });
 
 
-module.exports = { verifyUser, requireRole, loginLimiter, apiLimiter };
+const requireCompletedProfile = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const buyer = await buyerModel.findById(req.user._id);
+
+    if (!buyer) {
+      return sendError(
+        res,
+        404,
+        'Buyer not found'
+      );
+    }
+
+    if (!buyer.onboardingCompleted) {
+      return sendError(
+        res,
+        403,
+        'Please complete your profile'
+      );
+    }
+
+    req.buyer = buyer;
+
+    next();
+  } catch (error) {
+    return sendError(
+      res,
+      500,
+      'Profile verification failed'
+    );
+  }
+};
+
+module.exports = { verifyUser, requireRole, requireCompletedProfile, loginLimiter, apiLimiter };

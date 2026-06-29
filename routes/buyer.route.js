@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const { verifyUser, requireRole, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
+const { verifyUser, requireRole, requireCompletedProfile, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
 const imageUpload = require('../middleware/imageUpload');
 
-const { createUser, loginUser, googleLogin, logoutUser, getUsersDetails, updateBuyerProfile } = require('../controllers/Buyer/auth.controller');
+const { createUser, loginUser, googleLogin, logoutUser, getUsersDetails, updateBuyerProfile, completeBuyerProfile } = require('../controllers/Buyer/auth.controller');
 const { addToCart, getCart, updateCartItem, removeFromCart } = require('../controllers/Buyer/cart.controller');
 const { createBuyerOrder, getBuyerOrders, getSingleBuyerOrder, buyerConfirmDelivery, buyerCancelOrder, requestRefund, requestReturn } = require('../controllers/Buyer/order.controller');
 const { getWishlist, addToWishlist, removeFromWishlist, clearWishlist } = require('../controllers/Buyer/wishlist.controller');
@@ -26,68 +26,70 @@ router.post('/auth/logout', verifyUser, logoutUser);
 
 router.get('/profile/me', verifyUser, getUsersDetails);
 
+router.put("/profile/complete", verifyUser, completeBuyerProfile);
+
 router.put('/profile/me', verifyUser, imageUpload.fields([
     { name: 'profilePhoto', maxCount: 1 },
 ]), updateBuyerProfile);
 
-router.post("/cart/add", verifyUser, addToCart);
+router.post("/cart/add", verifyUser, requireCompletedProfile, addToCart);
 
-router.get("/cart/", verifyUser, getCart);
+router.get("/cart/", verifyUser, requireCompletedProfile, getCart);
 
-router.put("/cart/update", verifyUser, updateCartItem);
+router.put("/cart/update", verifyUser, requireCompletedProfile, updateCartItem);
 
-router.post("/checkout", verifyUser, imageUpload.paymentProofUpload.any(), createBuyerOrder);
+router.post("/checkout", verifyUser, requireCompletedProfile, imageUpload.paymentProofUpload.any(), createBuyerOrder);
 
-router.get("/orders", verifyUser, requireRole(['buyer']), getBuyerOrders);
+router.get("/orders", verifyUser, requireCompletedProfile, requireRole(['buyer']), getBuyerOrders);
 
-router.post('/orders/action/confirmdelivered', verifyUser, buyerConfirmDelivery);
+router.post('/orders/action/confirmdelivered', verifyUser, requireCompletedProfile, buyerConfirmDelivery);
 
-router.post('/orders/action/cancelorder', verifyUser, buyerCancelOrder);
+router.post('/orders/action/cancelorder', verifyUser, requireCompletedProfile, buyerCancelOrder);
 
-router.get('/wishlist', verifyUser, getWishlist);
+router.get('/wishlist', verifyUser, requireCompletedProfile, getWishlist);
 
-router.post('/wishlist', verifyUser, addToWishlist);
+router.post('/wishlist', verifyUser, requireCompletedProfile, addToWishlist);
 
-router.delete('/wishlist', verifyUser, clearWishlist);
+router.delete('/wishlist', verifyUser, requireCompletedProfile, clearWishlist);
 
-router.get('/activity', verifyUser, getUsersActivities);
+router.get('/activity', verifyUser, requireCompletedProfile, getUsersActivities);
 
-router.get('/ratings/me', verifyUser, requireRole(['buyer']), ratingController.getBuyerRatings);
+router.get('/ratings/me', verifyUser, requireCompletedProfile, requireRole(['buyer']), ratingController.getBuyerRatings);
 
-router.get('/reviews/me', verifyUser, requireRole(['buyer']), reviewController.getBuyerReviews);
+router.get('/reviews/me', verifyUser, requireCompletedProfile, requireRole(['buyer']), reviewController.getBuyerReviews);
 
-router.post('/reports', verifyUser, reportController.createReport);
+router.post('/reports', verifyUser, requireCompletedProfile, reportController.createReport);
 
-router.get('/reports/me', verifyUser, reportController.getMyReports);
+router.get('/reports/me', verifyUser, requireCompletedProfile, reportController.getMyReports);
 
 // Dynamic route
-router.delete("/cart/:productId", verifyUser, removeFromCart);
+router.delete("/cart/:productId", verifyUser, requireCompletedProfile, removeFromCart);
 
 router.get("/orders/:orderId", verifyUser, getSingleBuyerOrder);
 
-router.post('/orders/:orderId/refund-request', verifyUser, requestRefund);
+router.post('/orders/:orderId/refund-request', verifyUser, requireCompletedProfile, requestRefund);
 
-router.post('/orders/:orderId/return-request', verifyUser, requestReturn);
+router.post('/orders/:orderId/return-request', verifyUser, requireCompletedProfile, requestReturn);
 
-router.delete('/wishlist/:productId', verifyUser, removeFromWishlist);
+router.delete('/wishlist/:productId', verifyUser, requireCompletedProfile, removeFromWishlist);
 
-router.post('/products/:productId/ratings', verifyUser, requireRole(['buyer']), ratingController.createProductRating);
+router.post('/products/:productId/ratings', verifyUser, requireCompletedProfile, requireRole(['buyer']), ratingController.createProductRating);
 
-router.patch('/ratings/:ratingId', verifyUser, requireRole(['buyer']), ratingController.updateProductRating);
+router.patch('/ratings/:ratingId', verifyUser, requireCompletedProfile, requireRole(['buyer']), ratingController.updateProductRating);
 
-router.delete('/ratings/:ratingId', verifyUser, requireRole(['buyer']), ratingController.deleteOwnProductRating);
+router.delete('/ratings/:ratingId', verifyUser, requireCompletedProfile, requireRole(['buyer']), ratingController.deleteOwnProductRating);
 
-router.get('/products/:productId/ratings', ratingController.getProductRatings);
+router.get('/products/:productId/ratings', requireCompletedProfile, ratingController.getProductRatings);
 
-router.get('/products/:productId/ratings/summary', ratingController.getProductRatingSummary);
+router.get('/products/:productId/ratings/summary', requireCompletedProfile, ratingController.getProductRatingSummary);
 
-router.post('/products/:productId/reviews', verifyUser, requireRole(['buyer']), reviewController.createReview);
+router.post('/products/:productId/reviews', verifyUser, requireCompletedProfile, requireRole(['buyer']), reviewController.createReview);
 
-router.patch('/reviews/:reviewId', verifyUser, requireRole(['buyer']), reviewController.updateOwnReview);
+router.patch('/reviews/:reviewId', verifyUser, requireCompletedProfile, requireRole(['buyer']), reviewController.updateOwnReview);
 
-router.delete('/reviews/:reviewId', verifyUser, requireRole(['buyer']), reviewController.deleteOwnReview);
+router.delete('/reviews/:reviewId', verifyUser, requireCompletedProfile, requireRole(['buyer']), reviewController.deleteOwnReview);
 
-router.get('/products/:productId/reviews', reviewController.getProductReviews);
+router.get('/products/:productId/reviews', requireCompletedProfile, requireRole(['buyer']), reviewController.getProductReviews);
 
 
 module.exports  = router;

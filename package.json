@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "seed:categories": "node seeders/categorySeeder.js"
+    "seed:categories": "node seeders/categorySeeder.js",
+    "seed:schools": "node seeders/schoolSeeder.js"
   },
   "author": "The Great Man Concept",
   "license": "ISC",
