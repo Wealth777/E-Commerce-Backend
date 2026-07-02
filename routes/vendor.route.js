@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 const imageUpload = require('../middleware/imageUpload');
+const vendorOnboardingUpload = require('../middleware/imageUpload');
 const { verifyUser, requireRole, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
 
-const { createUser, loginUser, googleLogin, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails } = require('../controllers/Vendor/auth.controller');
+const { createUser, loginUser, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding, VendorDeleteAccount } = require('../controllers/Vendor/auth.controller');
 const { addProduct, getVendorProducts, getAllProducts, getProductDetails, updateProduct, deleteProduct, getVendorProductsByCategory } = require('../controllers/Vendor/product.controller');
 const { saveVendorPayout } = require('../controllers/Vendor/payout.controller');
 const { getVendorOrders, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, getRefundRequests, getReturnRequests, getSingleVendorOrder, reviewRefundRequest, reviewReturnRequest } = require('../controllers/Vendor/order.controller');
@@ -22,11 +23,13 @@ router.use(apiLimiter);
 
 router.post('/auth/register', validateRegister, createUser);
 
-router.post('/auth/google', googleLogin);
-
 router.post('/auth/login', loginLimiter, loginUser);
 
+router.post('/profile/onboarding', verifyUser, vendorOnboardingUpload.fields([{ name: "profilePhoto", maxCount: 1 }, { name: "businessLogo", maxCount: 1 }, { name: "schoolIdCard", maxCount: 1 }, { name: "nationalId", maxCount: 1 }]), completeOnboarding);
+
 router.post('/auth/logout', verifyUser, logoutUser);
+
+router.delete("/profile", verifyUser, VendorDeleteAccount);
 
 router.get('/profile/me', verifyUser, getUsersDetails);
 

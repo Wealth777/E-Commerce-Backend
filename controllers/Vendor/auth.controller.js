@@ -25,9 +25,9 @@ exports.createUser = async (req, res) => {
       await session.abortTransaction();
       return sendError(res, 400, 'Validation failed', errors.array());
     }
-    const { fullName, email, phoneNo, school, state, password } = req.body;
+    const { fullName, email, phoneNo, password } = req.body;
 
-    if (!fullName || !email || !phoneNo || !school || !state || !password) {
+    if (!fullName || !email || !phoneNo || !password) {
       await session.abortTransaction();
       return sendError(res, 400, 'All fields are required');
     }
@@ -46,8 +46,6 @@ exports.createUser = async (req, res) => {
       fullName,
       email,
       phoneNo,
-      school,
-      state,
       password: hashPassword
     });
 
@@ -158,106 +156,6 @@ exports.loginUser = async (req, res) => {
 
     logger.error(err);
     return sendError(res, 500, 'Internal Server Error');
-  } finally {
-    session.endSession();
-  }
-};
-
-exports.googleLogin = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { idToken } = req.body;
-
-    if (!idToken) {
-      await session.abortTransaction();
-      return sendError(res, 400, 'idToken required');
-    }
-
-    const payload = await verifyGoogleToken(idToken);
-
-    if (!payload) {
-      await session.abortTransaction();
-      return sendError(res, 401, 'Invalid Google token');
-    }
-
-    const { email, name, picture, sub: googleId } = payload;
-
-    let user = await vendorModel.findOne({ email }).session(session);
-
-    if (!user) {
-      const serialNo = await generateSerialNumber("vendor", session);
-
-      user = await vendorModel.create([{
-        serialNumber: serialNo,
-        email,
-        fullName: name,
-        profilePhoto: picture,
-        googleId,
-        isEmailVerified: true,
-        role: 'vendor'
-      }], { session });
-
-      user = user[0];
-    }
-
-    const accessToken = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_KEY,
-      { expiresIn: '24h' }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    await AuditLog.create([{
-      user: user._id,
-      role: 'vendor',
-      action: 'GOOGLE_LOGIN',
-      entity: 'Vendor',
-      entityId: user._id,
-      metadata: { email: user.email }
-    }], { session });
-
-    if (!user.profileUpdateNotificationSent) {
-      try {
-        await notificationService.safeCreateProfileUpdateNotification({
-          userId: user._id,
-          role: 'vendor'
-        });
-
-        await vendorModel.findByIdAndUpdate(
-          user._id,
-          { $set: { profileUpdateNotificationSent: true } },
-          { session }
-        );
-      } catch (e) {
-        logger.error(e);
-      }
-    }
-
-    const responseData = {
-      user: VendorDTO.fromModel(user),
-      accessToken,
-      refreshToken,
-      expiresIn: 86400,
-    };
-
-    await session.commitTransaction();
-
-    return sendSuccess(res, 200, 'Google login successful', responseData);
-
-  } catch (error) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-
-    logger.error(error);
-    return sendError(res, 401, 'Google authentication failed');
   } finally {
     session.endSession();
   }
@@ -578,5 +476,244 @@ exports.getVendorDetails = async (req, res) => {
   } catch (err) {
     logger.error('GET VENDOR DETAILS ERROR:', err);
     return sendError(res, 500, 'Internal Server Error', err.message);
+  }
+};
+
+exports.completeOnboarding = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      await session.abortTransaction();
+      return sendError(res, 400, "Validation failed", errors.array());
+    }
+
+    const vendorId = req.user._id;
+
+    const student =
+      typeof req.body.student === "string"
+        ? JSON.parse(req.body.student)
+        : req.body.student;
+
+    const business =
+      typeof req.body.business === "string"
+        ? JSON.parse(req.body.business)
+        : req.body.business;
+
+    const verificationDocuments =
+      typeof req.body.verificationDocuments === "string"
+        ? JSON.parse(req.body.verificationDocuments)
+        : req.body.verificationDocuments;
+
+    const terms =
+      typeof req.body.terms === "string"
+        ? JSON.parse(req.body.terms)
+        : req.body.terms;
+
+
+    const vendor = await vendorModel.findById(vendorId).session(session);
+
+    if (!vendor) {
+      await session.abortTransaction();
+      return sendError(res, 404, "Vendor not found");
+    }
+
+    if (vendor.onboardingCompleted) {
+      await session.abortTransaction();
+      return sendError(
+        res,
+        409,
+        "Vendor onboarding has already been completed"
+      );
+    }
+
+    const profilePhoto =
+      req.files?.profilePhoto?.[0]?.path || vendor.student?.profilePhoto;
+
+    const businessLogo =
+      req.files?.businessLogo?.[0]?.path || vendor.business?.logo;
+
+    const schoolIdCard =
+      req.files?.schoolIdCard?.[0]?.path ||
+      vendor.verificationDocuments?.schoolIdCard;
+
+    const nationalId =
+      req.files?.nationalId?.[0]?.path ||
+      vendor.verificationDocuments?.nationalId;
+
+    if (!profilePhoto) {
+      await session.abortTransaction();
+      return sendError(res, 400, "Profile photo is required");
+    }
+
+    if (!schoolIdCard) {
+      await session.abortTransaction();
+      return sendError(res, 400, "School ID card is required");
+    }
+
+    if (!nationalId) {
+      await session.abortTransaction();
+      return sendError(res, 400, "National ID is required");
+    }
+
+    vendor.student = {
+      profilePhoto,
+      gender: student.gender,
+      institution: student.institution,
+      state: student.state,
+      matricNumber: student.matricNumber,
+      faculty: student.faculty,
+      department: student.department,
+      level: student.level,
+      residence: student.residence,
+      address: student.address,
+    };
+
+    vendor.business = {
+      name: business.storeName,
+      type: business.type,
+      description: business.description,
+      logo: businessLogo,
+      socials: {
+        facebook: business.socials?.facebook || null,
+        instagram: business.socials?.instagram || null,
+        whatsapp: business.socials?.whatsapp || null,
+        tiktok: business.socials?.tiktok || null,
+      },
+    };
+
+    vendor.verificationDocuments = {
+      schoolIdCard,
+      nationalId,
+    };
+
+    vendor.terms = {
+      acceptedVendorTerms: terms.acceptedVendorTerms,
+      acceptedMarketplacePolicy: terms.acceptedMarketplacePolicy,
+      acceptedFraudPolicy: terms.acceptedFraudPolicy,
+      acceptedAt: terms.acceptedAt || new Date(),
+    };
+
+    vendor.onboardingCompleted = true;
+    vendor.onboardingCompletedAt = new Date();
+
+    await vendor.save({ session });
+
+    await AuditLog.create(
+      [
+        {
+          user: vendor._id,
+          role: "vendor",
+          action: "COMPLETE_ONBOARDING",
+          entity: "Vendor",
+          entityId: vendor._id,
+          metadata: {
+            serialNumber: vendor.serialNumber,
+            institution: student.institution,
+            matricNumber: student.matricNumber,
+            businessName: business.storeName,
+            businessType: business.type,
+          },
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    return sendSuccess(
+      res,
+      200,
+      "Vendor onboarding completed successfully. Your account is awaiting verification.",
+      VendorDTO.fromModel(vendor)
+    );
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    logger.error(err);
+
+    return sendError(res, 500, "Internal Server Error");
+  } finally {
+    session.endSession();
+  }
+};
+
+exports.VendorDeleteAccount = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { reason } = req.body;
+    const vendorId = req.user._id;
+
+    const vendor = await vendorModel
+      .findById(vendorId)
+      .session(session);
+
+    if (!vendor) {
+      await session.abortTransaction();
+      return sendError(res, 404, "Vendor not found");
+    }
+
+    if (vendor.deleted) {
+      await session.abortTransaction();
+      return sendError(res, 409, "Vendor account has already been deleted");
+    }
+
+    // Additional deletion metadata
+    vendor.isDeleted = true;
+    vendor.deleteReason = reason?.trim() || null;
+    vendor.deleteDate = new Date();
+    vendor.isActive = false
+    vendor.accountStatus = 'deleted'
+
+    // Soft delete plugin fields
+    vendor.deleted = true;
+    vendor.deletedAt = new Date();
+    vendor.deletedBy = vendor._id;
+    vendor.deletedByModel = "Vendor";
+
+    await vendor.save({ session });
+
+    await AuditLog.create(
+      [
+        {
+          user: vendor._id,
+          role: "vendor",
+          action: "DELETE_ACCOUNT",
+          entity: "Vendor",
+          entityId: vendor._id,
+          metadata: {
+            serialNumber: vendor.serialNumber,
+            email: vendor.email,
+            reason: reason?.trim() || null,
+          },
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    return sendSuccess(
+      res,
+      200,
+      "Your account has been deleted successfully."
+    );
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    logger.error(err);
+
+    return sendError(res, 500, "Internal Server Error");
+  } finally {
+    await session.endSession();
   }
 };

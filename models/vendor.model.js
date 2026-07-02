@@ -3,42 +3,13 @@ const { softDeletePlugin } = require("./base.schema");
 
 const vendorSchema = new mongoose.Schema(
   {
+    // ======================================================
+    // SYSTEM INFORMATION
+    // ======================================================
+
     serialNumber: {
       type: String,
       unique: true,
-    },
-
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
-
-    phoneNo: {
-      type: String,
-      required: true,
-      unique: true,
-      trim: true,
-    },
-
-    password: {
-      type: String,
-      required: true,
-    },
-
-    username: {
-      type: String,
-      unique: true,
-      sparse: true,
-      trim: true,
     },
 
     role: {
@@ -47,111 +18,183 @@ const vendorSchema = new mongoose.Schema(
       default: "vendor",
     },
 
-    school: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "School",
+    // ======================================================
+    // ACCOUNT INFORMATION (Registration)
+    // ======================================================
+
+    fullName: {
+      type: String,
+      required: true,
       trim: true,
-      required: true
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+    phoneNo: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    password: {
+      type: String,
+      required: true,
     },
 
-    state: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "School",
-      trim: true,
-      required: true
-    },
-
-    profilePhoto: String,
+    // ======================================================
+    // ONBOARDING STATUS
+    // ======================================================
 
     onboardingCompleted: {
       type: Boolean,
       default: false,
     },
 
-    vendorType: {
-      type: String,
-      enum: ["selling", "artisan"],
-      lowercase: true,
-      trim: true,
-    },
+    onboardingCompletedAt: Date,
 
-    businessCategory: {
-      type: String,
-      trim: true,
-    },
+    // ======================================================
+    // STUDENT INFORMATION
+    // ======================================================
 
-    brandName: {
-      type: String,
-      trim: true,
-      index: true,
-    },
-
-    brandDescription: {
-      type: String,
-      trim: true,
-      maxlength: 1000,
-    },
-
-    brandPhoneNo: {
-      type: String,
-      trim: true,
-    },
-
-    brandEmail: {
-      type: String,
-      lowercase: true,
-      trim: true,
-    },
-
-    bannerImage: String,
-
-    address: String,
-
-    socialLinks: {
-      facebook: {
+    student: {
+      profilePhoto: {
         type: String,
         trim: true,
       },
-
-      instagram: {
+      gender: {
+        type: String,
+        enum: [
+          "male",
+          "female"
+        ],
+        trim: true
+      },
+      institution: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "School",
+        trim: true
+      },
+      state: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "School",
+        trim: true,
+      },
+      matricNumber: {
+        type: String,
+        unique: true,
+        trim: true,
+      },
+      faculty: {
         type: String,
         trim: true,
       },
-
-      tiktok: {
+      department: {
         type: String,
         trim: true,
       },
-
-      x: {
+      level: {
         type: String,
         trim: true,
       },
-
-      website: {
+      residence: {
         type: String,
-        trim: true,
+        enum: [
+          "hostel",
+          "off-campus"
+        ]
       },
+      address: {
+        type: String,
+        trim: true
+      }
     },
 
-    preferredLanguage: {
-      type: String,
-      default: "english",
+    // ======================================================
+    // BUSINESS INFORMATION
+    // ======================================================
+
+    business: {
+      storeName: {
+        type: String,
+        trim: true,
+        index: true,
+      },
+      type: {
+        type: String,
+        enum: [
+          "freelancer",
+          "reseller",
+          "service-provider"
+        ]
+      },
+      description: {
+        type: String,
+        trim: true,
+        minlength: 20,
+        maxlength: 2000,
+      },
+      logo: {
+        type: String,
+        trim: true,
+      },
+      socials: {
+        facebook: String,
+        instagram: String,
+        whatsapp: String,
+        tiktok: String,
+      }
     },
 
-    notificationPreference: {
-      type: String,
-      enum: ["whatsapp", "email", "both"],
-      default: "both",
+    // ======================================================
+    // VERIFICATION DOCUMENTS
+    // ======================================================
+
+    verificationDocuments: {
+      schoolIdCard: {
+        type: String,
+      },
+      nationalId: {
+        type: String,
+      }
     },
+
+    // ======================================================
+    // TERMS ACCEPTANCE
+    // ======================================================
+
+    terms: {
+      acceptedVendorTerms: {
+        type: Boolean,
+        default: false,
+      },
+      acceptedMarketplacePolicy: {
+        type: Boolean,
+        default: false,
+      },
+      acceptedFraudPolicy: {
+        type: Boolean,
+        default: false,
+      },
+      acceptedAt: Date,
+    },
+
+    // ======================================================
+    // BANK DETAILS
+    // ======================================================
 
     bankDetails: {
       bankName: String,
-
       accountName: String,
-
       accountNumber: String,
     },
+
+    // ======================================================
+    // VERIFICATION
+    // ======================================================
 
     isVerified: {
       type: Boolean,
@@ -160,7 +203,11 @@ const vendorSchema = new mongoose.Schema(
 
     verificationStatus: {
       type: String,
-      enum: ["pending", "approved", "rejected"],
+      enum: [
+        "pending",
+        "approved",
+        "rejected"
+      ],
       default: "pending",
       index: true,
     },
@@ -181,14 +228,33 @@ const vendorSchema = new mongoose.Schema(
 
     verificationRejectionReason: String,
 
-    isActive: {
-      type: Boolean,
-      default: true,
+    // ======================================================
+    // NOTIFICATIONS
+    // ======================================================
+
+    notificationPreference: {
+      type: String,
+      enum: [
+        "email",
+        "whatsapp",
+        "both",
+        ""
+      ],
+      default: "",
     },
 
     profileUpdateNotificationSent: {
       type: Boolean,
       default: false,
+    },
+
+    // ======================================================
+    // ACCOUNT STATUS
+    // ======================================================
+
+    isActive: {
+      type: Boolean,
+      default: true,
     },
 
     isDeleted: {
@@ -198,11 +264,24 @@ const vendorSchema = new mongoose.Schema(
     },
 
     deleteReason: String,
+
+    deleteDate: Date,
+
+    accountStatus: {
+      type: String,
+      enum: [
+        "pending",
+        "active",
+        "suspended",
+        "banned",
+        "deleted"
+      ],
+      default: "pending"
+    }
   },
   {
     timestamps: true,
-  }
-);
+  });
 
 vendorSchema.index(
   { "bankDetails.accountNumber": 1 },

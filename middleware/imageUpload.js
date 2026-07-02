@@ -38,6 +38,15 @@ const paymentProofStorage = new CloudinaryStorage({
   }
 });
 
+const vendorOnboardingStorage = new CloudinaryStorage({
+    cloudinary,
+    params: async (req, file) => ({
+        folder: "campustrade/vendor-onboarding",
+        public_id: crypto.randomBytes(16).toString("hex"),
+        resource_type: "image",
+    }),
+});
+
 
 const imageUpload = multer({
   storage: imageStorage,
@@ -75,5 +84,27 @@ const paymentProofUpload = multer({
   }
 });
 
+const vendorOnboardingUpload = multer({
+    storage: vendorOnboardingStorage,
+    limits: {
+        fileSize: 5 * 1024 * 1024,
+    },
+    fileFilter(req, file, cb) {
+        const allowed = [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/jpg",
+        ];
+
+        if (!allowed.includes(file.mimetype)) {
+            return cb(new Error("Invalid image"));
+        }
+
+        cb(null, true);
+    },
+});
+
 module.exports = imageUpload;
 module.exports.paymentProofUpload = paymentProofUpload;
+module.exports.vendorOnboardingUpload = vendorOnboardingUpload;

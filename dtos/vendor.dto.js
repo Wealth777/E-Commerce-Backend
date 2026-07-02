@@ -1,43 +1,93 @@
 class VendorDTO {
   constructor(vendor) {
+    // ======================================================
+    // IDENTITY
+    // ======================================================
+
     this.identity = {
       id: vendor._id,
       serialNumber: vendor.serialNumber,
-      username: vendor.username,
       fullName: vendor.fullName,
-      profilePhoto: vendor.profilePhoto,
       role: vendor.role,
     };
 
-    this.contact = {
+    // ======================================================
+    // ACCOUNT
+    // ======================================================
+
+    this.account = {
       email: vendor.email,
       phoneNo: vendor.phoneNo,
-      address: vendor.address,
-      supportContact: vendor.supportContact,
     };
 
-    this.location = {
-      country: vendor.country,
-      state: vendor.state,
+    // ======================================================
+    // STUDENT
+    // ======================================================
+
+    this.student = {
+      profilePhoto: vendor.student?.profilePhoto,
+      gender: vendor.student?.gender,
+      institution: vendor.student?.institution,
+      state: vendor.student?.state,
+      matricNumber: vendor.student?.matricNumber,
+      faculty: vendor.student?.faculty,
+      department: vendor.student?.department,
+      level: vendor.student?.level,
+      residence: vendor.student?.residence,
+      address: vendor.student?.address,
     };
 
-    this.store = {
-      storeName: vendor.storeName,
-      storeDescription: vendor.storeDescription,
-      bannerImage: vendor.bannerImage,
-      socialLinks: vendor.socialLinks,
+    // ======================================================
+    // BUSINESS
+    // ======================================================
+
+    this.business = {
+      storeName: vendor.business?.storeName,
+      type: vendor.business?.type,
+      description: vendor.business?.description,
+      logo: vendor.business?.logo,
+
+      socials: {
+        facebook: vendor.business?.socials?.facebook,
+        instagram: vendor.business?.socials?.instagram,
+        whatsapp: vendor.business?.socials?.whatsapp,
+        tiktok: vendor.business?.socials?.tiktok,
+      },
     };
+
+    // ======================================================
+    // BANK DETAILS
+    // ======================================================
+
+    this.bankDetails = {
+      bankName: vendor.bankDetails?.bankName,
+      accountName: vendor.bankDetails?.accountName,
+      accountNumber: vendor.bankDetails?.accountNumber,
+    };
+
+    // ======================================================
+    // SETTINGS
+    // ======================================================
 
     this.preferences = {
-      preferredLanguage: vendor.preferredLanguage,
       notificationPreference: vendor.notificationPreference,
     };
 
-    this.payout = {
-      bankName: vendor.bankName,
-      accountName: vendor.accountName,
-      accountNumber: vendor.accountNumber,
+    // ======================================================
+    // VERIFICATION
+    // ======================================================
+
+    this.verification = {
+      onboardingCompleted: vendor.onboardingCompleted,
+      verificationStatus: vendor.verificationStatus,
+      isVerified: vendor.isVerified,
+      profileUpdateNotificationSent:
+        vendor.profileUpdateNotificationSent,
+      accountStatus: vendor.accountStatus
     };
+
+    this.createdAt = vendor.createdAt;
+    this.updatedAt = vendor.updatedAt;
   }
 
   static fromModel(vendor) {
@@ -46,30 +96,59 @@ class VendorDTO {
   }
 
   static fromList(vendors = []) {
-    return vendors.map((vendor) => VendorDTO.fromModel(vendor));
+    return vendors.map((vendor) => new VendorDTO(vendor));
   }
 
   static publicProfile(vendor) {
     if (!vendor) return null;
+
     return {
       id: vendor._id,
       serialNumber: vendor.serialNumber,
       fullName: vendor.fullName,
-      username: vendor.username,
-      profilePhoto: vendor.profilePhoto,
-      storeName: vendor.storeName,
-      storeDescription: vendor.storeDescription,
-      bannerImage: vendor.bannerImage,
-      supportContact: vendor.supportContact,
-      socialLinks: vendor.socialLinks,
+
+      student: {
+        profilePhoto: vendor.student?.profilePhoto,
+        gender: vendor.student?.gender,
+        institution: vendor.student?.institution,
+      },
+
+      business: {
+        storeName: vendor.business?.storeName,
+        type: vendor.business?.type,
+        description: vendor.business?.description,
+        logo: vendor.business?.logo,
+        socials: vendor.business?.socials,
+      },
+
+      verification: {
+        isVerified: vendor.isVerified,
+      },
+
+      accountStatus: vendor.accountStatus,
     };
   }
 
   static authUser(vendor) {
     return {
       id: vendor._id,
+      serialNumber: vendor.serialNumber,
+      fullName: vendor.fullName,
       email: vendor.email,
-      role: vendor.role || 'vendor',
+      role: vendor.role,
+
+      onboardingCompleted: vendor.onboardingCompleted,
+
+      verificationStatus: vendor.verificationStatus,
+      isVerified: vendor.isVerified,
+      accountStatus: vendor.accountStatus,
+
+      profilePhoto: vendor.student?.profilePhoto,
+
+      business: {
+        storeName: vendor.business?.storeName,
+        type: vendor.business?.type,
+      },
     };
   }
 }
