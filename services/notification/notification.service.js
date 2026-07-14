@@ -1,6 +1,7 @@
 const Notification = require('../../models/notification.model');
 const Buyer = require('../../models/buyer.model');
 const Vendor = require('../../models/vendor.model');
+const Founder = require('../../models/founder.model');
 const logger = require('../../logger');
 const { sendNotificationEmail } = require('../messaging/email.service');
 const { sendNotificationWhatsApp } = require('../messaging/whatsapp.service');
@@ -9,6 +10,7 @@ const { emitNotification, emitUnreadCount } = require('../../sockets/notificatio
 const roleModelMap = {
   buyer: { modelName: 'Buyer', model: Buyer },
   vendor: { modelName: 'Vendor', model: Vendor },
+  founder: { modelName: 'Founder', model: Founder }
 };
 
 const normalizeId = (value) => value?.toString?.() || String(value);

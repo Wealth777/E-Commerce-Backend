@@ -8,6 +8,7 @@ const { westAfricaCountries, nigeriaStates } = require("../../utils/location");
 const { validationResult } = require('express-validator');
 const VendorDTO = require('../../dtos/vendor.dto');
 const AddProduct = require('../../models/addproduct.model');
+const Order = require("../../models/buyerOrder.model");
 const notificationService = require('../../services/notification/notification.service');
 const { sendSuccess, sendError } = require('../../utils/responseStruture');
 const mongoose = require("mongoose");
@@ -201,35 +202,63 @@ exports.getUsersDetails = async (req, res) => {
       .findById(req.user._id)
       .select(`
         serialNumber
-        username
+        role
         fullName
         email
         phoneNo
-        profilePhoto
-        country
-        state
-        businessAddress
-        supportContact
-        storeName
-        storeDescription
-        bannerImage
-        socialLinks
-        preferredLanguage
+        onboardingCompleted
+        onboardingCompletedAt
+
+        student.profilePhoto
+        student.gender
+        student.institution
+        student.state
+        student.matricNumber
+        student.faculty
+        student.department
+        student.level
+        student.residence
+        student.address
+
+        business.storeName
+        business.type
+        business.description
+        business.logo
+        business.banner
+        business.socials
+
+        verificationDocuments
+
+        bankDetails.bankName
+        bankDetails.accountName
+        bankDetails.accountNumber
+
         notificationPreference
-        bankName
-        accountName
-        accountNumber
-      `);
+
+        isVerified
+        verificationStatus
+        accountStatus
+        isActive
+
+        createdAt
+        updatedAt
+      `)
+      .populate("student.institution", "name")
+      .populate("student.state", "name");
 
     if (!vendor) {
-      return sendError(res, 404, 'User not found');
+      return sendError(res, 404, "Vendor not found");
     }
 
-    return sendSuccess(res, 200, 'Vendor profile fetched successfully', VendorDTO.fromModel(vendor));
-
+    return sendSuccess(
+      res,
+      200,
+      "Vendor profile fetched successfully",
+      VendorDTO.fromModel(vendor)
+    );
   } catch (err) {
     logger.error(err);
-    return sendError(res, 500, 'Internal Server Error');
+    return sendError(res, 500, "Internal Server Error");
   }
 };
 
@@ -238,106 +267,104 @@ exports.updateVendorProfile = async (req, res) => {
   session.startTransaction();
 
   try {
-    const vendorId = req.user._id;
-
-    const {
-      username,
-      fullName,
-      country,
-      state,
-      email,
-      phoneNo,
-      address,
-      password,
-      supportContact,
-      storeName,
-      storeDescription,
-      preferredLanguage,
-      notificationPreference,
-      facebook,
-      instagram,
-      x
-    } = req.body;
-
-    const vendor = await vendorModel.findById(vendorId).session(session);
+    const vendor = await vendorModel
+      .findById(req.user._id)
+      .session(session);
 
     if (!vendor) {
       await session.abortTransaction();
-      return sendError(res, 404, 'Vendor not found');
+      return sendError(res, 404, "Vendor not found");
     }
 
-    if (country && !westAfricaCountries.includes(country)) {
-      await session.abortTransaction();
-      return sendError(res, 400, 'Invalid country');
+    const { fullName } = req.body;
+
+    if (fullName) {
+      vendor.fullName = fullName.trim();
     }
 
-    if (country === 'Nigeria' && state && !nigeriaStates.includes(state)) {
-      await session.abortTransaction();
-      return sendError(res, 400, 'Invalid Nigerian state');
+    if (req.body.business) {
+      const business =
+        typeof req.body.business === "string"
+          ? JSON.parse(req.body.business)
+          : req.body.business;
+
+      vendor.business.storeName =
+        business.storeName ?? vendor.business.storeName;
+
+      vendor.business.type =
+        business.type ?? vendor.business.type;
+
+      vendor.business.description =
+        business.description ?? vendor.business.description;
+
+      vendor.business.socials = {
+        facebook:
+          business.socials?.facebook ??
+          vendor.business.socials?.facebook,
+
+        instagram:
+          business.socials?.instagram ??
+          vendor.business.socials?.instagram,
+
+        whatsapp:
+          business.socials?.whatsapp ??
+          vendor.business.socials?.whatsapp,
+
+        tiktok:
+          business.socials?.tiktok ??
+          vendor.business.socials?.tiktok,
+      };
     }
 
-    if (username) vendor.username = username;
-    if (fullName) vendor.fullName = fullName;
-    if (country) vendor.country = country;
-    if (state) vendor.state = state;
-
-    if (email) vendor.email = email;
-    if (phoneNo) vendor.phoneNo = phoneNo;
-    if (address) vendor.address = address;
-    if (supportContact) vendor.supportContact = supportContact;
-
-    if (storeName) vendor.storeName = storeName;
-    if (storeDescription) vendor.storeDescription = storeDescription;
-
-    if (preferredLanguage) vendor.preferredLanguage = preferredLanguage;
-    if (notificationPreference) vendor.notificationPreference = notificationPreference;
-
-    vendor.socialLinks = {
-      facebook: facebook || vendor.socialLinks?.facebook,
-      instagram: instagram || vendor.socialLinks?.instagram,
-      x: x || vendor.socialLinks?.x
-    };
-
-    if (password) {
-      const hash = await bcrypt.hash(password, saltRounds);
-      vendor.password = hash;
+    if (req.files?.["student.profilePhoto"]) {
+      vendor.student.profilePhoto =
+        req.files["student.profilePhoto"][0].path;
     }
 
-    if (req.files?.profilePhoto) {
-      vendor.profilePhoto = req.files.profilePhoto[0].path;
+    if (req.files?.["business.logo"]) {
+      vendor.business.logo =
+        req.files["business.logo"][0].path;
     }
 
-    if (req.files?.bannerImage) {
-      vendor.bannerImage = req.files.bannerImage[0].path;
+    if (req.files?.["business.banner"]) {
+      vendor.business.banner =
+        req.files["business.banner"][0].path;
     }
 
     await vendor.save({ session });
 
-    await AuditLog.create([
-      {
-        user: vendor._id,
-        role: 'vendor',
-        action: 'UPDATE_ACCOUNT',
-        entity: 'Vendor',
-        entityId: vendor._id,
-        metadata: {
-          serialNumber: vendor.serialNumber,
-          email: vendor.email,
-          phoneNo: vendor.phoneNo
-        }
-      }
-    ], { session });
+    await AuditLog.create(
+      [
+        {
+          user: vendor._id,
+          role: "vendor",
+          action: "UPDATE_ACCOUNT",
+          entity: "Vendor",
+          entityId: vendor._id,
+          metadata: {
+            serialNumber: vendor.serialNumber,
+            email: vendor.email,
+          },
+        },
+      ],
+      { session }
+    );
 
     await session.commitTransaction();
 
-    return sendSuccess(res, 200, 'Profile updated successfully', VendorDTO.fromModel(vendor));
-
+    return sendSuccess(
+      res,
+      200,
+      "Profile updated successfully",
+      VendorDTO.fromModel(vendor)
+    );
   } catch (error) {
     await session.abortTransaction();
     logger.error(error);
-    return sendError(res, 500, 'Server error');
+
+    return sendError(res, 500, "Server error");
   } finally {
-    session.endSession()
+    session.endSession();
   }
 };
 
@@ -573,7 +600,7 @@ exports.completeOnboarding = async (req, res) => {
     };
 
     vendor.business = {
-      name: business.storeName,
+      storeName: business.storeName,
       type: business.type,
       description: business.description,
       logo: businessLogo,
@@ -638,6 +665,166 @@ exports.completeOnboarding = async (req, res) => {
     logger.error(err);
 
     return sendError(res, 500, "Internal Server Error");
+  } finally {
+    session.endSession();
+  }
+};
+
+exports.suspendVendorAccount = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { reason } = req.body;
+    const vendorId = req.user._id;
+
+    const vendor = await vendorModel
+      .findById(vendorId)
+      .session(session);
+
+    if (!vendor) {
+      await session.abortTransaction();
+      return sendError(res, 404, "Vendor not found");
+    }
+
+    if (vendor.accountStatus === "suspended") {
+      await session.abortTransaction();
+      return sendError(res, 409, "Account is already suspended.");
+    }
+
+    if (vendor.accountStatus === "deleted") {
+      await session.abortTransaction();
+      return sendError(res, 409, "Deleted accounts cannot be suspended.");
+    }
+
+    const pendingOrder = await Order.exists({
+      vendor: vendorId,
+      orderStatus: {
+        $in: [
+          "pending",
+          "confirmed",
+          "shipped"
+        ]
+      }
+    }).session(session);
+
+    if (pendingOrder) {
+      await session.abortTransaction();
+
+      return sendError(
+        res,
+        400,
+        "Finalize all pending orders before suspending account."
+      );
+    }
+
+    vendor.accountStatus = "suspended";
+    vendor.isActive = false;
+    vendor.suspendReason = reason?.trim() || null;
+    vendor.suspendDate = new Date();
+
+    await vendor.save({ session });
+
+    await AuditLog.create([
+      {
+        user: vendor._id,
+        role: "vendor",
+        action: "SUSPEND_ACCOUNT",
+        entity: "Vendor",
+        entityId: vendor._id,
+        metadata: {
+          serialNumber: vendor.serialNumber,
+          email: vendor.email,
+          reason: vendor.suspendReason
+        }
+      }
+    ], { session });
+
+    await session.commitTransaction();
+    return sendSuccess(
+      res,
+      200,
+      "Account suspended successfully."
+    );
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    logger.error(err);
+    return sendError(
+      res,
+      500,
+      "Internal Server Error"
+    );
+  } finally {
+    session.endSession();
+  }
+};
+
+exports.reactivateVendorAccount = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+
+    const vendorId = req.user._id;
+
+    const vendor = await vendorModel
+      .findById(vendorId)
+      .session(session);
+
+    if (!vendor) {
+      await session.abortTransaction();
+      return sendError(res, 404, "Vendor not found");
+    }
+
+    if (vendor.accountStatus !== "suspended") {
+      await session.abortTransaction();
+      return sendError(
+        res,
+        400,
+        "Account is not suspended."
+      );
+    }
+
+    vendor.accountStatus = "active";
+    vendor.isActive = true;
+    vendor.suspendReason = null;
+    vendor.suspendDate = null;
+    vendor.reactivatedAt = new Date();
+
+    await vendor.save({ session });
+
+    await AuditLog.create([
+      {
+        user: vendor._id,
+        role: "vendor",
+        action: "REACTIVATE_ACCOUNT",
+        entity: "Vendor",
+        entityId: vendor._id,
+        metadata: {
+          serialNumber: vendor.serialNumber,
+          email: vendor.email
+        }
+      }
+    ], { session });
+
+    await session.commitTransaction();
+    return sendSuccess(
+      res,
+      200,
+      "Account reactivated successfully."
+    );
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+    logger.error(err);
+    return sendError(
+      res,
+      500,
+      "Internal Server Error"
+    );
   } finally {
     session.endSession();
   }

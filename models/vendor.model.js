@@ -3,10 +3,6 @@ const { softDeletePlugin } = require("./base.schema");
 
 const vendorSchema = new mongoose.Schema(
   {
-    // ======================================================
-    // SYSTEM INFORMATION
-    // ======================================================
-
     serialNumber: {
       type: String,
       unique: true,
@@ -17,10 +13,6 @@ const vendorSchema = new mongoose.Schema(
       enum: ["vendor"],
       default: "vendor",
     },
-
-    // ======================================================
-    // ACCOUNT INFORMATION (Registration)
-    // ======================================================
 
     fullName: {
       type: String,
@@ -45,20 +37,12 @@ const vendorSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ======================================================
-    // ONBOARDING STATUS
-    // ======================================================
-
     onboardingCompleted: {
       type: Boolean,
       default: false,
     },
 
     onboardingCompletedAt: Date,
-
-    // ======================================================
-    // STUDENT INFORMATION
-    // ======================================================
 
     student: {
       profilePhoto: {
@@ -113,10 +97,6 @@ const vendorSchema = new mongoose.Schema(
       }
     },
 
-    // ======================================================
-    // BUSINESS INFORMATION
-    // ======================================================
-
     business: {
       storeName: {
         type: String,
@@ -141,6 +121,10 @@ const vendorSchema = new mongoose.Schema(
         type: String,
         trim: true,
       },
+      banner: {
+        type: String,
+        trim: true,
+      },
       socials: {
         facebook: String,
         instagram: String,
@@ -148,10 +132,6 @@ const vendorSchema = new mongoose.Schema(
         tiktok: String,
       }
     },
-
-    // ======================================================
-    // VERIFICATION DOCUMENTS
-    // ======================================================
 
     verificationDocuments: {
       schoolIdCard: {
@@ -161,10 +141,6 @@ const vendorSchema = new mongoose.Schema(
         type: String,
       }
     },
-
-    // ======================================================
-    // TERMS ACCEPTANCE
-    // ======================================================
 
     terms: {
       acceptedVendorTerms: {
@@ -182,19 +158,11 @@ const vendorSchema = new mongoose.Schema(
       acceptedAt: Date,
     },
 
-    // ======================================================
-    // BANK DETAILS
-    // ======================================================
-
     bankDetails: {
       bankName: String,
       accountName: String,
       accountNumber: String,
     },
-
-    // ======================================================
-    // VERIFICATION
-    // ======================================================
 
     isVerified: {
       type: Boolean,
@@ -228,10 +196,6 @@ const vendorSchema = new mongoose.Schema(
 
     verificationRejectionReason: String,
 
-    // ======================================================
-    // NOTIFICATIONS
-    // ======================================================
-
     notificationPreference: {
       type: String,
       enum: [
@@ -248,24 +212,25 @@ const vendorSchema = new mongoose.Schema(
       default: false,
     },
 
-    // ======================================================
-    // ACCOUNT STATUS
-    // ======================================================
-
     isActive: {
       type: Boolean,
       default: true,
     },
 
-    isDeleted: {
+    isSuspend: {
       type: Boolean,
       default: false,
-      index: true,
     },
+    
+    suspendReason: String,
 
+    suspendDate: Date,
+      
     deleteReason: String,
 
     deleteDate: Date,
+
+    reactivatedAt: Date,
 
     accountStatus: {
       type: String,

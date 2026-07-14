@@ -1,0 +1,126 @@
+# Project Folder Structure
+
+This document provides an overview of the backend project folder structure.
+
+```
+app.js
+FEED_ALGORITHM_DOCS.md
+Founder.js
+index.js
+logger.js
+NOTIFICATION.md
+package.json
+PROJECT_SUMMARY.md
+RATING_REVIEW_SYSTEM.md
+README.md
+REFUND_RETURN_IMPLEMENTATION.md
+swagger.js
+TIER_UPGRADE_GUIDE.md
+config/
+    chatDatabase.js
+    cloudinary.js
+    taxRate.js
+constants/
+    support.constants.js
+controllers/
+    auditlog.controller.js
+    buyer.controller.js
+    founder.controller.js
+    school.controller.js
+    vendor.controller.js
+    Buyer/
+        activtity.controller.js
+        auth.controller.js
+        cart.controller.js
+        order.controller.js
+        wishlist.controller.js
+    common/
+        chat.controller.js
+        notification.controller.js
+        rating.controller.js
+        report.controller.js
+        review.controller.js
+    Founder/
+        auth.controller.js
+        buyer.controller.js
+        common.controller.js
+        dashboard.controller.js
+        phase1.controller.js
+        users.controller.js
+        ...
+    Vendor/
+        ...
+dtos/
+    buyer.dto.js
+    vendor.dto.js
+logs/
+middleware/
+    chatUpload.js
+    founderAccess.js
+    imageUpload.js
+    requestLogger.js
+    validateRegister.js
+    verifyUser.js
+models/
+    addproduct.model.js
+    addToCart.model.js
+    auditLog.model.js
+    base.schema.js
+    buyer.model.js
+    buyerOrder.model.js
+    category.model.js
+    founder.model.js
+    loginHistory.model.js
+    notification.model.js
+    productRating.model.js
+    report.model.js
+    review.model.js
+    school.model.js
+    serialCounter.model.js
+    vendor.model.js
+    wishlist.model.js
+    chat/
+    support/
+routes/
+    buyer.route.js
+    chat.route.js
+    founder.route.js
+    notification.route.js
+    school.route.js
+    vendor.route.js
+seeders/
+    categorySeeder.js
+    schoolSeeder.js
+services/
+    auditlog.service.js
+    googleAuth.service.js
+    loginHistory.service.js
+    productRating.service.js
+    report.service.js
+    review.service.js
+    buyer/
+    chat/
+    common/
+    founder/
+    loginHistory/
+    messaging/
+    notification/
+    rating/
+    report/
+    review/
+    vendor/
+sockets/
+    notification.socket.js
+utils/
+    asyncHandler.js
+    authHelpers.js
+    feedAlgorithm.js
+    generateSerial.js
+    location.js
+    logger.js
+    responseStruture.js
+    support.ticketNumber.js
+validators/
+    founder.validator.js
+    support.validation.js
+```

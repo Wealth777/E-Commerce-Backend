@@ -2250,3 +2250,1145 @@
 {"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T08:50:24.534Z"}
 {"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T08:50:24.551Z"}
 {"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"hKz5hnvye82jSxpuAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T08:50:24.603Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"hKz5hnvye82jSxpuAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T09:19:53.939Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"cDPO-CMfS3BuSV2rAAAG","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T09:20:10.417Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3burQuaMULcrofBtAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T09:20:10.440Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3burQuaMULcrofBtAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T09:25:30.559Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"cDPO-CMfS3BuSV2rAAAG","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T09:25:30.930Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T13:16:07.488Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T13:16:07.523Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T13:16:07.545Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"XYrUMLI-VIKhR5H3AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:16:13.226Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"XYrUMLI-VIKhR5H3AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:16:23.009Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"JVxHAHSu_XHUxgsSAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:16:27.309Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"JVxHAHSu_XHUxgsSAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:20:04.194Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"emS3fZIRoNP7fJGyAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:20:04.967Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"emS3fZIRoNP7fJGyAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:25:08.142Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"EXD_tvWtoYBRrKMVAAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:31:07.190Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T13:37:47.200Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T13:37:47.234Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T13:37:47.266Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"iE1YTHoxixRMOrM4AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:37:47.442Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"iE1YTHoxixRMOrM4AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:38:00.001Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"D_SVmwZgZwMHQ-sRAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:38:02.802Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"D_SVmwZgZwMHQ-sRAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:38:04.378Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"shcqPVzxFuljhQyPAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:38:45.007Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"shcqPVzxFuljhQyPAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:38:50.834Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"mHAxDTbMqwZUE15KAAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:42:00.107Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"mHAxDTbMqwZUE15KAAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:55:47.539Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"HxA3lN0T5_BdZ89QAAAN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:55:51.760Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"HxA3lN0T5_BdZ89QAAAN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:56:24.139Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"YbcBiEX17zoUWHeJAAAQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T13:56:25.759Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"YbcBiEX17zoUWHeJAAAQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:03:02.826Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"qog03Xs-HG15zqGvAAAT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:03:05.374Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"qog03Xs-HG15zqGvAAAT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:07:00.428Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"a_TiEHEPYIZujH7QAAAW","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:07:04.095Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"a_TiEHEPYIZujH7QAAAW","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:09:34.297Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"bGequEf265mj5UgBAAAZ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:09:38.626Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:15:34.637Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:15:34.680Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:15:34.719Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Kt9zJ6R127ye6-2nAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:15:35.015Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Kt9zJ6R127ye6-2nAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:19:00.090Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"5Solrrpsdz4YEEypAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:19:04.171Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"5Solrrpsdz4YEEypAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:24:02.950Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"UaR1aBiHhDykhw-tAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:24:05.259Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:25:06.112Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:25:06.142Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:25:06.169Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"UB2lGHUCFVfIqN6TAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:25:06.466Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:25:26.633Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:25:26.643Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:25:26.682Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"PLvmwQ3UzDcsQE6NAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:25:32.082Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"PLvmwQ3UzDcsQE6NAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:25:47.856Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"QQoFH1f42KjeUvgfAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:25:50.671Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"QQoFH1f42KjeUvgfAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:25:51.561Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:26:22.312Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:26:22.318Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:26:22.337Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"szFKGMQCKq8w6tdGAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:26:52.511Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"szFKGMQCKq8w6tdGAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:27:12.753Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"EQgLZv7xx39eKBk1AAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:27:17.536Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:29:20.822Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:29:20.836Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:29:20.846Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"R1PN_iMjfdkP34F_AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:29:25.132Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"R1PN_iMjfdkP34F_AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:29:33.186Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"bgqe_DrjnqAUhC6cAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:29:37.286Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:32:38.606Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:32:38.635Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:32:38.653Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"vVFZ2Z8xOZt_pW8iAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:32:40.121Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:34:13.086Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-02T14:34:13.092Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-02T14:34:13.106Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"jvLQ7x8yWtquPQxuAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:34:17.090Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"jvLQ7x8yWtquPQxuAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:45:21.646Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"xwlQc9PxZ8qt1UgtAAAD","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:50:18.214Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"xwlQc9PxZ8qt1UgtAAAD","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T14:51:23.170Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"69fUrLD2n6Pobgc0AAAF","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T15:36:13.312Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"69fUrLD2n6Pobgc0AAAF","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T15:36:22.107Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"PiLRK2K78PbfphOMAAAI","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T15:36:27.369Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"PiLRK2K78PbfphOMAAAI","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-02T15:36:36.864Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:37:25.611Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:37:26.148Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:37:26.214Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3ARfdqjigPYEirJbAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:40:48.389Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3ARfdqjigPYEirJbAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:40:54.485Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ZH8PMxDs64BtnpFlAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:40:56.089Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:44:24.404Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:44:24.414Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:44:24.433Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:44:51.784Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:44:51.787Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:44:51.799Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"OMbJgd0BKaDoXBdwAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:44:51.873Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:46:55.726Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:46:55.730Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:46:55.744Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"J4M74i-lgL8y8cFqAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:46:58.602Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:47:37.927Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:47:37.929Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:47:37.940Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"XgYycSzLX89WxET3AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:47:38.077Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:48:51.453Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:48:51.456Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:48:51.472Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"BfQZBXjEoaAoHPb_AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:48:51.603Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:56:40.252Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:56:40.257Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:56:40.309Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"AAEqermg4mPwDKjiAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:56:41.087Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:57:05.781Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:57:05.784Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:57:05.795Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"NrQ95ro6OE0ZxWiBAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:57:10.555Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:57:47.738Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T08:57:47.748Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T08:57:47.772Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"xU9QWeuUXtgoZXUNAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T08:57:48.550Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"xU9QWeuUXtgoZXUNAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:00:54.530Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Vn_Ko-TAENB5pVEhAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:00:58.504Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Vn_Ko-TAENB5pVEhAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:05:25.593Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"i4fDIWS6aeRV5_YzAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:05:27.882Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"i4fDIWS6aeRV5_YzAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:12:41.549Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"pLqltov2kCXiSMr4AAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:12:46.636Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-03T09:24:09.015Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-03T09:24:09.018Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-03T09:24:09.029Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"CDyZ2YY-SHhDHFMSAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T09:24:09.556Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"CDyZ2YY-SHhDHFMSAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:18:56.924Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"RYXLnorvWbe3YcGPAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:22:07.338Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"RYXLnorvWbe3YcGPAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:23:39.828Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"-fz6uwSOIT85ZXV8AAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:24:38.724Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"-fz6uwSOIT85ZXV8AAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:24:45.741Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"y1SHEii6U-sacMR1AAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:24:47.763Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"y1SHEii6U-sacMR1AAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:26:38.568Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"0UYWIEBm11rb-gX8AAAN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T14:28:05.514Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"0UYWIEBm11rb-gX8AAAN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T15:07:10.612Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"jf1D-8S_H3z8QZcrAAAQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T15:07:52.780Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"jf1D-8S_H3z8QZcrAAAQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T15:07:58.857Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"AYDelqJeyG4pB8jhAAAT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T15:08:03.499Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"AYDelqJeyG4pB8jhAAAT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T15:08:41.279Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"qcnzQeqhPn7mij3HAAAV","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T19:50:36.883Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"qcnzQeqhPn7mij3HAAAV","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T19:50:39.507Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"YSMJDbiJaI0kocQ8AAAY","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T19:50:43.117Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"YSMJDbiJaI0kocQ8AAAY","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-03T19:50:47.578Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:42:30.127Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:42:30.181Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:42:30.247Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:01.376Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:01.418Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:49:01.438Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:09.463Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:09.474Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:49:09.510Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:23.784Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:23.787Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:49:23.798Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:36.233Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:36.243Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:49:36.261Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:59.865Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:49:59.871Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:49:59.887Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:57:58.537Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:57:58.563Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:57:58.587Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:58:07.802Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:58:07.805Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:58:07.816Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:58:20.992Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:58:20.998Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:58:21.009Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:58:40.267Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:58:40.278Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:58:40.293Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:59:44.968Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T14:59:44.973Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T14:59:44.988Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:00:29.090Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:00:29.249Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:00:29.302Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:00:59.495Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:00:59.528Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:00:59.550Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:04:17.388Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:04:17.396Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:04:17.413Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:05:27.036Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:05:27.049Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:05:27.067Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:05:43.310Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:05:43.322Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:05:43.359Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:06:38.677Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:06:38.681Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:06:38.697Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:07:47.691Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-06T15:07:47.695Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-06T15:07:47.712Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:24:02.775Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:24:02.795Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:24:02.862Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:32:41.731Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:32:41.742Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:32:41.779Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:35:56.794Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:35:56.805Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:35:56.826Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:37:48.514Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:37:48.527Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:37:48.539Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:42:47.423Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:42:47.432Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:42:47.469Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:44:23.022Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:44:23.026Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:44:23.034Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:45:05.551Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:45:05.557Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:45:05.572Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:49:38.439Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:49:38.442Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:49:38.454Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:49:49.968Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:49:49.971Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:49:49.987Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:52:16.192Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:52:16.197Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:52:16.221Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:52:43.443Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:52:43.448Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:52:43.471Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:52:58.779Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:52:58.789Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:52:58.810Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:53:26.042Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:53:26.048Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:53:26.063Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:54:38.442Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:54:38.446Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:54:38.460Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:54:56.829Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:54:56.833Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:54:56.878Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:55:22.507Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:55:22.515Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:55:22.547Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:57:58.015Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:57:58.019Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:57:58.035Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:58:29.454Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:58:29.465Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:58:29.483Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:58:42.411Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:58:42.415Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:58:42.437Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:59:28.707Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T11:59:28.711Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T11:59:28.721Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:02:28.256Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:02:28.261Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:02:28.277Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:02:56.161Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:02:56.177Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:02:56.201Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:04:10.432Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:04:10.582Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:04:10.742Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:08:42.492Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:08:42.514Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:08:42.541Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:09:23.929Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:09:23.963Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:09:24.000Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:16:36.584Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:16:36.622Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:16:36.647Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:18:13.337Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:18:13.350Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:18:13.366Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:18:38.108Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:18:38.112Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:18:38.126Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:19:45.019Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:19:45.024Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:19:45.046Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:19:57.200Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:19:57.203Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:19:57.217Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:20:32.871Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:20:32.874Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:20:32.882Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:21:34.681Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:21:34.696Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:21:34.705Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:22:22.520Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:22:22.525Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:22:22.539Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:23:01.257Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T12:23:01.272Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T12:23:01.326Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:00:31.345Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:00:31.376Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:00:31.402Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:04:00.811Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:04:00.839Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:04:00.855Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:08:27.486Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:08:27.502Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:08:27.523Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:08:38.136Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:08:38.144Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:08:38.169Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:08:50.900Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:08:50.903Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:08:50.914Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:14:06.206Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:14:06.215Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:14:06.229Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:14:14.993Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:14:14.999Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:14:15.019Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:17:00.268Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:17:00.280Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:17:00.290Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:17:17.217Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:17:17.221Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:17:17.247Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:17:34.401Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:17:34.409Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:17:34.426Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:20:42.704Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:20:43.317Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:20:43.390Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:21:02.979Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:21:02.982Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:21:02.992Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:21:48.072Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:21:48.076Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:21:48.088Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:25:12.564Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:25:12.587Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:25:12.627Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:25:48.176Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:25:48.180Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:25:48.198Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:27:08.184Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:27:08.199Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:27:08.215Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:29:29.403Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:29:29.421Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:29:29.434Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:29:44.206Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:29:44.211Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:29:44.222Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:30:19.036Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:30:19.039Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:30:19.049Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:31:08.961Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:31:08.965Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:31:08.982Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:31:26.852Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:31:26.861Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:31:26.880Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:31:48.848Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:31:48.863Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:31:48.875Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:32:09.993Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:32:09.997Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:32:10.007Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:34:57.432Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T13:34:57.446Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T13:34:57.456Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:01:51.937Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:01:51.983Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:01:52.022Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:02:02.932Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:02:02.935Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:02:02.952Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:02:36.669Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:02:36.675Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:02:36.693Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:04:09.144Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:04:09.148Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:04:09.164Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:04:28.471Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:04:28.487Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:04:28.505Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:04:48.850Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:04:48.853Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:04:48.864Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:05:04.933Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:05:04.936Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:05:04.951Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:05:44.385Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:05:44.388Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:05:44.403Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:05:55.762Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:05:55.766Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:05:55.777Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:06:20.625Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:06:20.635Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:06:20.650Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:07:23.783Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:07:23.788Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:07:23.806Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:07:39.700Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:07:39.704Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:07:39.718Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:08:07.134Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:08:07.143Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:08:07.160Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:09:03.589Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:09:03.592Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:09:03.605Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:09:59.494Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:09:59.499Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:09:59.520Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:11:00.556Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:11:00.560Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:11:00.574Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:11:46.131Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:11:46.152Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:11:46.177Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:12:46.194Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:12:46.224Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:12:46.259Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:13:18.463Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:13:18.467Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:13:18.479Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:14:24.605Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:14:24.636Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:14:24.666Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:14:51.037Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:14:51.046Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:14:51.064Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:15:11.648Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:15:11.652Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:15:11.662Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:15:32.279Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:15:32.285Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:15:32.300Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:15:52.757Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:15:52.760Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:15:52.769Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:17:02.793Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:17:02.813Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:17:02.837Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:17:26.476Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:17:26.483Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:17:26.500Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:18:08.216Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:18:08.219Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:18:08.230Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:18:52.919Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:18:52.928Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:18:52.955Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:19:18.059Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:19:18.070Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:19:18.090Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:20:11.179Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:20:11.187Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:20:11.206Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:20:43.319Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:20:43.327Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:20:43.342Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:21:05.467Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:21:05.476Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:21:05.503Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:21:13.882Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:21:13.891Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:21:13.910Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:21:55.344Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:21:55.354Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:21:55.381Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:24:03.284Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:24:03.303Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:24:03.345Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:24:29.238Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:24:29.242Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:24:29.256Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:24:46.055Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:24:46.067Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:24:46.088Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:26:13.425Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:26:13.434Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:26:13.454Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:29:35.740Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:29:35.750Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:29:35.780Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:29:47.505Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:29:47.509Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:29:47.525Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:30:53.812Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:30:53.852Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:30:53.879Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:32:02.568Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:32:02.571Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:32:02.581Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:33:19.417Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:33:19.421Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:33:19.436Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:34:01.550Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:34:01.557Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:34:01.571Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:35:24.646Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:35:24.684Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:35:24.717Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:37:17.097Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:37:17.110Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:37:17.124Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:40:08.117Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:40:08.127Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:40:08.144Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:40:15.545Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:40:15.550Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:40:15.567Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:40:52.647Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:40:52.651Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:40:52.665Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:41:21.063Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:41:21.069Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:41:21.088Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:41:38.179Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:41:38.183Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:41:38.197Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:41:53.095Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:41:53.102Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:41:53.114Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:42:13.090Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:42:13.093Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:42:13.101Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:42:27.565Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:42:27.567Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:42:27.575Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:43:25.144Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:43:25.147Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:43:25.159Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:44:53.956Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:44:53.962Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:44:53.972Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:46:00.757Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:46:00.761Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:46:00.776Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:49:03.783Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:49:03.794Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:49:03.844Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:52:27.372Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:52:27.385Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:52:27.395Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:52:41.938Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:52:41.942Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:52:41.962Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:53:47.736Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:53:47.744Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:53:47.766Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:54:00.240Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:54:00.243Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:54:00.254Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:57:10.196Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:57:10.206Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:57:10.233Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:57:35.498Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:57:35.509Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:57:35.545Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:58:30.105Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:58:30.114Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:58:30.139Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:58:43.954Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T14:58:43.961Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T14:58:43.996Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:00:00.824Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:00:00.834Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:00:00.856Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:00:21.969Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:00:21.978Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:00:22.002Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:00:35.229Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:00:35.243Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:00:35.256Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:01:07.944Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:01:07.953Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:01:07.974Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:01:37.822Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:01:37.831Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:01:37.871Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:02:00.012Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:02:00.018Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:02:00.045Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:26:12.032Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:26:12.056Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:26:12.083Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:37:25.705Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:37:25.749Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:37:25.788Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:37:51.294Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:37:51.342Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:37:51.392Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:42:22.859Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:42:22.874Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:42:22.892Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:42:45.100Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:42:45.168Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:42:45.201Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:46:31.054Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:46:31.064Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:46:31.091Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:47:02.252Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:47:02.261Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:47:02.275Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:48:00.130Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:48:00.134Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:48:00.155Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:48:38.062Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:48:38.068Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:48:38.088Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:49:05.191Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:49:05.198Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:49:05.212Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:49:21.952Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:49:21.956Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:49:21.970Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:49:31.879Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:49:32.062Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:49:32.147Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:50:01.647Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:50:01.673Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:50:01.704Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:52:17.984Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:52:18.019Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:52:18.059Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:52:56.203Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:52:56.218Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:52:56.250Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:53:32.585Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:53:32.594Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:53:32.638Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:56:07.521Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:56:07.560Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:56:07.591Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:56:28.518Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:56:28.530Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:56:28.551Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:56:51.762Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T15:56:51.765Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T15:56:51.793Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T16:02:46.562Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T16:02:46.608Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T16:02:46.640Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T16:03:00.564Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T16:03:00.740Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T16:03:00.761Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-07T16:08:12.187Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-07T16:08:12.214Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-07T16:08:12.244Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:05:24.207Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:05:24.238Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:05:24.266Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:05:45.154Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:05:45.159Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:05:45.172Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:06:20.528Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:06:20.548Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:06:20.577Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:06:39.134Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:06:39.146Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:06:39.157Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:06:59.080Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:06:59.115Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:06:59.149Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:07:21.576Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:07:21.620Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:07:21.650Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:08:19.216Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:08:19.220Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:08:19.235Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:08:47.723Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:08:47.729Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:08:47.747Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:10:18.769Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:10:18.782Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:10:18.814Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:11:29.380Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:11:29.392Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:11:29.412Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:13:08.517Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:13:08.521Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:13:08.534Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:18:56.952Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:18:56.966Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:18:57.002Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:21:34.027Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:21:34.061Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:21:34.104Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:24:20.429Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:24:20.437Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:24:20.457Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:25:10.218Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:25:10.220Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:25:10.231Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:27:08.548Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:27:08.567Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:27:08.629Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:35:10.976Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:35:10.985Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:35:11.017Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:37:45.991Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:37:45.999Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:37:46.032Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:58:09.921Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:58:09.929Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:58:09.965Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:58:47.016Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T09:58:47.020Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T09:58:47.037Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:00:20.046Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:00:20.051Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:00:20.063Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:00:30.528Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:00:30.535Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:00:30.567Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:01:12.245Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:01:12.258Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:01:12.282Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:02:25.172Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:02:25.259Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:02:25.314Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:08:28.114Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:08:28.124Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:08:28.152Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ng6F_WkCaMffvZa0AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:09:32.933Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ng6F_WkCaMffvZa0AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:09:39.149Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"2T___LFaJZX0NPyeAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:09:43.007Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:12:30.992Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:12:31.012Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:12:31.025Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"fFQ_Hx3dj8oeWyx4AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:12:31.209Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:12:48.659Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:12:48.691Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:12:48.734Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"wS63tHmLMb07wiyNAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:12:49.340Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:13:07.859Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:13:07.863Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:13:07.874Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"7bG1D0p4ULOPpyDjAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:13:08.212Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:23:50.773Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:23:50.789Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:23:50.809Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"UnOc798amy7tvyORAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:23:51.017Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:24:53.410Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:24:53.453Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:24:53.492Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Xat4Bff7oVsEyUQgAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:24:53.733Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:26:06.883Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:26:06.893Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:26:06.927Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:26:58.916Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:26:58.921Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:26:58.936Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"FJPguhg_ZhF9MKsDAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:27:02.677Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:27:28.654Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:27:28.663Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:27:28.699Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"tGzYj58vwQ88LcYyAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:27:30.395Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:27:49.285Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:27:49.290Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:27:49.312Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"48ewshCiVItEiXESAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:27:49.424Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:28:14.664Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:28:14.668Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:28:14.682Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:28:30.346Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:28:30.361Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:28:30.390Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"aQk82FwkleI0BzWNAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:28:30.727Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:29:13.367Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:29:13.377Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:29:13.424Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"tnYg_zzVk2N6qUqIAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:29:13.728Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:30:02.321Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:30:02.348Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:30:02.381Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"T9SOdfYZDfhMrwrWAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:30:05.391Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:32:30.876Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:32:30.910Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:32:30.978Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"wp2rZmmroTkvC1HLAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:32:33.369Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:33:28.672Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:33:28.677Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:33:28.695Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"1ZCtTjLUCzE8u90xAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:33:28.852Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:34:27.553Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:34:27.562Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:34:27.600Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"f1NKu6zKLi0-mIHPAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:34:30.399Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:35:51.918Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:35:51.927Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:35:51.938Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Yya9tmy4Aci6RrlWAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:35:52.154Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:36:20.682Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:36:20.690Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:36:20.703Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:36:38.431Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:36:38.434Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:36:38.443Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:37:57.315Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:37:57.321Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:37:57.338Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"WG9yTHoqvW74JHFzAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:37:57.425Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:38:26.152Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:38:26.160Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:38:26.178Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"69BNbW8ZT7n1YQk9AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:38:26.394Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:38:51.704Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:38:51.905Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:38:51.968Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"XPaKXXq55yaui3bJAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:38:55.494Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:39:53.646Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:39:53.662Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:39:53.686Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:40:11.507Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:40:11.527Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:40:11.547Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:40:30.706Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:40:30.709Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:40:30.721Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"8mxfIrBek4wpxL94AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:40:31.381Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:41:08.533Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T10:41:08.551Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T10:41:08.574Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ZVcYwijyhDPRMzkJAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T10:41:12.363Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ZVcYwijyhDPRMzkJAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T11:02:53.469Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:29:35.052Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:29:35.072Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T13:29:35.126Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Efm3Bv07OxW6YwirAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T13:30:40.576Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Efm3Bv07OxW6YwirAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T13:30:43.984Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:31:35.999Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:31:36.024Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T13:31:36.202Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"_My1BDnoFazd5ZaRAAAB","userId":"6a0462f8df35c9f1e9f2302e","role":"buyer"},"timestamp":"2026-07-08T13:31:42.452Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"_My1BDnoFazd5ZaRAAAB","userId":"6a0462f8df35c9f1e9f2302e","role":"buyer"},"timestamp":"2026-07-08T13:32:29.915Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"S5kBMyglvYig1V1UAAAE","userId":"6a0462f8df35c9f1e9f2302e","role":"buyer"},"timestamp":"2026-07-08T13:32:35.787Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"S5kBMyglvYig1V1UAAAE","userId":"6a0462f8df35c9f1e9f2302e","role":"buyer"},"timestamp":"2026-07-08T13:32:40.679Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:34:00.613Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:34:00.619Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T13:34:00.643Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:35:32.215Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:35:32.223Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T13:35:32.281Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:42:46.320Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T13:42:46.337Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T13:42:46.383Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"N62UsBkBcH46WAldAAAB","userId":"6a3e61f6aa558c1bac984687","role":"buyer"},"timestamp":"2026-07-08T13:45:59.734Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"N62UsBkBcH46WAldAAAB","userId":"6a3e61f6aa558c1bac984687","role":"buyer"},"timestamp":"2026-07-08T13:51:55.808Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"wYRusKZEkKwaGKLRAAAD","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T13:53:54.593Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"wYRusKZEkKwaGKLRAAAD","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T13:53:58.663Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3sCu2pDAQ5o4C6hMAAAG","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T13:54:01.724Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:24:03.251Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:24:03.271Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:24:03.318Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"QCkhsc23HNwG6B6aAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T14:24:03.478Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:36:50.866Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:36:50.914Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:36:50.950Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:43:25.864Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:43:25.874Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:43:25.894Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:43:52.820Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:43:52.829Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:43:52.843Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:44:18.300Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:44:18.323Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:44:18.359Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:44:54.853Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:44:54.858Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:44:54.876Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:46:24.730Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:46:24.738Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:46:24.760Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:48:41.242Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:48:41.247Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:48:41.259Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:49:18.384Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:49:18.395Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:49:18.418Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:53:28.778Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:53:28.781Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:53:28.793Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:56:58.918Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:56:58.922Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:56:58.944Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:57:19.126Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:57:19.136Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:57:19.196Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:58:06.309Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:58:06.323Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:58:06.371Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:58:25.322Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:58:25.330Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:58:25.351Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:58:38.930Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:58:38.933Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:58:38.951Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:59:09.584Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:59:09.597Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:59:09.625Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:59:44.589Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T14:59:44.593Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T14:59:44.623Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:01:13.451Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:01:13.463Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:01:13.476Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:01:31.891Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:01:31.908Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:01:31.941Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:05:11.147Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:05:11.155Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:05:11.170Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:06:05.732Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:06:05.735Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:06:05.752Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:06:23.687Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:06:23.690Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:06:23.701Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:07:35.446Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:07:35.449Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:07:35.460Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:08:33.164Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:08:33.176Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:08:33.220Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:36:41.255Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T15:36:41.305Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T15:36:41.335Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ZiXJrnuJoWSsZ4ZKAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:36:58.909Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ZiXJrnuJoWSsZ4ZKAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:37:03.020Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3PPLD0dPns1kuiuWAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:37:53.073Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3PPLD0dPns1kuiuWAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:39:05.145Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"vE83L2BjAcM6vdBMAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:39:09.603Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"vE83L2BjAcM6vdBMAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:51:21.596Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"9d-Sc4lloFirPrbNAAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T15:51:25.937Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:03:47.124Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:03:47.157Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T16:03:47.189Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"TzVgwq2T-4Dk9rQSAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:03:52.107Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:04:50.960Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:04:50.977Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T16:04:50.999Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Hshv6nQEayLxfAVnAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:04:51.088Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:14:31.884Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:14:31.899Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T16:14:31.913Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"n7lcLtOb5MhhHNmCAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:14:37.120Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"n7lcLtOb5MhhHNmCAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:16:10.370Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"-NUYXVKKolNrlI1GAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:16:42.941Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"EFhG7YnpphhxSmYeAAAN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:31.882Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"67DlEHTDAdm6TffqAAAO","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:32.841Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Yz4Y8gHrXxirM8C7AAAP","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:33.386Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"8GV1iAxe6QQMk7pPAAAQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:33.611Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Ct4cCxQQzGa8IGmCAAAT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:40.240Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"C1s6-nOLTZa2djfnAAAY","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:42.452Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"kxPOPPIJcnSWqU3hAAAf","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:51.347Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"w_dVDGQB9MwLpPpgAABS","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:53.137Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"-2pd392iP6vopWXgAABV","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:54.545Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3AByddIFaUKtvOXXAABW","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:54.572Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"iFHM9cgNmGGXlMb6AABX","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.257Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"_rBdZMmhK1eYS-HvAABY","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.272Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"jo1Blk6zO3wDwgX3AABZ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.281Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3Yym37Rd6enIfnH-AABa","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.347Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3eEfdwtAqb1X5b7nAABb","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.364Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"5kbRUgs2YrOdYEIEAABc","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.398Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"P-JOPILPbpG5sHceAABd","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.409Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"q05BVVmjo6xZIVGIAABe","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.426Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Vq4tdw5mDlPxyvt2AABf","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.826Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"RMCtgmmmQmHaxi3HAABg","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.838Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"HLh1J_wbLUJTZ-poAABh","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.844Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"85J1enFx_HXQ3IusAABi","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.865Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"HTWsz3vIETCGeZ0oAABj","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.875Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"KaOzGcYM7m26HLeqAABk","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.892Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"XVLfTi_Ho9wWxl5QAABl","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.909Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"uKpQ0zNDUHBx9xRSAABm","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.928Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"2lHacMVgYej13NJ-AABn","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.948Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Egv21kc-Ro2hZKZmAABo","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.959Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Sic7FGDKxp8jHzsdAABp","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:56.972Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"26Rh5dZzPQSzDlOGAABq","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.012Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"mZflGnBRVk3rCNP4AABr","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.024Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"rBoEPFa2h4KacJ7FAABs","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.034Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"6FSUB78GgGc_N7l8AABt","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.049Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"vXn1r52XZ_LhVTBkAABu","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.064Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"PZ6picYjuqIpboD4AABv","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.113Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"k6NokB1cRxfQEyYqAAB6","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:57.817Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"9DEq23k1QPiZF8-8AACJ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.340Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"4yTdZUtjHhAp--TuAACK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.375Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"LTt4xRb0GanoEr0-AACL","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.460Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"IDj_l-HnKGQei0YVAACM","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.496Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"qeM2hnmeHijVP_nBAACN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.513Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Fg4hEXiOaT6SKTtBAACO","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.549Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ze-9U_Wfhk_94dDoAACP","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.592Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ZdDIeDEoSe0ti-uzAACQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.610Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"crDU3x9WvhQl8yYYAACR","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.648Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"okUJchEnuYx9I9LiAACS","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.682Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"XE--J34ajv5kQOz3AACT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.774Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"zzdDUDzUHDEoVz2fAACU","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:17:59.857Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"5kbRUgs2YrOdYEIEAABc","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.007Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"P-JOPILPbpG5sHceAABd","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.056Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"q05BVVmjo6xZIVGIAABe","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.076Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Vq4tdw5mDlPxyvt2AABf","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.147Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"HLh1J_wbLUJTZ-poAABh","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.200Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"85J1enFx_HXQ3IusAABi","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.239Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"RMCtgmmmQmHaxi3HAABg","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.575Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"KaOzGcYM7m26HLeqAABk","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.729Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"XVLfTi_Ho9wWxl5QAABl","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.782Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"uKpQ0zNDUHBx9xRSAABm","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.863Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"HTWsz3vIETCGeZ0oAABj","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:02.937Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"2lHacMVgYej13NJ-AABn","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.085Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Egv21kc-Ro2hZKZmAABo","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.139Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Sic7FGDKxp8jHzsdAABp","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.181Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"26Rh5dZzPQSzDlOGAABq","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.285Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"mZflGnBRVk3rCNP4AABr","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.338Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"rBoEPFa2h4KacJ7FAABs","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.410Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"6FSUB78GgGc_N7l8AABt","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.459Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"vXn1r52XZ_LhVTBkAABu","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.541Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"PZ6picYjuqIpboD4AABv","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.600Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"k6NokB1cRxfQEyYqAAB6","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.714Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"9DEq23k1QPiZF8-8AACJ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.781Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"4yTdZUtjHhAp--TuAACK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.894Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"IDj_l-HnKGQei0YVAACM","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:03.946Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"LTt4xRb0GanoEr0-AACL","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.005Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Fg4hEXiOaT6SKTtBAACO","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.060Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ze-9U_Wfhk_94dDoAACP","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.086Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ZdDIeDEoSe0ti-uzAACQ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.123Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"crDU3x9WvhQl8yYYAACR","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.157Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"qeM2hnmeHijVP_nBAACN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.179Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"okUJchEnuYx9I9LiAACS","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.259Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"XE--J34ajv5kQOz3AACT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.296Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"zzdDUDzUHDEoVz2fAACU","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:04.332Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"67DlEHTDAdm6TffqAAAO","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:49.789Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"EFhG7YnpphhxSmYeAAAN","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:49.857Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Yz4Y8gHrXxirM8C7AAAP","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:49.978Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"-2pd392iP6vopWXgAABV","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.060Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3Yym37Rd6enIfnH-AABa","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.249Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"iFHM9cgNmGGXlMb6AABX","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.329Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"C1s6-nOLTZa2djfnAAAY","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.448Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"_rBdZMmhK1eYS-HvAABY","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.534Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"jo1Blk6zO3wDwgX3AABZ","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.550Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3AByddIFaUKtvOXXAABW","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.678Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3eEfdwtAqb1X5b7nAABb","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.682Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"w_dVDGQB9MwLpPpgAABS","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.769Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"kxPOPPIJcnSWqU3hAAAf","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:50.839Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Ct4cCxQQzGa8IGmCAAAT","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:18:51.103Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:19:38.145Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:19:38.214Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T16:19:38.262Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ilkZ4S7QYMnmF3ohAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:19:39.108Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ilkZ4S7QYMnmF3ohAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:19:39.202Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:33:56.864Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-08T16:33:56.878Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-08T16:33:56.909Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"6MWw_nxL1bvXdAINAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:36:50.306Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"6MWw_nxL1bvXdAINAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:36:57.232Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"0HOSRueEeaGFcTx8AAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:36:59.089Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"0HOSRueEeaGFcTx8AAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T16:42:20.109Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Dum8uZRGeFGfpjTaAAAG","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-08T21:25:37.448Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Dum8uZRGeFGfpjTaAAAG","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-09T01:40:55.926Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"az6XfdvyPSFZwX71AAAI","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-09T09:43:42.165Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"az6XfdvyPSFZwX71AAAI","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-09T09:50:39.619Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"Y4PMhXyyhoeiJhP-AAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-09T09:51:49.306Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"Y4PMhXyyhoeiJhP-AAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-09T09:53:07.672Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T09:40:10.129Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T09:40:10.148Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T09:40:10.187Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"3m47BWvgmaWu0O_fAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:40:54.627Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"3m47BWvgmaWu0O_fAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:40:58.644Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"nlz1fHho3yHUswCJAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:41:00.837Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"nlz1fHho3yHUswCJAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:41:07.508Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ySAb1cUn4kdCq1CEAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:41:09.186Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ySAb1cUn4kdCq1CEAAAH","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:41:14.586Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"LQte7ClVtdINr8IWAAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:41:16.554Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"LQte7ClVtdINr8IWAAAK","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:44:36.728Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"j72Gzl9kLYgC5K7pAAAM","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:46:40.850Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"j72Gzl9kLYgC5K7pAAAM","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T09:47:15.967Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:03:47.478Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:03:47.497Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T10:03:47.513Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ZmwStRh6B4CSn32MAAAC","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:05:19.129Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ZmwStRh6B4CSn32MAAAC","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:05:33.628Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"zWAVo7bzkeJqAHRwAAAF","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:05:36.628Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"zWAVo7bzkeJqAHRwAAAF","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:07:41.197Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:13:36.149Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:13:36.156Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T10:13:36.217Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"jI7ianL_NO0gxjBuAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:13:47.570Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"jI7ianL_NO0gxjBuAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:14:01.305Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"tvJ1aqLF0UXZj8nMAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:14:05.488Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:16:34.726Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:16:34.730Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T10:16:34.745Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"zXilK6WNkhRGLrllAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:16:35.084Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:55:59.328Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T10:55:59.361Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T10:55:59.389Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"9yewaXvkRYlsM-x3AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:56:04.589Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"9yewaXvkRYlsM-x3AAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:56:09.888Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"YitQR0hIARBBQEfzAAAE","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T10:56:13.751Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"1WlTpeDjsHisd6-DAAAG","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T10:57:06.750Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"1WlTpeDjsHisd6-DAAAG","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T10:57:09.655Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ODH--yLrhHN1dv_9AAAJ","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T10:57:10.497Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/api/vendor/profile/delete/me","status":404,"duration":"1ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-07-14T10:57:50.335Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:00:53.355Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:00:53.373Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:00:53.386Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"xZZVaYgnLq1aGdTaAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:00:53.557Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"nj-Bf8qEH_6RlbybAAAD","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T11:00:53.589Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:02:39.577Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:02:39.580Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:02:39.590Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"ZmfZgOe9RnJ3CuZBAAAB","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T11:02:39.633Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"WosoBFZeqbUafGRHAAAD","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:02:44.072Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/api/vendor/profile/delete/me","status":404,"duration":"0ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-07-14T11:03:43.660Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:04:43.548Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:04:43.551Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:04:43.563Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"m3z7PZv6WOW5eK2rAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:04:43.619Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"2VRjdRBvYijProz2AAAD","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T11:04:48.090Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:06:52.896Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:06:52.900Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:06:52.908Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"tfK0JBO4pnrD_C_LAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:06:53.124Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"XlDR5pWR2iRWy-VLAAAD","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T11:06:56.425Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"XlDR5pWR2iRWy-VLAAAD","userId":"6a43dd048522c32e9a5b72a2","role":"vendor"},"timestamp":"2026-07-14T11:06:58.180Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:10:15.564Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:10:15.569Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:10:15.593Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"oidPOFM-C1Y3g9SMAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:10:19.128Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:31:01.356Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:31:01.379Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:31:01.409Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"YkhYUEXqOJSwwNxfAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:31:02.104Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:31:30.505Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-07-14T11:31:30.510Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-07-14T11:31:30.528Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"RmtkWDaGMuAvEP3TAAAB","userId":"6a4625ff7ecc1ea9fab7db15","role":"vendor"},"timestamp":"2026-07-14T11:31:34.097Z"}

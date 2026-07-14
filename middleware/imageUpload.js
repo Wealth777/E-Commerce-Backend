@@ -10,7 +10,7 @@ const imageStorage = new CloudinaryStorage({
     const sanitizedName = crypto.randomBytes(16).toString('hex');
 
     return {
-      folder: "gmc/product/image",
+      folder: "campustrade/product/image",
       public_id: sanitizedName,
       format: ext,
     };
@@ -29,7 +29,7 @@ const paymentProofStorage = new CloudinaryStorage({
     const ext = file.originalname.split('.').pop().toLowerCase();
 
     return {
-      folder: "gmc/payment/proof",
+      folder: "campustrade/payment/proof",
       resource_type: "auto",
       format: ext === 'pdf' ? 'pdf' : undefined,
       public_id: `proof_${uniqueSuffix}`,
@@ -39,12 +39,30 @@ const paymentProofStorage = new CloudinaryStorage({
 });
 
 const vendorOnboardingStorage = new CloudinaryStorage({
-    cloudinary,
-    params: async (req, file) => ({
-        folder: "campustrade/vendor-onboarding",
-        public_id: crypto.randomBytes(16).toString("hex"),
-        resource_type: "image",
-    }),
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "campustrade/vendor-onboarding",
+    public_id: crypto.randomBytes(16).toString("hex"),
+    resource_type: "image",
+  }),
+});
+
+const supportAttachmentStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+
+    const ext = file.originalname
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    return {
+      folder: "campustrade/support",
+      public_id: crypto.randomBytes(16).toString("hex"),
+      resource_type: "auto",
+      format: ext
+    };
+  }
 });
 
 
@@ -85,26 +103,52 @@ const paymentProofUpload = multer({
 });
 
 const vendorOnboardingUpload = multer({
-    storage: vendorOnboardingStorage,
-    limits: {
-        fileSize: 5 * 1024 * 1024,
-    },
-    fileFilter(req, file, cb) {
-        const allowed = [
-            "image/jpeg",
-            "image/png",
-            "image/webp",
-            "image/jpg",
-        ];
+  storage: vendorOnboardingStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter(req, file, cb) {
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/jpg",
+    ];
 
-        if (!allowed.includes(file.mimetype)) {
-            return cb(new Error("Invalid image"));
-        }
+    if (!allowed.includes(file.mimetype)) {
+      return cb(new Error("Invalid image"));
+    }
 
-        cb(null, true);
-    },
+    cb(null, true);
+  },
+});
+
+const supportAttachmentUpload = multer({
+  storage: supportAttachmentStorage,
+  limits: {
+    files: 5,
+    fileSize: 5 * 1024 * 1024
+  },
+
+  fileFilter(req, file, cb) {
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+      "application/pdf"
+    ];
+
+    if (!allowed.includes(file.mimetype)) {
+      return cb(
+        new Error("Only JPG, JPEG, PNG, WEBP and PDF files are allowed.")
+      );
+    }
+    cb(null, true);
+  }
 });
 
 module.exports = imageUpload;
 module.exports.paymentProofUpload = paymentProofUpload;
 module.exports.vendorOnboardingUpload = vendorOnboardingUpload;
+module.exports.supportAttachmentUpload = supportAttachmentUpload;

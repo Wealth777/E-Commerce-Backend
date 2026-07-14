@@ -23,6 +23,7 @@ const founderRoutes = require('./routes/founder.route');
 const notificationRoutes = require('./routes/notification.route');
 const chatRoutes = require('./routes/chat.route');
 const schoolRoute = require('./routes/school.route')
+const supportRoute = require('./routes/support.routes')
 
 app.use('/api/buyer', buyerRoutes);
 app.use('/api/vendor', vendorRoutes);
@@ -30,6 +31,7 @@ app.use('/api/founder', founderRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/schools', schoolRoute);
+app.use('/api/support', supportRoute);
 
 const requestLogger = require('./middleware/requestLogger');
 

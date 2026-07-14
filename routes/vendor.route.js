@@ -5,7 +5,7 @@ const imageUpload = require('../middleware/imageUpload');
 const vendorOnboardingUpload = require('../middleware/imageUpload');
 const { verifyUser, requireRole, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
 
-const { createUser, loginUser, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding, VendorDeleteAccount } = require('../controllers/Vendor/auth.controller');
+const { createUser, loginUser, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding, VendorDeleteAccount, suspendVendorAccount, reactivateVendorAccount } = require('../controllers/Vendor/auth.controller');
 const { addProduct, getVendorProducts, getAllProducts, getProductDetails, updateProduct, deleteProduct, getVendorProductsByCategory } = require('../controllers/Vendor/product.controller');
 const { saveVendorPayout } = require('../controllers/Vendor/payout.controller');
 const { getVendorOrders, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, getRefundRequests, getReturnRequests, getSingleVendorOrder, reviewRefundRequest, reviewReturnRequest } = require('../controllers/Vendor/order.controller');
@@ -29,16 +29,21 @@ router.post('/profile/onboarding', verifyUser, vendorOnboardingUpload.fields([{ 
 
 router.post('/auth/logout', verifyUser, logoutUser);
 
-router.delete("/profile", verifyUser, VendorDeleteAccount);
+router.post("/profile/delete/me", verifyUser, VendorDeleteAccount);
+
+router.post('/profile/suspend/me', verifyUser, suspendVendorAccount)
+
+router.post('/profile/reactivate/me', verifyUser, reactivateVendorAccount)
 
 router.get('/profile/me', verifyUser, getUsersDetails);
 
 router.put('/profile/me', verifyUser, imageUpload.fields([
-    { name: 'profilePhoto', maxCount: 1 },
-    { name: 'bannerImage', maxCount: 1 }
+    { name: "student.profilePhoto", maxCount: 1 },
+    { name: "business.logo", maxCount: 1 },
+    { name: "business.banner", maxCount: 1 },
 ]), updateVendorProfile);
 
-router.put('/profile/me/change-password', verifyUser, updateVendorProfile);
+// router.put('/profile/me/change-password', verifyUser, updateVendorProfile);
 
 router.post('/product/add', verifyUser, requireRole(['vendor']), imageUpload.single('image'), addProduct)
 
@@ -102,4 +107,4 @@ router.patch('/orders/:orderId/return-request/review', verifyUser, reviewReturnR
 
 router.get('/reviews/vendor/:vendorId', reviewController.getVendorReviews);
 
-module.exports  = router;
+module.exports = router;

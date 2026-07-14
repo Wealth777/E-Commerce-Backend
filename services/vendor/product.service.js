@@ -120,15 +120,24 @@ const getVendorProducts = async ({ vendorId }) => {
 const getAllProducts = async ({ limitParam, user }) => {
   const limit = validateLimit(limitParam);
   const products = await AddProduct.find()
-    .populate('vendor', 'storeName profilePhoto country state')
+    .populate({
+      path: "vendor",
+      select: "storeName profilePhoto country state accountStatus",
+      match: {
+        accountStatus: "active",
+        isActive: true,
+      },
+    })
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug');
+
 
   if (!products || products.length === 0) {
     return { count: 0, totalProducts: 0, items: [] };
   }
 
-  const vendorGroups = groupProductsByVendor(products);
+  const filteredProducts = products.filter(product => product.vendor);
+  const vendorGroups = groupProductsByVendor(filteredProducts);
   const items = buildInterleavedFeed(vendorGroups, limit);
 
   if (user?._id) {
@@ -141,13 +150,13 @@ const getAllProducts = async ({ limitParam, user }) => {
       metadata: {
         limit,
         productsReturned: items.length,
-        totalProducts: products.length,
+        totalProducts: filteredProducts.length,
         vendorsCount: Object.keys(vendorGroups).length,
       },
     });
   }
 
-  return { count: items.length, totalProducts: products.length, products: items, };
+  return { count: items.length, totalProducts: filteredProducts.length, products: items, };
 };
 
 const updateProduct = async ({ productId, vendorId, body, file, session }) => {
@@ -253,11 +262,19 @@ const softDeleteProduct = async ({ productId, vendorId, session }) => {
 
 const getProductDetails = async ({ productId }) => {
   const product = await AddProduct.findById(productId)
-    .populate('vendor', 'serialNumber fullName storeName storeDescription profilePhoto country state socialLinks')
+    .populate({
+      path: "vendor",
+      select:
+        "serialNumber fullName storeName storeDescription profilePhoto country state socialLinks accountStatus isActive",
+      match: {
+        accountStatus: "active",
+        isActive: true,
+      },
+    })
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug');
 
-  if (!product) throw new AppError('Product not found', 404);
+  if (!product || !product.vendor) throw new AppError('Product not found', 404);
 
   return {
     product: {
@@ -324,12 +341,21 @@ const getVendorProductsByCategory = async ({ vendorId, category }) => {
     ],
   })
     .sort({ createdAt: -1 })
-    .populate('vendor', 'fullName storeName profilePhoto country state')
+    .populate({
+      path: "vendor",
+      select: "fullName storeName profilePhoto country state accountStatus",
+      match: {
+        accountStatus: "active",
+        isActive: true,
+      },
+    })
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug');
 
+  const filteredProducts = products.filter(product => product.vendor);
+
   return {
-    count: products.length,
+    count: filteredProducts.length,
     category: categoryDoc.name,
     vendor: products[0]?.vendor
       ? {
@@ -338,7 +364,7 @@ const getVendorProductsByCategory = async ({ vendorId, category }) => {
         storeName: products[0].vendor.storeName,
       }
       : null,
-    products,
+    products: filteredProducts.length,
   };
 };
 

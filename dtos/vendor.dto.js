@@ -46,6 +46,7 @@ class VendorDTO {
       type: vendor.business?.type,
       description: vendor.business?.description,
       logo: vendor.business?.logo,
+      banner: vendor.business?.banner,
 
       socials: {
         facebook: vendor.business?.socials?.facebook,
@@ -118,6 +119,7 @@ class VendorDTO {
         type: vendor.business?.type,
         description: vendor.business?.description,
         logo: vendor.business?.logo,
+        banner: vendor.business?.banner,
         socials: vendor.business?.socials,
       },
 
