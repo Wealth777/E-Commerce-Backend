@@ -10,6 +10,8 @@ const VendorDTO = require('../../dtos/vendor.dto');
 const AddProduct = require('../../models/addproduct.model');
 const Order = require("../../models/buyerOrder.model");
 const notificationService = require('../../services/notification/notification.service');
+const emailService = require("../../services/email.service");
+const verificationTokenService = require("../../services/verificationToken.service");
 const { sendSuccess, sendError } = require('../../utils/responseStruture');
 const mongoose = require("mongoose");
 const { verifyGoogleToken } = require('../../services/googleAuth.service');
@@ -40,6 +42,7 @@ exports.createUser = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, saltRounds);
+
     const serialNo = await generateSerialNumber("vendor", session);
 
     const createAcc = new vendorModel({
@@ -51,6 +54,12 @@ exports.createUser = async (req, res) => {
     });
 
     await createAcc.save({ session });
+
+    const verificationToken =
+      await verificationTokenService.create(
+        createAcc._id,
+        "Vendor"
+      );
 
     await AuditLog.create([
       {
@@ -67,7 +76,21 @@ exports.createUser = async (req, res) => {
 
     await session.commitTransaction();
 
-    return sendSuccess(res, 201, 'User Account Created Successfully');
+    try {
+      await emailService.sendVerificationEmail({
+        email: createAcc.email,
+        name: createAcc.fullName,
+        verificationToken: verificationToken.token,
+      });
+    } catch (emailError) {
+      logger.error("Verification email failed", {
+        user: createAcc._id,
+        email: createAcc.email,
+        error: emailError.message,
+      });
+    }
+
+    return sendSuccess(res, 201, "Account created successfully. Please check your email to verify your account before logging in.");
   } catch (err) {
     await session.abortTransaction();
     logger.error(err);
@@ -98,9 +121,15 @@ exports.loginUser = async (req, res) => {
 
     const confirmPassword = await bcrypt.compare(password, user.password);
 
+
     if (!confirmPassword) {
       await session.abortTransaction();
       return sendError(res, 400, 'Invalid credentials');
+    }
+
+    if (!user.emailVerified) {
+      await session.abortTransaction();
+      return sendError(res, 403, "Please verify your email before logging in.");
     }
 
     const accessToken = jwt.sign(

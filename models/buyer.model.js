@@ -17,6 +17,10 @@ const buyer = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+  emailVerified: {
+    type: Boolean,
+    trim: true
+  },
   googleId: {
     type: String,
     trim: true
@@ -89,14 +93,17 @@ const buyer = new mongoose.Schema({
     default: true
   },
 
-
-
   isDeleted: {
     type: Boolean,
     default: false,
     index: true
   },
+
   deleteReason: String,
+
+  passwordResetToken: String,
+
+  passwordResetExpires: Date,
 
   updatedAt: Date
 }, {

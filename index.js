@@ -7,6 +7,7 @@ const { Server } = require('socket.io');
 const app = require('./app');
 const { initializeSocket } = require('./sockets/notification.socket');
 const { connectChatDatabase } = require('./config/chatDatabase');
+const { verifyEmailConnection } = require('./config/email')
 
 const port = process.env.PORT;
 
@@ -15,14 +16,28 @@ async function validateEnvironment() {
   const required = [
     'JWT_KEY',
     'JWT_REFRESH_SECRET',
+
     'MONGO_URL',
     'CHAT_DB_URL',
+
     'PORT',
     'frontedURL',
+
     'CLOUDINARY_CLOUD_NAME',
     'CLOUDINARY_API_KEY',
     'CLOUDINARY_API_SECRET',
+
     'NODE_ENV',
+
+    'EMAIL_HOST',
+    'EMAIL_PORT',
+    'EMAIL_SECURE',
+    'EMAIL_USER',
+    'EMAIL_PASSWORD',
+    'EMAIL_FROM',
+    'APP_NAME',
+    'EMAIL_SUPPORT',
+    'EMAIL_LOGO'
   ];
 
   const missing = required.filter((key) => !process.env[key]);
@@ -43,6 +58,8 @@ async function validateEnvironment() {
 async function startServer() {
   try {
     await validateEnvironment();
+
+    await verifyEmailConnection();
 
     await mongoose.connect(process.env.MONGO_URL, {
       serverSelectionTimeoutMS: 5000,

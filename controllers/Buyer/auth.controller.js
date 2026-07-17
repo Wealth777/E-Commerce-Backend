@@ -12,6 +12,8 @@ const { default: mongoose } = require('mongoose');
 const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
 const BuyerDTO = require('../../dtos/buyer.dto');
 const { verifyGoogleToken } = require('../../services/googleAuth.service');
+const emailService = require("../../services/email.service");
+const verificationTokenService = require("../../services/verificationToken.service");
 
 const saltRounds = 10;
 
@@ -87,11 +89,25 @@ exports.createUser = async (req, res) => {
 
     await session.commitTransaction();
 
-    sendResponse(res, 201, true, '🎉 User Account Created Successfully!.')
+    try {
+      await emailService.sendVerificationEmail({
+        email: createAcc.email,
+        name: createAcc.fullName,
+        verificationToken: verificationToken.token,
+      });
+    } catch (emailError) {
+      logger.error("Verification email failed", {
+        user: createAcc._id,
+        email: createAcc.email,
+        error: emailError.message,
+      });
+    }
+
+    return sendResponse(res, 201, true, '🎉 User Account Created Successfully!.')
   } catch (err) {
     await session.abortTransaction();
     logger.error(err);
-    sendResponse(res, 500, false, 'Internal Server Error')
+    return sendResponse(res, 500, false, 'Internal Server Error')
   } finally {
     session.endSession();
   };
@@ -121,6 +137,11 @@ exports.loginUser = async (req, res) => {
     if (!confirmPassword) {
       await session.abortTransaction();
       return sendError(res, 400, 'Invalid credentials');
+    }
+
+    if (!user.emailVerified) {
+      await session.abortTransaction();
+      return sendError(res, 403, "Please verify your email before logging in.");
     }
 
     const accessToken = jwt.sign(

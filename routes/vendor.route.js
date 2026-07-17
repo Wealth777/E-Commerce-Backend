@@ -3,7 +3,7 @@ const router = express.Router();
 
 const imageUpload = require('../middleware/imageUpload');
 const vendorOnboardingUpload = require('../middleware/imageUpload');
-const { verifyUser, requireRole, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
+const { verifyUser, requireRole, loginLimiter, apiLimiter, requireVerifiedEmail, requireCompletedOnboarding } = require('../middleware/verifyUser');
 
 const { createUser, loginUser, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding, VendorDeleteAccount, suspendVendorAccount, reactivateVendorAccount } = require('../controllers/Vendor/auth.controller');
 const { addProduct, getVendorProducts, getAllProducts, getProductDetails, updateProduct, deleteProduct, getVendorProductsByCategory } = require('../controllers/Vendor/product.controller');
@@ -21,90 +21,278 @@ const { createVendorCategory, getCategories, rejectCategory, approveCategory } =
 
 router.use(apiLimiter);
 
-router.post('/auth/register', validateRegister, createUser);
+/* -------------------------------------------------------------------------- */
+/*                               PUBLIC ROUTES                                */
+/* -------------------------------------------------------------------------- */
 
-router.post('/auth/login', loginLimiter, loginUser);
+router.post("/auth/register", validateRegister, createUser);
 
-router.post('/profile/onboarding', verifyUser, vendorOnboardingUpload.fields([{ name: "profilePhoto", maxCount: 1 }, { name: "businessLogo", maxCount: 1 }, { name: "schoolIdCard", maxCount: 1 }, { name: "nationalId", maxCount: 1 }]), completeOnboarding);
+router.post("/auth/login", loginLimiter, loginUser);
 
-router.post('/auth/logout', verifyUser, logoutUser);
-
-router.post("/profile/delete/me", verifyUser, VendorDeleteAccount);
-
-router.post('/profile/suspend/me', verifyUser, suspendVendorAccount)
-
-router.post('/profile/reactivate/me', verifyUser, reactivateVendorAccount)
-
-router.get('/profile/me', verifyUser, getUsersDetails);
-
-router.put('/profile/me', verifyUser, imageUpload.fields([
-    { name: "student.profilePhoto", maxCount: 1 },
-    { name: "business.logo", maxCount: 1 },
-    { name: "business.banner", maxCount: 1 },
-]), updateVendorProfile);
-
-// router.put('/profile/me/change-password', verifyUser, updateVendorProfile);
-
-router.post('/product/add', verifyUser, requireRole(['vendor']), imageUpload.single('image'), addProduct)
-
-router.get('/product/me', verifyUser, getVendorProducts);
-
-router.get('/product/all', getAllProducts);
+router.get("/product/all", getAllProducts);
 
 router.get("/categories", getCategories);
 
-router.post("/categories", verifyUser, requireRole(['vendor']), createVendorCategory);
+/* -------------------------------------------------------------------------- */
+/*                          AUTHENTICATED ROUTES                              */
+/* -------------------------------------------------------------------------- */
 
-router.post('/payout', verifyUser, saveVendorPayout);
+router.post("/auth/logout", verifyUser, logoutUser);
 
-router.get('/orders', verifyUser, getVendorOrders)
+router.get("/profile/me", verifyUser, getUsersDetails);
 
-router.post('/orders/action/confirmpayment', verifyUser, vendorConfirmPayment);
-
-router.post('/orders/action/confirmorder', verifyUser, vendorConfirmOrder);
-
-router.post('/orders/action/confirmshipped', verifyUser, vendorShipOrder);
-
-router.get('/orders/refund-requests', verifyUser, getRefundRequests);
-
-router.get('/orders/return-requests', verifyUser, getReturnRequests);
-
-router.get('/analytics', verifyUser, requireRole(['vendor']), asyncHandler(getVendorAnalytics));
-
-router.get("/analytics/export/pdf", verifyUser, asyncHandler(exportVendorAnalyticsPDF));
-
-router.get('/activity', verifyUser, getUsersActivities);
-
-router.get('/ratings/products', verifyUser, requireRole(['vendor']), ratingController.getVendorProductRatings);
-
-router.get('/reviews/me', verifyUser, requireRole(['vendor']), reviewController.getVendorReviews);
-
-router.post('/reports', verifyUser, reportController.createReport);
-
-router.get('/reports/me', verifyUser, reportController.getMyReports);
-
-// Dynamic routes
-router.get("/product/:productId", getProductDetails);
-
-router.get('/vendor/details/:id', getVendorDetails)
-
-router.put('/product/:id', verifyUser, imageUpload.single("image"), updateProduct
+router.put(
+    "/profile/me",
+    verifyUser,
+    imageUpload.fields([
+        { name: "student.profilePhoto", maxCount: 1 },
+        { name: "business.logo", maxCount: 1 },
+        { name: "business.banner", maxCount: 1 },
+    ]),
+    updateVendorProfile
 );
 
-router.delete('/product/:id', verifyUser, deleteProduct);
+router.post("/profile/delete/me", verifyUser, VendorDeleteAccount);
 
-router.get('/vendor/products/:vendorId/category/:category', getVendorProductsByCategory)
+router.post("/profile/suspend/me", verifyUser, suspendVendorAccount);
 
-router.patch("/categories/:categoryId/approve", verifyUser, requireRole(['founder']), approveCategory);
+router.post("/profile/reactivate/me", verifyUser, reactivateVendorAccount);
 
-router.patch("/categories/:categoryId/reject", verifyUser, requireRole(['founder']), rejectCategory);
+/* -------------------------------------------------------------------------- */
+/*                         VERIFIED ACCOUNT ROUTES                            */
+/* -------------------------------------------------------------------------- */
 
-router.get('/orders/:orderId', verifyUser, getSingleVendorOrder);
+router.post(
+    "/profile/onboarding",
+    verifyUser,
+    requireVerifiedEmail,
+    vendorOnboardingUpload.fields([
+        { name: "profilePhoto", maxCount: 1 },
+        { name: "businessLogo", maxCount: 1 },
+        { name: "schoolIdCard", maxCount: 1 },
+        { name: "nationalId", maxCount: 1 },
+    ]),
+    completeOnboarding
+);
 
-router.patch('/orders/:orderId/refund-request/review', verifyUser, reviewRefundRequest);
+/* -------------------------------------------------------------------------- */
+/*                        ACTIVE VENDOR ROUTES                                */
+/* -------------------------------------------------------------------------- */
 
-router.patch('/orders/:orderId/return-request/review', verifyUser, reviewReturnRequest);
+router.post(
+    "/product/add",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    imageUpload.single("image"),
+    addProduct
+);
 
-router.get('/reviews/vendor/:vendorId', reviewController.getVendorReviews);
+router.get(
+    "/product/me",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    getVendorProducts
+);
+
+router.post(
+    "/categories",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    createVendorCategory
+);
+
+router.post(
+    "/payout",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    saveVendorPayout
+);
+
+router.get(
+    "/orders",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    getVendorOrders
+);
+
+router.post(
+    "/orders/action/confirmpayment",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    vendorConfirmPayment
+);
+
+router.post(
+    "/orders/action/confirmorder",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    vendorConfirmOrder
+);
+
+router.post(
+    "/orders/action/confirmshipped",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    vendorShipOrder
+);
+
+router.get(
+    "/orders/refund-requests",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    getRefundRequests
+);
+
+router.get(
+    "/orders/return-requests",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    getReturnRequests
+);
+
+router.get(
+    "/analytics",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    asyncHandler(getVendorAnalytics)
+);
+
+router.get(
+    "/analytics/export/pdf",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    asyncHandler(exportVendorAnalyticsPDF)
+);
+
+router.get(
+    "/ratings/products",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    ratingController.getVendorProductRatings
+);
+
+router.get(
+    "/reviews/me",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    reviewController.getVendorReviews
+);
+
+router.post(
+    "/reports",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    reportController.createReport
+);
+
+router.get(
+    "/reports/me",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    reportController.getMyReports
+);
+
+router.get(
+    "/activity",
+    verifyUser,
+    requireRole(["vendor"]),
+    getUsersActivities
+);
+
+/* -------------------------------------------------------------------------- */
+/*                        ALL VENDOR DYNAMIC ROUTES                           */
+/* -------------------------------------------------------------------------- */
+
+router.get("/product/:productId", getProductDetails);
+
+router.get("/vendor/details/:id", getVendorDetails);
+
+router.get(
+    "/vendor/products/:vendorId/category/:category",
+    getVendorProductsByCategory
+);
+
+router.get(
+    "/reviews/vendor/:vendorId",
+    reviewController.getVendorReviews
+);
+
+router.put(
+    "/product/:id",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    imageUpload.single("image"),
+    updateProduct
+);
+
+router.delete(
+    "/product/:id",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    deleteProduct
+);
+
+router.get(
+    "/orders/:orderId",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    getSingleVendorOrder
+);
+
+router.patch(
+    "/orders/:orderId/refund-request/review",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    reviewRefundRequest
+);
+
+router.patch(
+    "/orders/:orderId/return-request/review",
+    verifyUser,
+    requireRole(["vendor"]),
+    requireVerifiedEmail,
+    requireCompletedOnboarding,
+    reviewReturnRequest
+);
 
 module.exports = router;

@@ -79,6 +79,7 @@ class VendorDTO {
     // ======================================================
 
     this.verification = {
+      emailVerified: vendor.emailVerified,
       onboardingCompleted: vendor.onboardingCompleted,
       verificationStatus: vendor.verificationStatus,
       isVerified: vendor.isVerified,
@@ -139,6 +140,7 @@ class VendorDTO {
       email: vendor.email,
       role: vendor.role,
 
+      emailVerified: vendor.emailVerified,
       onboardingCompleted: vendor.onboardingCompleted,
 
       verificationStatus: vendor.verificationStatus,

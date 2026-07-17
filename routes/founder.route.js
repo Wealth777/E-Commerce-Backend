@@ -4,7 +4,7 @@ const dashboardController = require('../controllers/Founder/dashboard.controller
 const usersController = require('../controllers/Founder/users.controller');
 const vendorController = require('../controllers/Founder/vendor.controller');
 const buyerController = require('../controllers/Founder/buyer.controller');
-const { verifyUser, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
+const { verifyUser, loginLimiter, apiLimiter, requireRole } = require('../middleware/verifyUser');
 const { founderOnly, founderOrAdmin } = require('../middleware/founderAccess');
 const reviewController = require('../controllers/common/review.controller');
 const reportController = require('../controllers/common/report.controller');
@@ -16,6 +16,7 @@ const {
   reasonBodyValidator,
   rejectVendorValidator,
 } = require('../validators/founder.validator');
+const { approveCategory, rejectCategory } = require('../controllers/Vendor/category.controller');
 
 const router = express.Router();
 
@@ -51,6 +52,7 @@ router.get('/vendors/approved', verifyUser, founderOrAdmin, listQueryValidator, 
 router.get('/vendors/rejected', verifyUser, founderOrAdmin, listQueryValidator, vendorController.getRejectedVendors);
 
 router.get('/buyers', verifyUser, founderOrAdmin, listQueryValidator, buyerController.getBuyers);
+
 
 // Dynamic Route
 router.patch('/reviews/:reviewId/hide', verifyUser, founderOrAdmin, reviewController.founderHideReview);
@@ -95,5 +97,19 @@ router.get('/buyers/:buyerId', verifyUser, founderOrAdmin, mongoIdParam('buyerId
 router.patch('/buyers/:buyerId/ban', verifyUser, founderOrAdmin, mongoIdParam('buyerId'), reasonBodyValidator, buyerController.banBuyer);
 
 router.patch('/buyers/:buyerId/unban', verifyUser, founderOrAdmin, mongoIdParam('buyerId'), reasonBodyValidator, buyerController.unbanBuyer);
+
+router.patch(
+    "/categories/:categoryId/approve",
+    verifyUser,
+    requireRole (["founder"]),
+    approveCategory
+);
+
+router.patch(
+    "/categories/:categoryId/reject",
+    verifyUser,
+    requireRole(["founder"]),
+    rejectCategory
+);
 
 module.exports = router;

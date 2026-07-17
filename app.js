@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(express.json({ limit: '1mb' }))
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
+const commonAuth = require('./routes/commonAuth.route');
 const buyerRoutes = require('./routes/buyer.route');
 const vendorRoutes = require('./routes/vendor.route');
 const founderRoutes = require('./routes/founder.route');
@@ -24,7 +25,11 @@ const notificationRoutes = require('./routes/notification.route');
 const chatRoutes = require('./routes/chat.route');
 const schoolRoute = require('./routes/school.route')
 const supportRoute = require('./routes/support.routes')
+const requestLogger = require('./middleware/requestLogger');
 
+app.use(requestLogger);
+
+app.use('/api/auth', commonAuth);
 app.use('/api/buyer', buyerRoutes);
 app.use('/api/vendor', vendorRoutes);
 app.use('/api/founder', founderRoutes);
@@ -33,9 +38,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/schools', schoolRoute);
 app.use('/api/support', supportRoute);
 
-const requestLogger = require('./middleware/requestLogger');
 
-app.use(requestLogger);
 
 const { specs, swaggerUi } = require('./swagger');
 

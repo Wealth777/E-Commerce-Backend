@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { sendError } = require('../utils/responseStruture');
 const buyerModel = require('../models/buyer.model');
+const vendorModel = require("../models/vendor.model");
+
 
 const verifyUser = (req, res, next) => {
   try {
@@ -93,4 +95,42 @@ const requireCompletedProfile = async (
   }
 };
 
-module.exports = { verifyUser, requireRole, requireCompletedProfile, loginLimiter, apiLimiter };
+const requireVerifiedEmail = async (req, res, next) => {
+  try {
+    const Model = req.user.role === "buyer"
+      ? buyerModel
+      : vendorModel;
+
+    const user = await Model.findById(req.user._id).select("emailVerified");
+
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    if (!user.emailVerified) {
+      return sendError(
+        res,
+        403,
+        "Please verify your email address before continuing."
+      );
+    }
+
+    next();
+  } catch (error) {
+    return sendError(res, 500, "Verification failed");
+  }
+};
+
+const requireCompletedOnboarding = (req, res, next) => {
+    if (!req.user.onboardingCompleted) {
+        return sendError(
+            res,
+            403,
+            "Please complete your onboarding first."
+        );
+    }
+
+    next();
+};
+
+module.exports = { verifyUser, requireRole, requireCompletedProfile, loginLimiter, apiLimiter, requireVerifiedEmail, requireCompletedOnboarding };

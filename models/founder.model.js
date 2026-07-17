@@ -39,7 +39,11 @@ const founder = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
-  }
+  },
+
+  passwordResetToken: String,
+
+  passwordResetExpires: Date,
 }, {
   timestamps: true
 });

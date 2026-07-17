@@ -22,14 +22,16 @@ const vendorSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
       lowercase: true,
       trim: true,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
     },
     phoneNo: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     password: {
@@ -69,7 +71,6 @@ const vendorSchema = new mongoose.Schema(
       },
       matricNumber: {
         type: String,
-        unique: true,
         trim: true,
       },
       faculty: {
@@ -221,16 +222,20 @@ const vendorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    
+
     suspendReason: String,
 
     suspendDate: Date,
-      
+
     deleteReason: String,
 
     deleteDate: Date,
 
     reactivatedAt: Date,
+
+    passwordResetToken: String,
+
+    passwordResetExpires: Date,
 
     accountStatus: {
       type: String,
@@ -247,6 +252,37 @@ const vendorSchema = new mongoose.Schema(
   {
     timestamps: true,
   });
+
+vendorSchema.index(
+  { email: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      deleted: { $ne: true },
+    },
+  }
+);
+
+vendorSchema.index(
+  { phoneNo: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      deleted: { $ne: true },
+    },
+  }
+);
+
+// vendorSchema.index(
+//   { "student.matricNumber": 1 },
+//   {
+//     unique: true,
+//     partialFilterExpression: {
+//       "student.matricNumber": { $exists: true },
+//       deleted: { $ne: true },
+//     },
+//   }
+// );
 
 vendorSchema.index(
   { "bankDetails.accountNumber": 1 },
