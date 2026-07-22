@@ -29,6 +29,7 @@ const vendorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    emailVerifiedDate: Date,
     phoneNo: {
       type: String,
       required: true,
@@ -227,11 +228,35 @@ const vendorSchema = new mongoose.Schema(
 
     suspendDate: Date,
 
+    isLocked: {
+      type: Boolean,
+      default: false,
+    },
+
+    lockReason: String,
+
     deleteReason: String,
 
     deleteDate: Date,
 
     reactivatedAt: Date,
+
+    pendingEmail: {
+      type: String,
+      default: null,
+    },
+
+    emailHistory: [
+      {
+        email: String,
+        changedAt: Date,
+        verifiedAt: Date
+      }
+    ],
+
+    changeEmailDate: Date,
+
+    updatePasswordDate: Date,
 
     passwordResetToken: String,
 
@@ -243,6 +268,7 @@ const vendorSchema = new mongoose.Schema(
         "pending",
         "active",
         "suspended",
+        "locked",
         "banned",
         "deleted"
       ],

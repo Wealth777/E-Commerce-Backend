@@ -25,6 +25,7 @@ const notificationRoutes = require('./routes/notification.route');
 const chatRoutes = require('./routes/chat.route');
 const schoolRoute = require('./routes/school.route')
 const supportRoute = require('./routes/support.routes')
+const securityRoute = require('./routes/security.route');
 const requestLogger = require('./middleware/requestLogger');
 
 app.use(requestLogger);
@@ -37,6 +38,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/schools', schoolRoute);
 app.use('/api/support', supportRoute);
+app.use('/api/security', securityRoute);
 
 
 

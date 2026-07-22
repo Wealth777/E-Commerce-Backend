@@ -5,6 +5,9 @@ class BuyerDTO {
 
     this.onboardingCompleted =
       buyer.onboardingCompleted || false;
+    
+    this.emailVerified =
+      buyer.emailVerified || false;
 
     this.identity = {
       serialNumber: buyer.serialNumber || "",

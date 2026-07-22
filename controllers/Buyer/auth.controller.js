@@ -9,7 +9,7 @@ const notificationService = require('../../services/notification/notification.se
 const School = require("../../models/school.model");
 
 const { default: mongoose } = require('mongoose');
-const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
+const { sendSuccess, sendError } = require('../../utils/responseStruture');
 const BuyerDTO = require('../../dtos/buyer.dto');
 const { verifyGoogleToken } = require('../../services/googleAuth.service');
 const emailService = require("../../services/email.service");
@@ -43,14 +43,14 @@ exports.createUser = async (req, res) => {
 
     if (!fullName || !email || !phoneNo || !school || !state || !password) {
       await session.abortTransaction();
-      return sendResponse(res, 400, false, "All fields are required");
+      return sendError(res, 400, false, "All fields are required");
     }
 
     const existingUser = await buyerModel.findOne({ email }).session(session);
     if (existingUser) {
       await session.abortTransaction();
       logger.info('User already exist')
-      return sendResponse(res, 400, false, 'User already exist... Try to login or use another ID(email)');
+      return sendError(res, 400, false, 'User already exist... Try to login or use another ID(email)');
     };
 
     const passwordErrors = validatePassword(password);
@@ -75,6 +75,12 @@ exports.createUser = async (req, res) => {
     });
 
     await createAcc.save({ session });
+
+    const verificationToken =
+      await verificationTokenService.create(
+        createAcc._id,
+        "Buyer"
+      );
 
     await AuditLog.create([{
       user: createAcc._id,
@@ -103,11 +109,11 @@ exports.createUser = async (req, res) => {
       });
     }
 
-    return sendResponse(res, 201, true, '🎉 User Account Created Successfully!.')
+    return sendSuccess(res, 201, true, '🎉 Account created successfully. Please check your email to verify your account before logging in.')
   } catch (err) {
     await session.abortTransaction();
     logger.error(err);
-    return sendResponse(res, 500, false, 'Internal Server Error')
+    return sendError(res, 500, false, 'Internal Server Error')
   } finally {
     session.endSession();
   };
@@ -173,8 +179,7 @@ exports.loginUser = async (req, res) => {
         });
 
         await buyerModel.findByIdAndUpdate(
-          // user._id,
-          { id: user._id },
+          user._id,
           { $set: { profileUpdateNotificationSent: true } },
           { session }
         );
@@ -227,7 +232,10 @@ exports.googleLogin = async (req, res) => {
 
     const { email, name, picture, sub: googleId } = payload;
 
+
     let user = await buyerModel.findOne({ email }).session(session);
+
+    let isNewUser = false;
 
     if (!user) {
       const serialNo = await generateSerialNumber("buyer", session);
@@ -238,12 +246,13 @@ exports.googleLogin = async (req, res) => {
         fullName: name,
         profilePhoto: picture,
         googleId,
-        isEmailVerified: true,
+        emailVerified: true,
         role: 'buyer',
         onboardingCompleted: false,
       }], { session });
 
       user = user[0];
+      isNewUser = true;
     }
 
     const accessToken = jwt.sign(
@@ -257,6 +266,21 @@ exports.googleLogin = async (req, res) => {
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
+
+    if (isNewUser) {
+      try {
+        await emailService.sendBuyerWelcome({
+          email: user.email,
+          name: user.fullName,
+        });
+      } catch (emailError) {
+        logger.error("Failed to send welcome email", {
+          userId: user._id,
+          role: user.role,
+          error: emailError.message,
+        });
+      }
+    }
 
     await AuditLog.create([{
       user: user._id,
@@ -275,8 +299,7 @@ exports.googleLogin = async (req, res) => {
         });
 
         await buyerModel.findByIdAndUpdate(
-          // user._id,
-          { id: user._id },
+          user._id,
           { $set: { profileUpdateNotificationSent: true } },
           { session }
         );
@@ -356,10 +379,11 @@ exports.getUsersDetails = async (req, res) => {
         country
         state
         school
-        state
         address
         preferredLanguage
         notificationPreference
+        emailVerified
+        onboardingCompleted
       `);
 
     if (!buyer) {
@@ -409,10 +433,6 @@ exports.updateBuyerProfile = async (req, res) => {
     if (state) buyer.state = state;
     if (address) buyer.address = address;
 
-    if (email) buyer.email = email;
-    if (phoneNo) buyer.phoneNo = phoneNo;
-    if (address) buyer.address = address;
-
     if (preferredLanguage) buyer.preferredLanguage = preferredLanguage;
     if (notificationPreference) buyer.notificationPreference = notificationPreference;
 
@@ -420,7 +440,7 @@ exports.updateBuyerProfile = async (req, res) => {
       buyer.profilePhoto = req.files.profilePhoto[0].path;
     }
 
-    await buyer.save();
+    await buyer.save({ session });
 
     await AuditLog.create([{
       user: buyer._id,
@@ -453,7 +473,6 @@ exports.completeBuyerProfile = async (req, res) => {
 
   try {
     session.startTransaction();
-
     const buyerId = req.user._id;
 
     const {
@@ -464,36 +483,19 @@ exports.completeBuyerProfile = async (req, res) => {
 
     if (!school || !state || !phoneNo) {
       await session.abortTransaction();
-
-      return sendError(
-        res,
-        400,
-        "School, state and phone number are required"
-      );
+      return sendError(res, 400, "School, state and phone number are required");
     }
 
-    const buyer = await buyerModel
-      .findById(buyerId)
-      .session(session);
+    const buyer = await buyerModel.findById(buyerId).session(session);
 
     if (!buyer) {
       await session.abortTransaction();
-
-      return sendError(
-        res,
-        404,
-        "Buyer not found"
-      );
+      return sendError(res, 404, "Buyer not found");
     }
 
     if (buyer.onboardingCompleted) {
       await session.abortTransaction();
-
-      return sendError(
-        res,
-        400,
-        "Profile onboarding already completed"
-      );
+      return sendError(res, 400, "Profile onboarding already completed");
     }
 
     const schoolRecord = await School.findOne({
@@ -505,12 +507,7 @@ exports.completeBuyerProfile = async (req, res) => {
 
     if (!schoolRecord) {
       await session.abortTransaction();
-
-      return sendError(
-        res,
-        404,
-        "Selected school does not exist"
-      );
+      return sendError(res, 404, "Selected school does not exist");
     }
 
     const stateRecord = await School.findOne({
@@ -523,12 +520,7 @@ exports.completeBuyerProfile = async (req, res) => {
 
     if (!stateRecord) {
       await session.abortTransaction();
-
-      return sendError(
-        res,
-        400,
-        "Selected state does not belong to the selected school"
-      );
+      return sendError(res, 400, "Selected state does not belong to the selected school");
     }
 
     const existingPhone = await buyerModel.findOne({
@@ -538,12 +530,7 @@ exports.completeBuyerProfile = async (req, res) => {
 
     if (existingPhone) {
       await session.abortTransaction();
-
-      return sendError(
-        res,
-        409,
-        "Phone number already exists"
-      );
+      return sendError(res, 409, "Phone number already exists");
     }
 
     buyer.school = schoolRecord._id;
@@ -578,24 +565,13 @@ exports.completeBuyerProfile = async (req, res) => {
       .populate("school", "name type")
       .populate("state", "name type");
 
-    return sendSuccess(
-      res,
-      200,
-      "Profile completed successfully",
-      BuyerDTO.fromModel(populatedBuyer)
-    );
+    return sendSuccess(res, 200, "Profile completed successfully", BuyerDTO.fromModel(populatedBuyer));
   } catch (error) {
     if (session.inTransaction()) {
       await session.abortTransaction();
     }
-
-    console.error(error);
-
-    return sendError(
-      res,
-      500,
-      "Failed to complete profile"
-    );
+    logger.error(error);
+    return sendError(res, 500, "Failed to complete profile");
   } finally {
     session.endSession();
   }

@@ -7,7 +7,7 @@ const VERIFICATION_TOKEN_EXPIRY = 60 * 60 * 1000;
 
 class VerificationTokenService {
     async create(userId, userModel) {
-        await VerificationToken.deleteMany({
+        await VerificationToken.deleteMany({    
             user: userId,
             userModel,
         });
@@ -16,12 +16,14 @@ class VerificationTokenService {
 
         const expiresAt = new Date(Date.now() + VERIFICATION_TOKEN_EXPIRY);
 
-        await VerificationToken.create({
-            user: userId,
-            userModel,
-            token,
-            expiresAt,
-        });
+        await VerificationToken.create(
+            {
+                user: userId,
+                userModel,
+                token,
+                expiresAt,
+            }
+        );
 
         return {
             token,

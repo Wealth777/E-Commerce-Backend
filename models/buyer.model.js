@@ -19,7 +19,7 @@ const buyer = new mongoose.Schema({
   },
   emailVerified: {
     type: Boolean,
-    trim: true
+    default: false,
   },
   googleId: {
     type: String,

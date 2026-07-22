@@ -4,7 +4,6 @@ const AuditLog = require('../../models/auditLog.model')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { generateSerialNumber } = require('../../utils/generateSerial');
-const { westAfricaCountries, nigeriaStates } = require("../../utils/location");
 const { validationResult } = require('express-validator');
 const VendorDTO = require('../../dtos/vendor.dto');
 const AddProduct = require('../../models/addproduct.model');
@@ -90,7 +89,7 @@ exports.createUser = async (req, res) => {
       });
     }
 
-    return sendSuccess(res, 201, "Account created successfully. Please check your email to verify your account before logging in.");
+    return sendSuccess(res, 201, "🎉 Account created successfully. Please check your email to verify your account before logging in.");
   } catch (err) {
     await session.abortTransaction();
     logger.error(err);
@@ -234,6 +233,7 @@ exports.getUsersDetails = async (req, res) => {
         role
         fullName
         email
+        emailVerified
         phoneNo
         onboardingCompleted
         onboardingCompletedAt
@@ -268,6 +268,18 @@ exports.getUsersDetails = async (req, res) => {
         verificationStatus
         accountStatus
         isActive
+        isLocked
+        isSuspend
+        
+        lockReason
+        suspendReason
+        suspendDate
+        deleteReason
+        deleteDate
+        reactivatedAt
+        pendingEmail
+        changeEmailDate
+        updatePasswordDate
 
         createdAt
         updatedAt

@@ -81,12 +81,21 @@ class VendorDTO {
     this.verification = {
       emailVerified: vendor.emailVerified,
       onboardingCompleted: vendor.onboardingCompleted,
+      isLocked: vendor.isLocked,
       verificationStatus: vendor.verificationStatus,
       isVerified: vendor.isVerified,
       profileUpdateNotificationSent:
         vendor.profileUpdateNotificationSent,
       accountStatus: vendor.accountStatus
     };
+
+    this.updatePasswordDate = vendor.updatePasswordDate;
+
+    this.emailChange = {
+      pendingEmail: vendor.pendingEmail,
+      requestedAt: vendor.pendingEmail ? vendor.changeEmailDate : null,
+    };
+    this.changeEmailDate = vendor.changeEmailDate;
 
     this.createdAt = vendor.createdAt;
     this.updatedAt = vendor.updatedAt;
@@ -146,6 +155,7 @@ class VendorDTO {
       verificationStatus: vendor.verificationStatus,
       isVerified: vendor.isVerified,
       accountStatus: vendor.accountStatus,
+      isLocked: vendor.isLocked,
 
       profilePhoto: vendor.student?.profilePhoto,
 

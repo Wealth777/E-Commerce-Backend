@@ -1,6 +1,7 @@
-module.exports = function verificationMail(options = {}) {
+module.exports = function verifyChangeEmail(options = {}) {
     const {
         name = '',
+        newEmail = '',
         verificationUrl = '#',
         logoUrl = process.env.EMAIL_LOGO,
         appName = process.env.APP_NAME,
@@ -9,13 +10,18 @@ module.exports = function verificationMail(options = {}) {
     } = options;
 
     const safeName = name ? `Hi ${name},` : 'Hello,';
+    
+    // Sub-text dynamic segment if the new target email parameter exists
+    const targetEmailContext = newEmail 
+        ? ` We received a request to update the primary email address for your account to <strong style="color: #1e293b;">${newEmail}</strong>.`
+        : ' We received a request to change the primary email address associated with your account.';
 
     return `<!doctype html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>${appName} • Verify Your Email</title>
+        <title>${appName} • Confirm Email Change</title>
         <style>
             /* CLIENT-SAFE RESET & RESPONSIVENESS */
             body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
@@ -72,7 +78,7 @@ module.exports = function verificationMail(options = {}) {
                                             </table>
                                         </td>
                                         <td align="right" style="vertical-align: middle; color: #9ca3af; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Verification Desk
+                                            Security Desk
                                         </td>
                                     </tr>
                                 </table>
@@ -83,15 +89,15 @@ module.exports = function verificationMail(options = {}) {
                         <tr>
                             <td class="content" style="padding: 44px 48px 32px 48px;">
                                 <h1 class="hero-heading" style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 26px; font-weight: 800; line-height: 32px; color: #1e293b; letter-spacing: -0.5px;">
-                                    Verify Your Identity
-                                </h1>
+                                    Confirm Email Update
+                               </h1>
                                 
                                 <p style="margin: 0 0 12px 0; color: #475569; font-size: 15px; line-height: 1.6; font-weight: 500;">
-                                    Hello ${safeName},
+                                    ${safeName}
                                 </p>
                                 
                                 <p style="margin: 0 0 28px 0; color: #475569; font-size: 15px; line-height: 1.6;">
-                                    Thank you for establishing your vendor profile on our platform. To secure your account structure and finalize setup parameters, please complete your email verification below.
+                                    ${targetEmailContext} To maintain core profile synchronization parameters and verify your access authority, please finalize authorization via the link below.
                                 </p>
 
                                 <!-- Call to Action Button Container -->
@@ -102,7 +108,7 @@ module.exports = function verificationMail(options = {}) {
                                                 <tr>
                                                     <td align="center" class="button-cell" style="border-radius: 12px; background-color: #10B981;">
                                                         <a class="btn-verify" href="${verificationUrl}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 12px; border: 1px solid #10B981; letter-spacing: 0.5px;">
-                                                            Verify My Account
+                                                            Confirm Email Change
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -113,7 +119,7 @@ module.exports = function verificationMail(options = {}) {
 
                                 <!-- Alternate Manual URL Link -->
                                 <p style="margin: 28px 0 6px 0; color: #64748b; font-size: 13px; font-weight: 600;">
-                                    Alternative verification vector:
+                                    Alternative confirmation vector:
                                 </p>
                                 <p style="word-break: break-all; margin: 0 0 28px 0; font-size: 13px; line-height: 1.5;">
                                     <a href="${verificationUrl}" target="_blank" style="color: #10B981; font-weight: 500; text-decoration: underline;">${verificationUrl}</a>
@@ -127,7 +133,7 @@ module.exports = function verificationMail(options = {}) {
                                                 ⚠️ Expiration Parameter Window
                                             </p>
                                             <p style="margin: 0; color: #64748b; font-size: 12px; line-height: 1.5;">
-                                                For account protection, this verification signature window will expire in <strong style="color: #334155;">${expiresInMinutes} minutes</strong>. If you did not initiate this registration request, please disregard this email.
+                                                For identity verification protection, this secure session link will expire in <strong style="color: #334155;">${expiresInMinutes} minutes</strong>. No alterations will take effect without dynamic authorization.
                                             </p>
                                         </td>
                                     </tr>
@@ -137,7 +143,7 @@ module.exports = function verificationMail(options = {}) {
 
                                 <!-- Safety Notice -->
                                 <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.5;">
-                                    <strong>Corporate Safety Protocol:</strong> ${appName} security representatives will never request access credentials or personal authentication details via email correspondence. If you suspect spoofing, reach out directly at <a href="mailto:${supportEmail}" style="color: #10B981; text-decoration: none; font-weight: 600;">${supportEmail}</a>.
+                                    <strong>Corporate Safety Protocol:</strong> If you did not request this email swap sequence, please change your application password immediately to secure your directory profile and report the event to <a href="mailto:${supportEmail}" style="color: #10B981; text-decoration: none; font-weight: 600;">${supportEmail}</a>.
                                 </p>
                             </td>
                         </tr>
@@ -164,7 +170,7 @@ module.exports = function verificationMail(options = {}) {
                     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 600px;">
                         <tr>
                             <td align="center" style="padding: 16px 24px; font-size: 11px; line-height: 1.4; color: #94a3b8;">
-                                You received this secure transmission because your email was used to register an account with the ${appName} network directory. If this was an error, please delete the mail directly.
+                                You received this secure transmission because an active request was initiated to update account data inside the ${appName} network directory.
                             </td>
                         </tr>
                     </table>

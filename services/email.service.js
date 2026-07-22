@@ -2,15 +2,22 @@ const { transporter } = require("../config/email");
 const logger = require("../logger");
 
 const verificationMail = require("../templates/auth/verificationMail");
+const verifyChangeEmail = require("../templates/auth/verifyChangeEmail");
+const notiifyChangeEmail = require("../templates/auth/notifyOldEmail");
 const vendorWelcome = require('../templates/auth/vendor.welcomeMail')
 const buyerWelcome = require('../templates/auth/buyer.welcomeMail')
 const resetPasswordMail = require('../templates/auth/forgetPasswordMail')
 
+const securityRecoveryStartedMail = require('../templates/Security/sendSecurityRecoveryStarted')
+
 const EMAIL_SUBJECTS = {
     VERIFY: "Verify Your CampusTrade Account",
+    VERIFY_EMAIL_CHANGE: "Confirm Your New Email Address",
+    NOTIFY_EMAIL_CHANGE: "Your CampusTrade email was changed",
     VENDOR_WELCOME: "Welcome to CampusTrade",
     BUYER_WELCOME: "Welcome to CampusTrade",
     PASSWORD_RESET: "Reset Your CampusTrade Password",
+    SECURITY_RECOVERY_STARTED: "Your CampusTrade account has been secured",
 };
 
 class EmailService {
@@ -98,6 +105,70 @@ class EmailService {
         });
     }
 
+    /* Send change email verification */
+    async sendChangeEmailVerification({
+        email,
+        newEmail,
+        name,
+        verificationToken,
+        expiresInMinutes = 60,
+    }) {
+        const verificationUrl =
+            `${process.env.frontedURL}/verify-change-email?token=${verificationToken}`;
+
+        const html = verifyChangeEmail({
+            name,
+            newEmail,
+            verificationUrl,
+            expiresInMinutes,
+            appName: process.env.APP_NAME,
+            supportEmail: process.env.EMAIL_SUPPORT,
+        });
+
+        return this.sendEmail({
+            to: email,
+            subject: EMAIL_SUBJECTS.VERIFY_EMAIL_CHANGE,
+            html,
+        });
+    }
+
+    /* Send change email Notification */
+    async sendChangeEmailNotification({
+        email,
+        oldEmail,
+        newEmail,
+        name,
+        verificationToken,
+        browser,
+        os,
+        device,
+        location,
+        changedAt,
+    }) {
+        const recoveryUrl =
+            `${process.env.frontedURL}/security/unauthorized-email-change?token=${verificationToken}`;
+
+        const html = notiifyChangeEmail({
+            name,
+            oldEmail,
+            newEmail,
+            recoveryUrl,
+            appName: process.env.APP_NAME,
+            supportEmail: process.env.EMAIL_SUPPORT,
+            browser,
+            os,
+            device,
+            location,
+            changedAt
+        });
+
+        return this.sendEmail({
+            to: email,
+            subject: EMAIL_SUBJECTS.NOTIFY_EMAIL_CHANGE,
+            html,
+        });
+    }
+
     /* Send forget password */
     async sendPasswordResetEmail({
         email,
@@ -155,6 +226,36 @@ class EmailService {
         return this.sendEmail({
             to: email,
             subject: EMAIL_SUBJECTS.BUYER_WELCOME,
+            html,
+        });
+    }
+
+
+
+
+    /* SECURITY MAILS */
+
+    /* Send Security Recovery Started */
+    async sendSecurityRecoveryStarted({
+        email,
+        name,
+        recoveryUrl,
+        ipAddress,
+        deviceInfo,
+    }) {
+        const html = securityRecoveryStartedMail({
+            name,
+            recoveryUrl,
+            ipAddress,
+            deviceInfo,
+            appName: process.env.APP_NAME,
+            supportEmail: process.env.EMAIL_SUPPORT,
+            logoUrl: process.env.EMAIL_LOGO,
+        });
+
+        return this.sendEmail({
+            to: email,
+            subject: EMAIL_SUBJECTS.SECURITY_RECOVERY_STARTED,
             html,
         });
     }

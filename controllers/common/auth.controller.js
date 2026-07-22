@@ -5,14 +5,15 @@ const bcrypt = require("bcrypt");
 const Vendor = require("../../models/vendor.model");
 const Buyer = require("../../models/buyer.model");
 const Founder = require("../../models/founder.model");
+const Order = require("../../models/buyerOrder.model");
 
 const verificationTokenService = require("../../services/verificationToken.service");
+const securityRecoveryService = require('../../services/securityRecovery.service')
 const emailService = require("../../services/email.service");
-
 const auditLogModel = require("../../models/auditLog.model");
-
 const { sendSuccess, sendError } = require("../../utils/responseStruture");
 const logger = require("../../logger");
+const requestInfo = require('../../utils/getRequestHelper')
 
 const findUserById = async (id, session) => {
     let user = await Vendor.findById(id).session(session);
@@ -89,6 +90,7 @@ exports.verifyEmail = async (req, res) => {
         }
 
         user.emailVerified = true;
+        user.emailVerifiedDate = new Date();
 
         await user.save({ session });
 
@@ -143,7 +145,18 @@ exports.verifyEmail = async (req, res) => {
             });
         }
 
-        return sendSuccess(res, 200, "Email verified successfully.");
+        const loginRoutes = {
+            buyer: "/login",
+            vendor: "/vendor/login",
+            founder: "/founder/login",
+        };
+
+        return sendSuccess(res, 200, "Email verified successfully.",
+            {
+                role: user.role,
+                redirectTo: loginRoutes[user.role],
+            }
+        );
 
     } catch (error) {
         if (session.inTransaction()) {
@@ -170,15 +183,7 @@ exports.resendVerificationEmail = async (req, res) => {
             return sendError(res, 400, "Email address is required.");
         }
 
-        let user = await Vendor.findOne({ email }).session(session);
-
-        if (!user) {
-            user = await Buyer.findOne({ email }).session(session);
-        }
-
-        if (!user) {
-            user = await Founder.findOne({ email }).session(session);
-        }
+        const user = await findUserByEmail(email);
 
         if (!user) {
             await session.abortTransaction();
@@ -190,17 +195,17 @@ exports.resendVerificationEmail = async (req, res) => {
             return sendSuccess(res, 200, "Your email address has already been verified.");
         }
 
-        await verificationTokenService.deleteUserTokens(user._id, session);
+        const modelMap = {
+            vendor: "Vendor",
+            buyer: "Buyer",
+            founder: "Founder",
+        };
 
-
-        const verificationToken = crypto.randomBytes(32).toString("hex");
-
-        await verificationTokenService.createToken(
-            {
-                user: user._id,
-                token: verificationToken,
-            }, session
-        );
+        const { token } =
+            await verificationTokenService.create(
+                user._id,
+                modelMap[user.role]
+            );
 
         await session.commitTransaction();
 
@@ -208,7 +213,7 @@ exports.resendVerificationEmail = async (req, res) => {
             await emailService.sendVerificationEmail({
                 email: user.email,
                 name: user.fullName,
-                verificationToken,
+                verificationToken: token,
                 expiresInMinutes: 60,
             });
         } catch (emailError) {
@@ -224,7 +229,7 @@ exports.resendVerificationEmail = async (req, res) => {
             await session.abortTransaction();
         }
         logger.error(error);
-        return sendError(res, 500, "Failed to resend verification email.");
+        return sendError(res, 500, "Unable to send verification email.");
     } finally {
         session.endSession();
     }
@@ -306,6 +311,8 @@ exports.resetPassword = async (req, res) => {
 
         const user = await findUserByEmail(email, session);
 
+        const deviceInfo = requestInfo(req);
+
         if (!user) {
             await session.abortTransaction();
             return sendError(res, 400, "Account not found.");
@@ -329,6 +336,7 @@ exports.resetPassword = async (req, res) => {
         user.password = hashedPassword;
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
+        user.updatePasswordDate = new Date();
 
         await user.save({ session });
 
@@ -342,6 +350,10 @@ exports.resetPassword = async (req, res) => {
                     entityId: user._id,
                     metadata: {
                         email: user.email,
+                        browser: deviceInfo.browser,
+                        os: deviceInfo.os,
+                        device: deviceInfo.device,
+                        location: deviceInfo.location,
                     },
                 },
             ], { session }
@@ -358,5 +370,606 @@ exports.resetPassword = async (req, res) => {
         return sendError(res, 500, "Internal Server Error.");
     } finally {
         session.endSession();
+    }
+};
+
+exports.changePassword = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Current password and new password are required.");
+        }
+
+        const user = await findUserById(req.user._id, session);
+
+        const deviceInfo = requestInfo(req);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        const passwordMatch = await bcrypt.compare(
+            oldPassword,
+            user.password
+        );
+
+        if (!passwordMatch) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Current password is incorrect.");
+        }
+
+        const samePassword = await bcrypt.compare(
+            newPassword,
+            user.password
+        );
+
+        if (samePassword) {
+            await session.abortTransaction();
+            return sendError(res, 400, "New password must be different from your current password.");
+        }
+
+        const passwordErrors = validatePassword(newPassword);
+
+        if (passwordErrors.length > 0) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Password does not meet security requirements.", passwordErrors);
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.updatePasswordDate = new Date();
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "CHANGE_PASSWORD",
+                    entity: user.role,
+                    entityId: user._id,
+                    metadata: {
+                        email: user.email,
+                        device: deviceInfo.device,
+                        browser: deviceInfo.browser,
+                        os: deviceInfo.os,
+                        location: deviceInfo.location,
+                    },
+                },
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Password changed successfully.");
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Internal Server Error.");
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.changeEmail = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const { newEmail } = req.body;
+
+        if (!newEmail) {
+            await session.abortTransaction();
+            return sendError(res, 400, "New email address is required.");
+        }
+
+        const user = await findUserById(req.user._id, session);
+
+        const deviceInfo = requestInfo(req);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        if (user.email === newEmail.trim().toLowerCase()) {
+            await session.abortTransaction();
+            return sendError(res, 400, "New email must be different from your current email.");
+        }
+
+        const existingUser = await findUserByEmail(newEmail.trim().toLowerCase(), session);
+
+        if (existingUser) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Email address is already in use.");
+        }
+
+        const modelMap = {
+            vendor: "Vendor",
+            buyer: "Buyer",
+            founder: "Founder",
+        };
+
+        const verification = await verificationTokenService.create(user._id, modelMap[user.role]);
+
+        user.pendingEmail = newEmail.trim().toLowerCase();
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "REQUEST_EMAIL_CHANGE",
+                    entity: user.role,
+                    entityId: user._id,
+                    metadata: {
+                        oldEmail: user.email,
+                        newEmail: user.pendingEmail,
+                        device: deviceInfo.device,
+                        browser: deviceInfo.browser,
+                        os: deviceInfo.os,
+                        location: deviceInfo.location,
+                    },
+                },
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        try {
+            await emailService.sendChangeEmailVerification({
+                email: user.pendingEmail,
+                newEmail: user.pendingEmail,
+                name: user.fullName,
+                verificationToken: verification.token,
+                expiresInMinutes: 60,
+            });
+        } catch (emailError) {
+            logger.error("Failed to send email change verification.", {
+                userId: user._id,
+                error: emailError.message,
+            });
+        }
+
+        return sendSuccess(res, 200, "A verification link has been sent to your new email address.");
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Internal Server Error.");
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.verifyChangedEmail = async (req, res) => {
+    const session = await mongoose.startSession();
+    try {
+        session.startTransaction();
+
+        const { token } = req.query;
+
+        if (!token) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Verification token is required.");
+        }
+
+        const verification = await verificationTokenService.findValidToken(token, session);
+
+        if (!verification) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Invalid or expired verification link.");
+        }
+
+        const user = await findUserById(verification.user, session);
+
+        const deviceInfo = requestInfo(req);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "Account not found.");
+        }
+
+        if (!user.pendingEmail) {
+            await session.abortTransaction();
+            return sendError(res, 400, "No pending email change request found.");
+        }
+
+        const existingUser = await findUserByEmail(user.pendingEmail);
+
+        if (existingUser && existingUser._id.toString() !== user._id.toString()) {
+            await session.abortTransaction();
+            return sendError(res, 400, "This email address is already in use.");
+        }
+
+        const oldEmail = user.email;
+        const oldEmailVerifyDate = user.emailVerifiedDate;
+        const newEmail = user.pendingEmail;
+
+        user.email = user.pendingEmail;
+        user.emailHistory.push({
+            oldEmail: oldEmail,
+            newEmail,
+            changedAt: new Date(),
+            verifiedAt: oldEmailVerifyDate
+        });
+        user.pendingEmail = null;
+        user.changeEmailDate = new Date();
+        user.emailVerified = true;
+        user.emailVerifiedDate = new Date();
+
+        await user.save({ session });
+
+        await verificationTokenService.deleteToken(verification._id, session);
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "CHANGE_EMAIL",
+                    entity: user.role,
+                    entityId: user._id,
+                    metadata: {
+                        oldEmail,
+                        newEmail: user.email,
+                        changedAt: new Date(),
+                        browser: deviceInfo.browser,
+                        os: deviceInfo.os,
+                        device: deviceInfo.device,
+                        location: deviceInfo.location,
+                    },
+                },
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        try {
+            const modelMap = {
+                vendor: "Vendor",
+                buyer: "Buyer",
+                founder: "Founder",
+            };
+            const recoveryToken = await securityRecoveryService.create({
+                userId: user._id,
+                userModel: modelMap[user.role],
+                metadata: {
+                    oldEmail,
+                    newEmail: user.email,
+                    browser: deviceInfo.device.browser,
+                    os: deviceInfo.device.os,
+                    device: deviceInfo.deviceName,
+                    location: [
+                        deviceInfo.location.city,
+                        deviceInfo.location.region,
+                        deviceInfo.location.country,
+                    ]
+                        .filter(Boolean)
+                        .join(", "),
+                    ipAddress: deviceInfo.ip,
+                },
+            });
+
+            await emailService.sendChangeEmailNotification({
+                email: oldEmail,
+                oldEmail,
+                newEmail: user.email,
+                name: user.fullName,
+                verificationToken: recoveryToken.token,
+                browser: deviceInfo.device.browser,
+                os: deviceInfo.device.os,
+                device: deviceInfo.deviceName,
+                location: [
+                    deviceInfo.location.city,
+                    deviceInfo.location.region,
+                    deviceInfo.location.country,
+                ]
+                    .filter(Boolean)
+                    .join(", "),
+                changedAt: new Date(),
+            });
+        } catch (emailError) {
+            logger.error("Failed to send email change verification.", {
+                userId: user._id,
+                error: emailError.message,
+            });
+        }
+
+        const loginRoutes = {
+            buyer: "/login",
+            vendor: "/vendor/login",
+            founder: "/founder/login",
+        };
+
+        return sendSuccess(res, 200, "Email address changed successfully.",
+            {
+                email: user.email,
+                role: user.role,
+                redirectTo: loginRoutes[user.role],
+            }
+        );
+
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Internal Server Error.");
+    } finally {
+        session.endSession();
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.suspendVendorAccount = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { reason } = req.body;
+        const userId = req.user._id;
+
+        const user = await findUserById.findById(userId).session(session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "Vendor not found");
+        }
+
+        if (user.accountStatus === "suspended") {
+            await session.abortTransaction();
+            return sendError(res, 409, "Account is already suspended.");
+        }
+
+        if (user.accountStatus === "deleted") {
+            await session.abortTransaction();
+            return sendError(res, 409, "Deleted accounts cannot be suspended.");
+        }
+
+        const pendingOrder = await Order.exists({
+            user: userId,
+            orderStatus: {
+                $in: [
+                    "pending",
+                    "confirmed",
+                    "shipped"
+                ]
+            }
+        }).session(session);
+
+        if (pendingOrder) {
+            await session.abortTransaction();
+
+            return sendError(
+                res,
+                400,
+                "Finalize all pending orders before suspending account."
+            );
+        }
+
+        vendor.accountStatus = "suspended";
+        vendor.isActive = false;
+        vendor.suspendReason = reason?.trim() || null;
+        vendor.suspendDate = new Date();
+
+        await vendor.save({ session });
+
+        await AuditLog.create([
+            {
+                user: vendor._id,
+                role: "vendor",
+                action: "SUSPEND_ACCOUNT",
+                entity: "Vendor",
+                entityId: vendor._id,
+                metadata: {
+                    serialNumber: vendor.serialNumber,
+                    email: vendor.email,
+                    reason: vendor.suspendReason
+                }
+            }
+        ], { session });
+
+        await session.commitTransaction();
+        return sendSuccess(
+            res,
+            200,
+            "Account suspended successfully."
+        );
+    } catch (err) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(err);
+        return sendError(
+            res,
+            500,
+            "Internal Server Error"
+        );
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.reactivateVendorAccount = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+
+        const vendorId = req.user._id;
+
+        const vendor = await vendorModel
+            .findById(vendorId)
+            .session(session);
+
+        if (!vendor) {
+            await session.abortTransaction();
+            return sendError(res, 404, "Vendor not found");
+        }
+
+        if (vendor.accountStatus !== "suspended") {
+            await session.abortTransaction();
+            return sendError(
+                res,
+                400,
+                "Account is not suspended."
+            );
+        }
+
+        vendor.accountStatus = "active";
+        vendor.isActive = true;
+        vendor.suspendReason = null;
+        vendor.suspendDate = null;
+        vendor.reactivatedAt = new Date();
+
+        await vendor.save({ session });
+
+        await AuditLog.create([
+            {
+                user: vendor._id,
+                role: "vendor",
+                action: "REACTIVATE_ACCOUNT",
+                entity: "Vendor",
+                entityId: vendor._id,
+                metadata: {
+                    serialNumber: vendor.serialNumber,
+                    email: vendor.email
+                }
+            }
+        ], { session });
+
+        await session.commitTransaction();
+        return sendSuccess(
+            res,
+            200,
+            "Account reactivated successfully."
+        );
+    } catch (err) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(err);
+        return sendError(
+            res,
+            500,
+            "Internal Server Error"
+        );
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.VendorDeleteAccount = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { reason } = req.body;
+        const vendorId = req.user._id;
+
+        const vendor = await vendorModel
+            .findById(vendorId)
+            .session(session);
+
+        if (!vendor) {
+            await session.abortTransaction();
+            return sendError(res, 404, "Vendor not found");
+        }
+
+        if (vendor.deleted) {
+            await session.abortTransaction();
+            return sendError(res, 409, "Vendor account has already been deleted");
+        }
+
+        // Additional deletion metadata
+        vendor.isDeleted = true;
+        vendor.deleteReason = reason?.trim() || null;
+        vendor.deleteDate = new Date();
+        vendor.isActive = false
+        vendor.accountStatus = 'deleted'
+
+        // Soft delete plugin fields
+        vendor.deleted = true;
+        vendor.deletedAt = new Date();
+        vendor.deletedBy = vendor._id;
+        vendor.deletedByModel = "Vendor";
+
+        await vendor.save({ session });
+
+        await AuditLog.create(
+            [
+                {
+                    user: vendor._id,
+                    role: "vendor",
+                    action: "DELETE_ACCOUNT",
+                    entity: "Vendor",
+                    entityId: vendor._id,
+                    metadata: {
+                        serialNumber: vendor.serialNumber,
+                        email: vendor.email,
+                        reason: reason?.trim() || null,
+                    },
+                },
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(
+            res,
+            200,
+            "Your account has been deleted successfully."
+        );
+    } catch (err) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+
+        logger.error(err);
+
+        return sendError(res, 500, "Internal Server Error");
+    } finally {
+        await session.endSession();
     }
 };

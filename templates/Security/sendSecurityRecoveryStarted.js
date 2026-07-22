@@ -1,11 +1,12 @@
-module.exports = function verificationMail(options = {}) {
+module.exports = function securityRecoveryMail(options = {}) {
     const {
         name = '',
-        verificationUrl = '#',
+        recoveryUrl = '#',
         logoUrl = process.env.EMAIL_LOGO,
-        appName = process.env.APP_NAME,
-        expiresInMinutes = 60,
+        appName = process.env.APP_NAME || 'CampusTrade',
         supportEmail = process.env.EMAIL_SUPPORT,
+        ipAddress = '',
+        deviceInfo = '',
     } = options;
 
     const safeName = name ? `Hi ${name},` : 'Hello,';
@@ -15,7 +16,7 @@ module.exports = function verificationMail(options = {}) {
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>${appName} • Verify Your Email</title>
+        <title>${appName} • Security Recovery Started</title>
         <style>
             /* CLIENT-SAFE RESET & RESPONSIVENESS */
             body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
@@ -25,10 +26,10 @@ module.exports = function verificationMail(options = {}) {
             body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
 
             /* Interactive Micro-animations for Supporting Clients */
-            .btn-verify {
+            .btn-recover {
                 transition: all 0.3s ease-in-out !important;
             }
-            .btn-verify:hover {
+            .btn-recover:hover {
                 background-color: #059669 !important;
                 transform: translateY(-2px) !important;
                 box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
@@ -66,13 +67,13 @@ module.exports = function verificationMail(options = {}) {
                                             <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
                                                 <tr>
                                                     <td>
-                                                        <img src=${logoUrl} alt="${appName} Logo" width="140" style="display:block; border:none; outline:none;" />
+                                                        ${logoUrl ? `<img src="${logoUrl}" alt="${appName} Logo" width="140" style="display:block; border:none; outline:none;" />` : `<span style="font-size: 20px; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">${appName}</span>`}
                                                     </td>
                                                 </tr>
                                             </table>
                                         </td>
                                         <td align="right" style="vertical-align: middle; color: #9ca3af; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                                            Verification Desk
+                                            Security Center
                                         </td>
                                     </tr>
                                 </table>
@@ -83,16 +84,30 @@ module.exports = function verificationMail(options = {}) {
                         <tr>
                             <td class="content" style="padding: 44px 48px 32px 48px;">
                                 <h1 class="hero-heading" style="margin: 0 0 16px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 26px; font-weight: 800; line-height: 32px; color: #1e293b; letter-spacing: -0.5px;">
-                                    Verify Your Identity
+                                    Security Recovery Initiated
                                 </h1>
                                 
                                 <p style="margin: 0 0 12px 0; color: #475569; font-size: 15px; line-height: 1.6; font-weight: 500;">
-                                    Hello ${safeName},
+                                    ${safeName}
                                 </p>
                                 
-                                <p style="margin: 0 0 28px 0; color: #475569; font-size: 15px; line-height: 1.6;">
-                                    Thank you for establishing your vendor profile on our platform. To secure your account structure and finalize setup parameters, please complete your email verification below.
+                                <p style="margin: 0 0 24px 0; color: #475569; font-size: 15px; line-height: 1.6;">
+                                    We have secured your CampusTrade account after receiving a report of an unauthorized email change. All active sessions have been signed out and your account has been temporarily locked while we investigate
                                 </p>
+
+                                ${ipAddress || deviceInfo ? `
+                                <!-- Request Metadata Card -->
+                                <table role="presentation" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 24px;">
+                                    <tr>
+                                        <td style="padding: 16px 20px;">
+                                            <p style="margin: 0 0 8px 0; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                                Request Origin Details
+                                            </p>
+                                            ${ipAddress ? `<p style="margin: 0 0 4px 0; color: #334155; font-size: 13px;"><strong>IP Address:</strong> ${ipAddress}</p>` : ''}
+                                            ${deviceInfo ? `<p style="margin: 0; color: #334155; font-size: 13px;"><strong>Device:</strong> ${deviceInfo}</p>` : ''}
+                                        </td>
+                                    </tr>
+                                </table>` : ''}
 
                                 <!-- Call to Action Button Container -->
                                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
@@ -101,8 +116,8 @@ module.exports = function verificationMail(options = {}) {
                                             <table role="presentation" class="button-wrapper" cellpadding="0" cellspacing="0">
                                                 <tr>
                                                     <td align="center" class="button-cell" style="border-radius: 12px; background-color: #10B981;">
-                                                        <a class="btn-verify" href="${verificationUrl}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 12px; border: 1px solid #10B981; letter-spacing: 0.5px;">
-                                                            Verify My Account
+                                                        <a class="btn-recover" href="${recoveryUrl}" target="_blank" style="display: inline-block; padding: 16px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 700; color: #ffffff; text-decoration: none; border-radius: 12px; border: 1px solid #10B981; letter-spacing: 0.5px;">
+                                                            Verify Your Identity
                                                         </a>
                                                     </td>
                                                 </tr>
@@ -113,25 +128,60 @@ module.exports = function verificationMail(options = {}) {
 
                                 <!-- Alternate Manual URL Link -->
                                 <p style="margin: 28px 0 6px 0; color: #64748b; font-size: 13px; font-weight: 600;">
-                                    Alternative verification vector:
+                                    Alternative recovery link:
                                 </p>
                                 <p style="word-break: break-all; margin: 0 0 28px 0; font-size: 13px; line-height: 1.5;">
-                                    <a href="${verificationUrl}" target="_blank" style="color: #10B981; font-weight: 500; text-decoration: underline;">${verificationUrl}</a>
+                                    <a href="${recoveryUrl}" target="_blank" style="color: #10B981; font-weight: 500; text-decoration: underline;">${recoveryUrl}</a>
                                 </p>
 
-                                <!-- Security Metrics & Expiration Parameters -->
-                                <table role="presentation" width="100%" style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; margin-bottom: 28px;">
-                                    <tr>
-                                        <td style="padding: 16px;">
-                                            <p style="margin: 0 0 6px 0; color: #334155; font-size: 13px; font-weight: 700;">
-                                                ⚠️ Expiration Parameter Window
-                                            </p>
-                                            <p style="margin: 0; color: #64748b; font-size: 12px; line-height: 1.5;">
-                                                For account protection, this verification signature window will expire in <strong style="color: #334155;">${expiresInMinutes} minutes</strong>. If you did not initiate this registration request, please disregard this email.
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <!-- Next Steps -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0; background:#ecfdf5; border:1px solid #bbf7d0; border-radius:12px;">
+    <tr>
+        <td style="padding:20px;">
+            <p style="margin:0 0 12px; font-size:12px; font-weight:700; color:#047857; text-transform:uppercase; letter-spacing:0.5px;">
+                What Happens Next
+            </p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="padding:6px 0; color:#065f46; font-size:14px;">
+                        ✓ Your account has been secured.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; color:#065f46; font-size:14px;">
+                        ✓ All active sessions have been signed out.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; color:#065f46; font-size:14px;">
+                        ✓ New sign in attempts have been temporarily blocked.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; color:#065f46; font-size:14px;">
+                        ✓ Our security team will review your account activity.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; color:#065f46; font-size:14px;">
+                        ✓ We will contact you if additional identity verification is required.
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:6px 0; color:#065f46; font-size:14px;">
+                        ✓ You will receive another email once your account has been restored.
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 
                                 <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 24px 0;" />
 
@@ -139,6 +189,42 @@ module.exports = function verificationMail(options = {}) {
                                 <p style="margin: 0; color: #94a3b8; font-size: 11px; line-height: 1.5;">
                                     <strong>Corporate Safety Protocol:</strong> ${appName} security representatives will never request access credentials or personal authentication details via email correspondence. If you suspect spoofing, reach out directly at <a href="mailto:${supportEmail}" style="color: #10B981; text-decoration: none; font-weight: 600;">${supportEmail}</a>.
                                 </p>
+
+                                <!-- Support Instructions -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px;">
+    <tr>
+        <td style="padding:20px;">
+            <p style="margin:0 0 12px; font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">
+                If You Contact Support
+            </p>
+
+            <p style="margin:0 0 12px; font-size:14px; color:#334155; line-height:1.6;">
+                To help us restore your account as quickly as possible, please have the following information available:
+            </p>
+
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td style="padding:4px 0; color:#334155; font-size:14px;">• Full name</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px 0; color:#334155; font-size:14px;">• Previous email address</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px 0; color:#334155; font-size:14px;">• Student ID or other identity verification</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px 0; color:#334155; font-size:14px;">• Store name, if you are a vendor</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px 0; color:#334155; font-size:14px;">• Approximate time you noticed the email change</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px 0; color:#334155; font-size:14px;">• Incident Number: <strong>${incidentNumber}</strong></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
                             </td>
                         </tr>
 
@@ -164,7 +250,7 @@ module.exports = function verificationMail(options = {}) {
                     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 600px;">
                         <tr>
                             <td align="center" style="padding: 16px 24px; font-size: 11px; line-height: 1.4; color: #94a3b8;">
-                                You received this secure transmission because your email was used to register an account with the ${appName} network directory. If this was an error, please delete the mail directly.
+                                You received this secure transmission because a security event was triggered on your account with the ${appName} network directory. If this was an error, please inform support immediately.
                             </td>
                         </tr>
                     </table>
