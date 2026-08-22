@@ -29,38 +29,30 @@
 //     verifyEmailConnection,
 // };
 
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 const logger = require("../logger");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+if (!process.env.RESEND_API_KEY) {
+    logger.warn("RESEND_API_KEY is not configured.");
+}
 
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
-  },
-
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 100,
-
-  family: 4,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const verifyEmailConnection = async () => {
-  try {
-    await transporter.verify();
+    try {
+        if (!process.env.RESEND_API_KEY) {
+            throw new Error("RESEND_API_KEY is not configured.");
+        }
 
-    logger.info("Email service connected successfully.");
-  } catch (error) {
-    logger.error("Email service connection failed.");
-    logger.error(error.message);
-  }
+        logger.info("Email service connected successfully.");
+    } catch (error) {
+        logger.error("Email service connection failed.", {
+            error: error.message,
+        });
+    }
 };
 
 module.exports = {
-  transporter,
-  verifyEmailConnection,
+    resend,
+    verifyEmailConnection,
 };

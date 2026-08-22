@@ -1,4 +1,4 @@
-const { transporter } = require("../config/email");
+const { resend } = require("../config/email");
 const logger = require("../logger");
 
 const verificationMail = require("../templates/auth/verificationMail");
@@ -47,27 +47,31 @@ class EmailService {
         }
 
         try {
-            const info = await transporter.sendMail({
+            const { data, error } = await resend.emails.send({
                 from: process.env.EMAIL_FROM,
                 to,
-                cc,
-                bcc,
+                cc: cc.length > 0 ? cc : undefined,
+                bcc: bcc.length > 0 ? bcc : undefined,
+                reply_to: replyTo || undefined,
                 subject,
-                text,
+                text: text || undefined,
                 html,
-                attachments,
-                replyTo,
+                attachments: attachments.length > 0 ? attachments : undefined,
             });
 
+            if (error) {
+                throw new Error(error.message);
+            }
+
             logger.info("Email sent successfully.", {
-                messageId: info.messageId,
+                messageId: data?.id,
                 recipient: to,
                 subject,
             });
 
             return {
                 success: true,
-                messageId: info.messageId,
+                messageId: data?.id,
             };
         } catch (error) {
             logger.error("Failed to send email.", {

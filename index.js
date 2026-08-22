@@ -36,13 +36,17 @@ async function validateEnvironment() {
 
     'NODE_ENV',
 
-    'EMAIL_HOST',
-    'EMAIL_PORT',
-    'EMAIL_SECURE',
-    'EMAIL_USER',
-    'EMAIL_PASSWORD',
-    'EMAIL_FROM',
+    // 'EMAIL_HOST',
+    // 'EMAIL_PORT',
+    // 'EMAIL_SECURE',
+    // 'EMAIL_USER',
+    // 'EMAIL_PASSWORD',
+
+    'RESEND_API_KEY',
+    
     'APP_NAME',
+    
+    'EMAIL_FROM',
     'EMAIL_SUPPORT',
     'EMAIL_LOGO'
   ];
