@@ -1195,3 +1195,7 @@
 {"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-08-17T15:22:15.998Z"}
 {"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-08-17T15:28:01.463Z"}
 {"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-08-17T15:34:22.826Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-08-22T14:19:41.214Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-08-22T14:19:41.220Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-08-22T14:30:20.698Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-08-22T14:30:20.705Z"}

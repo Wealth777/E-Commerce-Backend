@@ -16,7 +16,7 @@ const { initializeSocket } = require('./sockets/notification.socket');
 const { connectChatDatabase } = require('./config/chatDatabase');
 const { verifyEmailConnection } = require('./config/email')
 
-const port = process.env.PORT;
+const port = process.env.PORT || 6778;
 
 
 async function validateEnvironment() {
@@ -104,7 +104,7 @@ async function startServer() {
 
     const io = new Server(server, {
       cors: {
-        origin: process.env.frontedURL || 'http://localhost:5173',
+        origin: process.env.frontedURL,
         credentials: true,
         methods: ['GET', 'POST'],
       },

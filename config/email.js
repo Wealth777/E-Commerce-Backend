@@ -30,16 +30,12 @@
 // };
 
 const nodemailer = require("nodemailer");
-const dns = require("dns");
-
 const logger = require("../logger");
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-
-  port: Number(process.env.EMAIL_PORT),
-
-  secure: process.env.EMAIL_SECURE === "true",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
 
   auth: {
     user: process.env.EMAIL_USER,
@@ -50,9 +46,7 @@ const transporter = nodemailer.createTransport({
   maxConnections: 5,
   maxMessages: 100,
 
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { family: 4 }, callback);
-  },
+  family: 4,
 });
 
 const verifyEmailConnection = async () => {

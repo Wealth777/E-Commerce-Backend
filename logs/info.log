@@ -9269,3 +9269,52 @@
 {"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/unread-count","status":401,"duration":"5028ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-17T16:52:14.433Z"}
 {"level":"info","service":"campustrade-backend","message":"Socket disconnected","meta":{"socketId":"ed2g4pmsa2mjfpboAAAD","userId":"6a8310ea36f2ec2c2e31432e","role":"vendor"},"timestamp":"2026-08-17T16:52:14.779Z"}
 {"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/vendor/details/6a8310ea36f2ec2c2e31432e","status":500,"duration":"5030ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-17T16:52:17.964Z"}
+{"level":"info","service":"campustrade-backend","message":"Email service connected successfully.","meta":null,"timestamp":"2026-08-22T14:02:49.589Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:02:53.069Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:02:53.076Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-08-22T14:02:53.099Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"217ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:03:23.726Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":304,"duration":"523ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:03:24.255Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"200ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:03:24.523Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"153ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:03:55.655Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"145ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:03:55.934Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"192ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:10.031Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"141ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:10.221Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"161ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:15.932Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"140ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:16.086Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"560ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:53.201Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":304,"duration":"172ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:53.392Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"148ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:04:53.543Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"179ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:05:11.914Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"156ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:05:12.075Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"184ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:05:15.873Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"198ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:05:16.134Z"}
+{"level":"info","service":"campustrade-backend","message":"Email service connected successfully.","meta":null,"timestamp":"2026-08-22T14:05:28.375Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:05:31.282Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:05:31.291Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-08-22T14:05:31.304Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":200,"duration":"199ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:05:50.892Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/","status":304,"duration":"186ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:05:51.084Z"}
+{"level":"info","service":"campustrade-backend","message":"Email service connected successfully.","meta":null,"timestamp":"2026-08-22T14:06:29.150Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:06:32.157Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:06:32.159Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-08-22T14:06:32.169Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":400,"duration":"943ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:07:04.449Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":400,"duration":"476ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:07:11.284Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":400,"duration":"497ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:07:19.222Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":200,"duration":"723ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:07:53.073Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"44U8wktKqeYTpsExAAAB","userId":"6a8310ea36f2ec2c2e31432e","role":"vendor"},"timestamp":"2026-08-22T14:07:53.193Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/cart","status":404,"duration":"290ms","userId":"6a8310ea36f2ec2c2e31432e","ip":"::1"},"timestamp":"2026-08-22T14:07:53.497Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/unread-count","status":200,"duration":"321ms","userId":"6a8310ea36f2ec2c2e31432e","ip":"::1"},"timestamp":"2026-08-22T14:07:53.578Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/unread-count","status":200,"duration":"297ms","userId":"6a8310ea36f2ec2c2e31432e","ip":"::1"},"timestamp":"2026-08-22T14:07:53.882Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/unread-count","status":200,"duration":"293ms","userId":"6a8310ea36f2ec2c2e31432e","ip":"::1"},"timestamp":"2026-08-22T14:07:54.178Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":400,"duration":"564ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:08:02.668Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":429,"duration":"3ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:08:05.358Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"POST","path":"/auth/login","status":429,"duration":"2ms","userId":"anonymous","ip":"::1"},"timestamp":"2026-08-22T14:08:06.305Z"}
+{"level":"info","service":"campustrade-backend","message":"Email service connected successfully.","meta":null,"timestamp":"2026-08-22T14:11:47.951Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Main Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:11:50.959Z"}
+{"level":"info","service":"campustrade-backend","message":"✅ Chat Database Connected Successfully","meta":null,"timestamp":"2026-08-22T14:11:50.962Z"}
+{"level":"info","service":"campustrade-backend","message":"🚀 Server running on port 6778","meta":null,"timestamp":"2026-08-22T14:11:50.987Z"}
+{"level":"info","service":"campustrade-backend","message":"Socket connected","meta":{"socketId":"tMJFX4tYqMpDg3nEAAAB","userId":"6a8310ea36f2ec2c2e31432e","role":"vendor"},"timestamp":"2026-08-22T14:11:56.201Z"}
+{"level":"info","service":"campustrade-backend","message":"HTTP Request","meta":{"method":"GET","path":"/unread-count","status":200,"duration":"339ms","userId":"6a8310ea36f2ec2c2e31432e","ip":"::1"},"timestamp":"2026-08-22T14:11:56.551Z"}
+{"level":"info","service":"campustrade-backend","message":"Email service connected successfully.","meta":null,"timestamp":"2026-08-22T14:32:13.886Z"}
