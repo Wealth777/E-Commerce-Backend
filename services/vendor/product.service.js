@@ -3,6 +3,7 @@ const AuditLog = require('../../models/auditLog.model');
 const { validateLimit, groupProductsByVendor, buildInterleavedFeed } = require('../../utils/feedAlgorithm');
 const Category = require('../../models/category.model');
 const AppError = require('../common/AppError');
+const VendorDTO = require('../../dtos/vendor.dto');
 
 const mongoose = require('mongoose');
 
@@ -110,33 +111,78 @@ const getVendorProducts = async ({ vendorId }) => {
     throw new AppError('Invalid vendor ID', 400);
   }
 
-  return AddProduct.find({ vendor: vendorId })
-    .populate('vendor', 'storeName businessName fullName profilePhoto country state')
+  const products = await AddProduct.find({ vendor: vendorId })
+    .populate({
+      path: 'vendor',
+      select: `
+        serialNumber
+  fullName
+  role
+  email
+  phoneNo
+  student
+  business
+  isVerified
+  accountStatus
+  isActive
+  createdAt
+  updatedAt
+      `,
+      match: {
+        accountStatus: 'active',
+        isActive: true,
+      },
+    })
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug')
     .sort({ createdAt: -1 });
+
+  return products
+    .filter(product => product.vendor)
+    .map(product => ({
+      ...product.toObject(),
+      vendor: VendorDTO.publicProfile(product.vendor),
+    }));
 };
 
 const getAllProducts = async ({ limitParam, user }) => {
   const limit = validateLimit(limitParam);
+
   const products = await AddProduct.find()
     .populate({
-      path: "vendor",
-      select: "storeName profilePhoto country state accountStatus",
+      path: 'vendor',
+      select: `
+        serialNumber
+  fullName
+  role
+  email
+  phoneNo
+  student
+  business
+  isVerified
+  accountStatus
+  isActive
+  createdAt
+  updatedAt
+      `,
       match: {
-        accountStatus: "active",
+        accountStatus: 'active',
         isActive: true,
       },
     })
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug');
 
-
   if (!products || products.length === 0) {
-    return { count: 0, totalProducts: 0, items: [] };
+    return {
+      count: 0,
+      totalProducts: 0,
+      products: [],
+    };
   }
 
   const filteredProducts = products.filter(product => product.vendor);
+
   const vendorGroups = groupProductsByVendor(filteredProducts);
   const items = buildInterleavedFeed(vendorGroups, limit);
 
@@ -156,7 +202,16 @@ const getAllProducts = async ({ limitParam, user }) => {
     });
   }
 
-  return { count: items.length, totalProducts: filteredProducts.length, products: items, };
+  const formattedProducts = items.map(product => ({
+    ...product.toObject(),
+    vendor: VendorDTO.publicProfile(product.vendor),
+  }));
+
+  return {
+    count: formattedProducts.length,
+    totalProducts: filteredProducts.length,
+    products: formattedProducts,
+  };
 };
 
 const updateProduct = async ({ productId, vendorId, body, file, session }) => {
@@ -263,18 +318,32 @@ const softDeleteProduct = async ({ productId, vendorId, session }) => {
 const getProductDetails = async ({ productId }) => {
   const product = await AddProduct.findById(productId)
     .populate({
-      path: "vendor",
-      select:
-        "serialNumber fullName storeName storeDescription profilePhoto country state socialLinks accountStatus isActive",
+      path: 'vendor',
+      select: `
+        serialNumber
+      fullName
+  role
+  email
+  phoneNo
+  student
+  business
+  isVerified
+  accountStatus
+  isActive
+  createdAt
+  updatedAt
+      `,
       match: {
-        accountStatus: "active",
+        accountStatus: 'active',
         isActive: true,
       },
     })
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug');
 
-  if (!product || !product.vendor) throw new AppError('Product not found', 404);
+  if (!product || !product.vendor) {
+    throw new AppError('Product not found', 404);
+  }
 
   return {
     product: {
@@ -286,22 +355,20 @@ const getProductDetails = async ({ productId }) => {
       subCategory: product.subCategory,
       price: product.price,
       originalPrice: product.originalPrice,
-      discount: product.originalPrice ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0,
+      discount: product.originalPrice
+        ? Math.round(
+          ((product.originalPrice - product.price) /
+            product.originalPrice) *
+          100
+        )
+        : 0,
       stock: product.stock,
       status: product.status,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     },
-    vendor: {
-      id: product.vendor._id,
-      serialNumber: product.vendor.serialNumber,
-      fullName: product.vendor.fullName,
-      storeName: product.vendor.storeName,
-      storeDescription: product.vendor.storeDescription,
-      profilePhoto: product.vendor.profilePhoto,
-      location: { country: product.vendor.country, state: product.vendor.state },
-      socialLinks: product.vendor.socialLinks,
-    },
+
+    vendor: VendorDTO.publicProfile(product.vendor),
   };
 };
 
@@ -342,10 +409,23 @@ const getVendorProductsByCategory = async ({ vendorId, category }) => {
   })
     .sort({ createdAt: -1 })
     .populate({
-      path: "vendor",
-      select: "fullName storeName profilePhoto country state accountStatus",
+      path: 'vendor',
+      select: `
+        serialNumber
+  fullName
+  role
+  email
+  phoneNo
+  student
+  business
+  isVerified
+  accountStatus
+  isActive
+  createdAt
+  updatedAt
+      `,
       match: {
-        accountStatus: "active",
+        accountStatus: 'active',
         isActive: true,
       },
     })
@@ -354,17 +434,20 @@ const getVendorProductsByCategory = async ({ vendorId, category }) => {
 
   const filteredProducts = products.filter(product => product.vendor);
 
+  const vendor = filteredProducts[0]?.vendor;
+
   return {
     count: filteredProducts.length,
     category: categoryDoc.name,
-    vendor: products[0]?.vendor
-      ? {
-        id: products[0].vendor._id,
-        fullName: products[0].vendor.fullName,
-        storeName: products[0].vendor.storeName,
-      }
+
+    vendor: vendor
+      ? VendorDTO.publicProfile(vendor)
       : null,
-    products: filteredProducts.length,
+
+    products: filteredProducts.map(product => ({
+      ...product.toObject(),
+      vendor: VendorDTO.publicProfile(product.vendor),
+    })),
   };
 };
 

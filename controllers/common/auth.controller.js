@@ -6,14 +6,17 @@ const Vendor = require("../../models/vendor.model");
 const Buyer = require("../../models/buyer.model");
 const Founder = require("../../models/founder.model");
 const Order = require("../../models/buyerOrder.model");
+const LoginHistory = require("../../models/loginHistory.model");
+const auditLogModel = require("../../models/auditLog.model");
 
 const verificationTokenService = require("../../services/verificationToken.service");
 const securityRecoveryService = require('../../services/securityRecovery.service')
 const emailService = require("../../services/email.service");
-const auditLogModel = require("../../models/auditLog.model");
+
 const { sendSuccess, sendError } = require("../../utils/responseStruture");
-const logger = require("../../logger");
 const requestInfo = require('../../utils/getRequestHelper')
+
+const logger = require("../../logger");
 
 const findUserById = async (id, session) => {
     let user = await Vendor.findById(id).session(session);
@@ -29,7 +32,7 @@ const findUserById = async (id, session) => {
     return user;
 };
 
-const findUserByEmail = async (email, session) => {
+const findUserByEmail = async (email) => {
     let user = await Vendor.findOne({ email });
 
     if (!user) {
@@ -53,6 +56,103 @@ const validatePassword = (password) => {
     if (!/[!@#$%^&*]/.test(password)) errors.push('At least one special character required');
 
     return errors;
+};
+
+async function hasActiveOrders(user, session) {
+    const activeStatuses = [
+        "pending",
+        "confirmed",
+        "shipped",
+    ];
+
+    const query =
+        user.role === "buyer"
+            ? {
+                buyer: user._id,
+                status: { $in: activeStatuses },
+            }
+            : {
+                vendor: user._id,
+                status: { $in: activeStatuses },
+            };
+
+    return Order.exists(query).session(session);
+}
+
+const ALLOWED_PREFERENCES = ["email", "whatsapp", "both"];
+
+exports.logoutUser = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const user = await findUserById(req.user._id, session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        const sessionId = req.user.sessionId;
+
+        const loginHistory = await LoginHistory.findOneAndUpdate(
+            {
+                user: user._id,
+                userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                sessionId,
+                sessionStatus: "active",
+            },
+            {
+                $set: {
+                    logoutAt: new Date(),
+                    sessionStatus: "logged_out",
+                    logoutReason: "manual",
+                },
+            },
+            {
+                returnDocument: "after",
+                session,
+            }
+        );
+
+        if (!loginHistory) {
+            logger.warn("Active login session not found.", {
+                userId: user._id,
+                role: user.role,
+                sessionId,
+            });
+        }
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "LOG_OUT",
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    entityId: user._id,
+                    metadata: {
+                        email: user.email,
+                        sessionId,
+                    },
+                },
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Logout successful.");
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Logout failed.");
+    } finally {
+        session.endSession();
+    }
 };
 
 exports.verifyEmail = async (req, res) => {
@@ -309,7 +409,7 @@ exports.resetPassword = async (req, res) => {
             return sendError(res, 400, 'Password does not meet requirements', passwordErrors);
         }
 
-        const user = await findUserByEmail(email, session);
+        const user = await findUserByEmail(email);
 
         const deviceInfo = requestInfo(req);
 
@@ -348,6 +448,7 @@ exports.resetPassword = async (req, res) => {
                     action: "RESET_PASSWORD",
                     entity: user.role,
                     entityId: user._id,
+                    reason: 'Resent my password',
                     metadata: {
                         email: user.email,
                         browser: deviceInfo.browser,
@@ -435,6 +536,7 @@ exports.changePassword = async (req, res) => {
                     action: "CHANGE_PASSWORD",
                     entity: user.role,
                     entityId: user._id,
+                    reason: 'I want to update my pasword',
                     metadata: {
                         email: user.email,
                         device: deviceInfo.device,
@@ -515,6 +617,7 @@ exports.changeEmail = async (req, res) => {
                     action: "REQUEST_EMAIL_CHANGE",
                     entity: user.role,
                     entityId: user._id,
+                    reason: 'I want to change my email address',
                     metadata: {
                         oldEmail: user.email,
                         newEmail: user.pendingEmail,
@@ -624,6 +727,7 @@ exports.verifyChangedEmail = async (req, res) => {
                     action: "CHANGE_EMAIL",
                     entity: user.role,
                     entityId: user._id,
+                    reason: "I've Changes email address",
                     metadata: {
                         oldEmail,
                         newEmail: user.email,
@@ -715,45 +819,25 @@ exports.verifyChangedEmail = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-exports.suspendVendorAccount = async (req, res) => {
+exports.suspendUserAccount = async (req, res) => {
     const session = await mongoose.startSession();
-    session.startTransaction();
 
     try {
+        session.startTransaction();
+
         const { reason } = req.body;
         const userId = req.user._id;
 
-        const user = await findUserById.findById(userId).session(session);
+        const user = await findUserById(userId, session);
 
         if (!user) {
             await session.abortTransaction();
-            return sendError(res, 404, "Vendor not found");
+            return sendError(res, 404, "User not found.");
+        }
+
+        if (user.accountStatus === "deleted") {
+            await session.abortTransaction();
+            return sendError(res, 400, "Deleted accounts cannot be suspended.");
         }
 
         if (user.accountStatus === "suspended") {
@@ -761,215 +845,456 @@ exports.suspendVendorAccount = async (req, res) => {
             return sendError(res, 409, "Account is already suspended.");
         }
 
-        if (user.accountStatus === "deleted") {
+        const hasOrders = await hasActiveOrders(user, session);
+
+        if (hasOrders) {
             await session.abortTransaction();
-            return sendError(res, 409, "Deleted accounts cannot be suspended.");
+            return sendError(res, 400, "Please complete all active orders before performing this action.");
         }
 
-        const pendingOrder = await Order.exists({
-            user: userId,
-            orderStatus: {
-                $in: [
-                    "pending",
-                    "confirmed",
-                    "shipped"
-                ]
-            }
-        }).session(session);
+        user.accountStatus = "suspended";
+        user.isActive = false;
+        user.suspendReason = reason?.trim() || null;
+        user.suspendDate = new Date();
 
-        if (pendingOrder) {
-            await session.abortTransaction();
+        await user.save({ session });
 
-            return sendError(
-                res,
-                400,
-                "Finalize all pending orders before suspending account."
-            );
-        }
-
-        vendor.accountStatus = "suspended";
-        vendor.isActive = false;
-        vendor.suspendReason = reason?.trim() || null;
-        vendor.suspendDate = new Date();
-
-        await vendor.save({ session });
-
-        await AuditLog.create([
-            {
-                user: vendor._id,
-                role: "vendor",
-                action: "SUSPEND_ACCOUNT",
-                entity: "Vendor",
-                entityId: vendor._id,
-                metadata: {
-                    serialNumber: vendor.serialNumber,
-                    email: vendor.email,
-                    reason: vendor.suspendReason
-                }
-            }
-        ], { session });
-
-        await session.commitTransaction();
-        return sendSuccess(
-            res,
-            200,
-            "Account suspended successfully."
-        );
-    } catch (err) {
-        if (session.inTransaction()) {
-            await session.abortTransaction();
-        }
-        logger.error(err);
-        return sendError(
-            res,
-            500,
-            "Internal Server Error"
-        );
-    } finally {
-        session.endSession();
-    }
-};
-
-exports.reactivateVendorAccount = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-
-        const vendorId = req.user._id;
-
-        const vendor = await vendorModel
-            .findById(vendorId)
-            .session(session);
-
-        if (!vendor) {
-            await session.abortTransaction();
-            return sendError(res, 404, "Vendor not found");
-        }
-
-        if (vendor.accountStatus !== "suspended") {
-            await session.abortTransaction();
-            return sendError(
-                res,
-                400,
-                "Account is not suspended."
-            );
-        }
-
-        vendor.accountStatus = "active";
-        vendor.isActive = true;
-        vendor.suspendReason = null;
-        vendor.suspendDate = null;
-        vendor.reactivatedAt = new Date();
-
-        await vendor.save({ session });
-
-        await AuditLog.create([
-            {
-                user: vendor._id,
-                role: "vendor",
-                action: "REACTIVATE_ACCOUNT",
-                entity: "Vendor",
-                entityId: vendor._id,
-                metadata: {
-                    serialNumber: vendor.serialNumber,
-                    email: vendor.email
-                }
-            }
-        ], { session });
-
-        await session.commitTransaction();
-        return sendSuccess(
-            res,
-            200,
-            "Account reactivated successfully."
-        );
-    } catch (err) {
-        if (session.inTransaction()) {
-            await session.abortTransaction();
-        }
-        logger.error(err);
-        return sendError(
-            res,
-            500,
-            "Internal Server Error"
-        );
-    } finally {
-        session.endSession();
-    }
-};
-
-exports.VendorDeleteAccount = async (req, res) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    try {
-        const { reason } = req.body;
-        const vendorId = req.user._id;
-
-        const vendor = await vendorModel
-            .findById(vendorId)
-            .session(session);
-
-        if (!vendor) {
-            await session.abortTransaction();
-            return sendError(res, 404, "Vendor not found");
-        }
-
-        if (vendor.deleted) {
-            await session.abortTransaction();
-            return sendError(res, 409, "Vendor account has already been deleted");
-        }
-
-        // Additional deletion metadata
-        vendor.isDeleted = true;
-        vendor.deleteReason = reason?.trim() || null;
-        vendor.deleteDate = new Date();
-        vendor.isActive = false
-        vendor.accountStatus = 'deleted'
-
-        // Soft delete plugin fields
-        vendor.deleted = true;
-        vendor.deletedAt = new Date();
-        vendor.deletedBy = vendor._id;
-        vendor.deletedByModel = "Vendor";
-
-        await vendor.save({ session });
-
-        await AuditLog.create(
+        await auditLogModel.create(
             [
                 {
-                    user: vendor._id,
-                    role: "vendor",
-                    action: "DELETE_ACCOUNT",
-                    entity: "Vendor",
-                    entityId: vendor._id,
+                    user: user._id,
+                    role: user.role,
+                    action: "SUSPEND_ACCOUNT",
+                    entity: user.role,
+                    entityId: user._id,
+                    reason: user.suspendReason,
                     metadata: {
-                        serialNumber: vendor.serialNumber,
-                        email: vendor.email,
-                        reason: reason?.trim() || null,
+                        serialNumber: user.serialNumber,
+                        email: user.email,
+                        reason: user.suspendReason,
+                        suspendedAt: user.suspendDate,
                     },
                 },
-            ],
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Account suspended successfully.");
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Internal Server Error.");
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.reactivateUserAccount = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const userId = req.user._id;
+
+        const user = await findUserById(userId, session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        if (user.accountStatus === "deleted") {
+            await session.abortTransaction();
+            return sendError(res, 400, "Deleted accounts cannot be reactivated.");
+        }
+
+        if (user.accountStatus !== "suspended") {
+            await session.abortTransaction();
+            return sendError(res, 400, "Account is not suspended.");
+        }
+
+        user.accountStatus = "active";
+        user.isActive = true;
+        user.suspendReason = null;
+        user.suspendDate = null;
+        user.reactivatedAt = new Date();
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "REACTIVATE_ACCOUNT",
+                    entity: user.role,
+                    entityId: user._id,
+                    reason: 'I want to reactivivate my account',
+                    metadata: {
+                        serialNumber: user.serialNumber,
+                        email: user.email,
+                        reactivatedAt: user.reactivatedAt,
+                    },
+                },
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Account reactivated successfully.");
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Internal Server Error.");
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.UserDeleteAccount = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const { reason } = req.body;
+        const userId = req.user._id;
+
+        const user = await findUserById(userId, session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        if (user.accountStatus === "deleted" || user.isDeleted || user.deleted) {
+            await session.abortTransaction();
+            return sendError(res, 409, "Account has already been deleted.");
+        }
+
+        const hasOrders = await hasActiveOrders(user, session);
+
+        if (hasOrders) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Please complete all active orders before performing this action.");
+        }
+
+        // Soft delete fields
+        user.isDeleted = true;
+        user.deleteReason = reason?.trim() || null;
+        user.deleteDate = new Date();
+
+        user.isActive = false;
+        user.accountStatus = "deleted";
+
+        // mongoose-delete plugin fields
+        user.deleted = true;
+        user.deletedAt = new Date();
+        user.deletedBy = user._id;
+        user.deletedByModel = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "DELETE_ACCOUNT",
+                    entity: user.role,
+                    entityId: user._id,
+                    reason: user.deleteReason,
+                    metadata: {
+                        serialNumber: user.serialNumber,
+                        email: user.email,
+                        reason: user.deleteReason,
+                    },
+                },
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Your account has been deleted successfully.");
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Internal Server Error.");
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.getLoginHistory = async (req, res) => {
+    try {
+        const user = await findUserById(req.user._id);
+
+        if (!user) {
+            return sendError(res, 404, "User not found.");
+        }
+
+        const loginHistory = await LoginHistory.find({
+            user: user._id,
+            userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+        })
+            .sort({ loginAt: -1 })
+            .limit(10)
+            .select(
+                "sessionId loginMethod deviceInfo location ipAddress loginAt logoutAt sessionStatus logoutReason success"
+            )
+            .lean();
+
+        const history = loginHistory.map((item) => ({
+            id: item._id,
+            sessionId: item.sessionId,
+            browser: item.deviceInfo?.browser,
+            os: item.deviceInfo?.os,
+            device: item.deviceInfo?.device,
+            location: [
+                item.location?.city,
+                item.location?.region,
+                item.location?.country,
+            ]
+                .filter(Boolean)
+                .join(", "),
+            ipAddress: item.ipAddress,
+            loginMethod: item.loginMethod,
+            loginAt: item.loginAt,
+            logoutAt: item.logoutAt,
+            status: item.sessionStatus,
+            logoutReason: item.logoutReason,
+            success: item.success,
+        }));
+
+        return sendSuccess(
+            res,
+            200,
+            "Login history retrieved successfully.",
+            { loginHistory: history }
+        );
+    } catch (error) {
+        logger.error(error);
+        return sendError(res, 500, "Unable to retrieve login history.");
+    }
+};
+
+exports.logoutAllDevices = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const user = await findUserById(req.user._id, session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        await LoginHistory.updateMany(
+            {
+                user: req.user._id,
+                userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                success: true,
+                sessionStatus: "active",
+                sessionId: {
+                    $ne: req.user.sessionId,
+                },
+            },
+            {
+                $set: {
+                    sessionStatus: "logged_out",
+                    logoutReason: "Logged out from all devices",
+                    logoutAt: new Date(),
+                },
+            },
             { session }
         );
 
+        user.tokenVersion = (user.tokenVersion || 0) + 1;
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "LOGOUT_ALL_DEVICES",
+                    entity: user.role,
+                    entityId: user._id,
+                    metadata: {
+                        email: user.email,
+                        performedAt: new Date(),
+                    },
+                },
+            ], { session }
+        );
+
         await session.commitTransaction();
 
-        return sendSuccess(
-            res,
-            200,
-            "Your account has been deleted successfully."
-        );
-    } catch (err) {
+        return sendSuccess(res, 200, "Logged out from all devices successfully.");
+    } catch (error) {
         if (session.inTransaction()) {
             await session.abortTransaction();
         }
-
-        logger.error(err);
-
-        return sendError(res, 500, "Internal Server Error");
+        logger.error(error);
+        return sendError(res, 500, "Unable to log out from all devices.");
     } finally {
-        await session.endSession();
+        session.endSession();
+    }
+};
+
+exports.getActiveSessions = async (req, res) => {
+    try {
+        const user = await findUserById(req.user._id);
+
+        if (!user) {
+            return sendError(res, 404, "User not found.");
+        }
+
+        const sessions = await LoginHistory.find({
+            user: user._id,
+            success: true,
+            sessionStatus: "active",
+        })
+            .sort({ loginAt: -1 })
+            .lean();
+
+        return sendSuccess(res, 200, "Active sessions retrieved successfully.",
+            {
+                sessions,
+                currentSessionId: req.user.sessionId,
+            }
+        );
+    } catch (error) {
+        logger.error(error);
+        return sendError(res, 500, "Unable to retrieve active sessions.");
+    }
+};
+
+exports.updateNotificationPreference = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const { notificationPreference } = req.body;
+
+        if (!notificationPreference) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Notification preference is required.");
+        }
+
+        if (!ALLOWED_PREFERENCES.includes(notificationPreference)) {
+            await session.abortTransaction();
+            return sendError(res, 400, "Invalid notification preference.");
+        }
+
+        const user = await findUserById(req.user._id, session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        user.notificationPreference = notificationPreference;
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "UPDATE_NOTIFICATION_PREFERENCE",
+                    entity: user.role,
+                    entityId: user._id,
+                    metadata: {
+                        notificationPreference,
+                    },
+                },
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Notification preference updated successfully.",
+            {
+                notificationPreference: user.notificationPreference,
+            }
+        );
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Failed to update notification preference.");
+    } finally {
+        session.endSession();
+    }
+};
+
+exports.updatePromotionalMessages = async (req, res) => {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const { promotionalMessages } = req.body;
+
+        if (typeof promotionalMessages !== "boolean") {
+            await session.abortTransaction();
+            return sendError(res, 400, "Promotional messages must be true or false.");
+        }
+
+        const user = await findUserById(req.user._id, session);
+
+        if (!user) {
+            await session.abortTransaction();
+            return sendError(res, 404, "User not found.");
+        }
+
+        user.promotionalMessages = promotionalMessages;
+
+        await user.save({ session });
+
+        await auditLogModel.create(
+            [
+                {
+                    user: user._id,
+                    role: user.role,
+                    action: "UPDATE_PROMOTIONAL_MESSAGES",
+                    entity: user.role,
+                    entityId: user._id,
+                    metadata: {
+                        promotionalMessages,
+                    },
+                },
+            ], { session }
+        );
+
+        await session.commitTransaction();
+
+        return sendSuccess(res, 200, "Promotional message preference updated successfully.",
+            {
+                promotionalMessages: user.promotionalMessages,
+            }
+        );
+    } catch (error) {
+        if (session.inTransaction()) {
+            await session.abortTransaction();
+        }
+        logger.error(error);
+        return sendError(res, 500, "Failed to update promotional message preference.");
+    } finally {
+        session.endSession();
     }
 };

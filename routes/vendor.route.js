@@ -5,7 +5,7 @@ const imageUpload = require('../middleware/imageUpload');
 const vendorOnboardingUpload = require('../middleware/imageUpload');
 const { verifyUser, requireRole, loginLimiter, apiLimiter, requireVerifiedEmail, requireCompletedOnboarding } = require('../middleware/verifyUser');
 
-const { createUser, loginUser, logoutUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding, VendorDeleteAccount, suspendVendorAccount, reactivateVendorAccount } = require('../controllers/Vendor/auth.controller');
+const { createUser, loginUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding } = require('../controllers/Vendor/auth.controller');
 const { addProduct, getVendorProducts, getAllProducts, getProductDetails, updateProduct, deleteProduct, getVendorProductsByCategory } = require('../controllers/Vendor/product.controller');
 const { saveVendorPayout } = require('../controllers/Vendor/payout.controller');
 const { getVendorOrders, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, getRefundRequests, getReturnRequests, getSingleVendorOrder, reviewRefundRequest, reviewReturnRequest } = require('../controllers/Vendor/order.controller');
@@ -37,8 +37,6 @@ router.get("/categories", getCategories);
 /*                          AUTHENTICATED ROUTES                              */
 /* -------------------------------------------------------------------------- */
 
-router.post("/auth/logout", verifyUser, logoutUser);
-
 router.get("/profile/me", verifyUser, getUsersDetails);
 
 router.put(
@@ -51,12 +49,6 @@ router.put(
     ]),
     updateVendorProfile
 );
-
-router.post("/profile/delete/me", verifyUser, VendorDeleteAccount);
-
-router.post("/profile/suspend/me", verifyUser, suspendVendorAccount);
-
-router.post("/profile/reactivate/me", verifyUser, reactivateVendorAccount);
 
 /* -------------------------------------------------------------------------- */
 /*                         VERIFIED ACCOUNT ROUTES                            */

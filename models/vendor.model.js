@@ -209,6 +209,11 @@ const vendorSchema = new mongoose.Schema(
       default: "",
     },
 
+    promotionalMessages: {
+      type: Boolean,
+      default: false,
+    },
+
     profileUpdateNotificationSent: {
       type: Boolean,
       default: false,
@@ -261,6 +266,16 @@ const vendorSchema = new mongoose.Schema(
     passwordResetToken: String,
 
     passwordResetExpires: Date,
+
+    sessionId: {
+      type: String,
+      index: true
+    },
+
+    tokenVersion: {
+      type: Number,
+      default: 0,
+    },
 
     accountStatus: {
       type: String,

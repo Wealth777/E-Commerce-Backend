@@ -105,23 +105,28 @@ const buyer = new mongoose.Schema({
 
   passwordResetExpires: Date,
 
+  tokenVersion: {
+    type: Number,
+    default: 0,
+  },
+
   updatedAt: Date
 }, {
   timestamps: true
 })
 
-buyer.index(
-  { "username": 1 },
-  {
-    unique: true,
-    partialFilterExpression: {
-      "username": {
-        $exists: true,
-        $ne: null,
-      },
-    },
-  }
-);
+// buyer.index(
+//   { "username": 1 },
+//   {
+//     unique: true,
+//     partialFilterExpression: {
+//       "username": {
+//         $exists: true,
+//         $ne: null,
+//       },
+//     },
+//   }
+// );
 
 buyer.index(
   { googleId: 1 },

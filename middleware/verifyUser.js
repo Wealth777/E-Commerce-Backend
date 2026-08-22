@@ -3,36 +3,59 @@ const rateLimit = require('express-rate-limit');
 const { sendError } = require('../utils/responseStruture');
 const buyerModel = require('../models/buyer.model');
 const vendorModel = require("../models/vendor.model");
+const founderModel = require("../models/founder.model");
+
+const findUserById = async (id) => {
+  let user = await vendorModel.findById(id);
+
+  if (!user) {
+    user = await buyerModel.findById(id);
+  }
+
+  if (!user) {
+    user = await founderModel.findById(id);
+  }
+
+  return user;
+};
 
 
-const verifyUser = (req, res, next) => {
+const verifyUser = async (req, res, next) => {
   try {
     let token;
 
-    // Get token from header
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
+      req.headers.authorization.startsWith("Bearer ")
     ) {
       token = req.headers.authorization.split(" ")[1];
     }
 
     if (!token) {
-      return sendError(res, 401, 'No token provided');
+      return sendError(res, 401, "No token provided");
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_KEY);
+
+    const user = await findUserById(decoded.id);
+
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    if (decoded.tokenVersion !== user.tokenVersion) {
+      return sendError(res, 401, "Your session has expired. Please log in again.");
+    }
 
     req.user = {
       _id: decoded.id,
-      role: decoded.role
+      role: decoded.role,
+      sessionId: decoded.sessionId,
     };
 
     next();
-
   } catch (error) {
-    return sendError(res, 401, 'Invalid or expired token');
+    return sendError(res, 401, "Invalid or expired token");
   }
 };
 
@@ -121,16 +144,39 @@ const requireVerifiedEmail = async (req, res, next) => {
   }
 };
 
-const requireCompletedOnboarding = (req, res, next) => {
-    if (!req.user.onboardingCompleted) {
-        return sendError(
-            res,
-            403,
-            "Please complete your onboarding first."
-        );
+const requireCompletedOnboarding = async (req, res, next) => {
+  try {
+    const Model =
+      req.user.role === 'buyer'
+        ? buyerModel
+        : req.user.role === 'vendor'
+          ? vendorModel
+          : founderModel;
+
+    const user = await Model
+      .findById(req.user._id)
+      .select('onboardingCompleted');
+
+    if (!user) {
+      return sendError(res, 404, 'User not found');
+    }
+
+    if (!user.onboardingCompleted) {
+      return sendError(
+        res,
+        403,
+        'Please complete your onboarding first.'
+      );
     }
 
     next();
+  } catch (error) {
+    return sendError(
+      res,
+      500,
+      'Failed to verify onboarding status'
+    );
+  }
 };
 
 module.exports = { verifyUser, requireRole, requireCompletedProfile, loginLimiter, apiLimiter, requireVerifiedEmail, requireCompletedOnboarding };

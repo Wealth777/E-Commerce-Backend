@@ -41,6 +41,11 @@ const founder = new mongoose.Schema({
     default: true
   },
 
+  tokenVersion: {
+    type: Number,
+    default: 0,
+  },
+
   passwordResetToken: String,
 
   passwordResetExpires: Date,

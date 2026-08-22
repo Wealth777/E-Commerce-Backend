@@ -1,19 +1,27 @@
-const logger = require('../../logger');
-const vendorModel = require('../../models/vendor.model');
-const AuditLog = require('../../models/auditLog.model')
+const mongoose = require("mongoose");
+const crypto = require("crypto");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { generateSerialNumber } = require('../../utils/generateSerial');
 const { validationResult } = require('express-validator');
-const VendorDTO = require('../../dtos/vendor.dto');
+
+const logger = require('../../logger');
+
+const vendorModel = require('../../models/vendor.model');
 const AddProduct = require('../../models/addproduct.model');
 const Order = require("../../models/buyerOrder.model");
-const notificationService = require('../../services/notification/notification.service');
+const AuditLog = require('../../models/auditLog.model')
+const LoginHistory = require("../../models/loginHistory.model");
+
+const VendorDTO = require('../../dtos/vendor.dto');
+
 const emailService = require("../../services/email.service");
+const notificationService = require('../../services/notification/notification.service');
 const verificationTokenService = require("../../services/verificationToken.service");
-const { sendSuccess, sendError } = require('../../utils/responseStruture');
-const mongoose = require("mongoose");
 const { verifyGoogleToken } = require('../../services/googleAuth.service');
+const getRequestInfo = require("../../utils/getRequestHelper");
+
+const { generateSerialNumber } = require('../../utils/generateSerial');
+const { sendSuccess, sendError } = require('../../utils/responseStruture');
 
 const saltRounds = 10;
 
@@ -67,6 +75,7 @@ exports.createUser = async (req, res) => {
         action: 'REGISTER_ACCOUNT',
         entity: 'Vendor',
         entityId: createAcc._id,
+        reason: 'Create an account',
         metadata: {
           email: createAcc.email
         }
@@ -106,73 +115,184 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const requestInfo = getRequestInfo(req);
+
     if (!email || !password) {
       await session.abortTransaction();
-      return sendError(res, 400, 'Email and password are required');
+
+      await LoginHistory.create({
+        role: "vendor",
+        email,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Email and password are required"
+      });
+
+      return sendError(res, 400, "Email and password are required");
     }
 
     const user = await vendorModel.findOne({ email }).session(session);
 
     if (!user) {
       await session.abortTransaction();
-      return sendError(res, 400, 'Invalid credentials');
+
+      await LoginHistory.create({
+        role: "vendor",
+        email,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Invalid email"
+      });
+
+      return sendError(res, 400, "Invalid credentials");
     }
 
     const confirmPassword = await bcrypt.compare(password, user.password);
 
-
     if (!confirmPassword) {
       await session.abortTransaction();
-      return sendError(res, 400, 'Invalid credentials');
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Vendor",
+        role: "vendor",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Invalid password"
+      });
+
+      return sendError(res, 400, "Invalid credentials");
     }
 
     if (!user.emailVerified) {
       await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Vendor",
+        role: "vendor",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Email not verified"
+      });
+
       return sendError(res, 403, "Please verify your email before logging in.");
     }
 
+    const sessionId = crypto.randomUUID();
+
     const accessToken = jwt.sign(
-      { id: user._id, role: user.role },
+      {
+        id: user._id,
+        role: user.role,
+        sessionId,
+        tokenVersion: user.tokenVersion,
+      },
       process.env.JWT_KEY,
-      { expiresIn: '24h' }
+      {
+        expiresIn: "24h"
+      }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id },
+      {
+        id: user._id,
+        sessionId,
+        tokenVersion: user.tokenVersion,
+      },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
+      {
+        expiresIn: "7d"
+      }
     );
 
-    await AuditLog.create([
-      {
-        user: user._id,
-        role: 'vendor',
-        action: 'LOG_IN',
-        entity: 'Vendor',
-        entityId: user._id,
-        metadata: {
-          email: user?.email || null
+    await LoginHistory.create(
+      [
+        {
+          user: user._id,
+          userModel: "Vendor",
+          role: "vendor",
+          email: user.email,
+          phoneNo: user.phoneNo,
+          loginMethod: "password",
+          sessionId,
+          ipAddress: requestInfo.ip,
+          userAgent: requestInfo.device.userAgent,
+          deviceInfo: requestInfo.device,
+          location: requestInfo.location,
+          success: true
         }
-      }
-    ], { session });
+      ], { session }
+    );
+
+    await AuditLog.create(
+      [
+        {
+          user: user._id,
+          role: "vendor",
+          action: "LOG_IN",
+          entity: "Vendor",
+          entityId: user._id,
+          reason: 'Login to application',
+          metadata: {
+            email: user.email,
+            sessionId,
+            ipAddress: requestInfo.ip,
+            device: requestInfo.deviceName,
+            location: requestInfo.location
+          }
+        }
+      ], { session }
+    );
 
     if (!user.profileUpdateNotificationSent) {
       await notificationService.safeCreateProfileUpdateNotification({
         userId: user._id,
-        role: 'vendor'
+        role: "vendor"
       });
 
       await vendorModel.findByIdAndUpdate(
         user._id,
-        { $set: { profileUpdateNotificationSent: true } },
-        { session }
+        {
+          $set: {
+            profileUpdateNotificationSent: true
+          }
+        },
+        {
+          session
+        }
       );
     }
 
     await session.commitTransaction();
 
-    return sendSuccess(res, 200, 'Login successful', {
+    return sendSuccess(res, 200, "Login successful", {
       user: VendorDTO.authUser(user),
+      sessionId,
       accessToken,
       refreshToken,
       expiresIn: 86400
@@ -182,45 +302,10 @@ exports.loginUser = async (req, res) => {
     if (session.inTransaction()) {
       await session.abortTransaction();
     }
-
     logger.error(err);
-    return sendError(res, 500, 'Internal Server Error');
+    return sendError(res, 500, "Internal Server Error");
   } finally {
     session.endSession();
-  }
-};
-
-exports.logoutUser = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-
-    if (req.user?._id) {
-      const user = await vendorModel.findById(req.user._id).select('email').session(session);
-
-      await AuditLog.create([
-        {
-          user: req.user._id,
-          role: 'vendor',
-          action: 'LOG_OUT',
-          entity: 'Vendor',
-          entityId: req.user._id,
-          metadata: {
-            email: user.email
-          }
-        }
-      ], { session });
-    }
-
-    await session.commitTransaction();
-
-    return sendSuccess(res, 200, 'Logout successful');
-
-  } catch (err) {
-    await session.abortTransaction();
-    return sendError(res, 500, 'Logout failed');
-  } finally {
-    session.endSession()
   }
 };
 
@@ -382,6 +467,7 @@ exports.updateVendorProfile = async (req, res) => {
           action: "UPDATE_ACCOUNT",
           entity: "Vendor",
           entityId: vendor._id,
+          reason: 'Update my profile',
           metadata: {
             serialNumber: vendor.serialNumber,
             email: vendor.email,
@@ -393,10 +479,7 @@ exports.updateVendorProfile = async (req, res) => {
 
     await session.commitTransaction();
 
-    return sendSuccess(
-      res,
-      200,
-      "Profile updated successfully",
+    return sendSuccess(res, 200, "Profile updated successfully",
       VendorDTO.fromModel(vendor)
     );
   } catch (error) {
@@ -591,11 +674,7 @@ exports.completeOnboarding = async (req, res) => {
 
     if (vendor.onboardingCompleted) {
       await session.abortTransaction();
-      return sendError(
-        res,
-        409,
-        "Vendor onboarding has already been completed"
-      );
+      return sendError(res, 409, "Vendor onboarding has already been completed");
     }
 
     const profilePhoto =
@@ -678,6 +757,7 @@ exports.completeOnboarding = async (req, res) => {
           action: "COMPLETE_ONBOARDING",
           entity: "Vendor",
           entityId: vendor._id,
+          reason: 'Completed Verifing account',
           metadata: {
             serialNumber: vendor.serialNumber,
             institution: student.institution,
@@ -708,240 +788,5 @@ exports.completeOnboarding = async (req, res) => {
     return sendError(res, 500, "Internal Server Error");
   } finally {
     session.endSession();
-  }
-};
-
-exports.suspendVendorAccount = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { reason } = req.body;
-    const vendorId = req.user._id;
-
-    const vendor = await vendorModel
-      .findById(vendorId)
-      .session(session);
-
-    if (!vendor) {
-      await session.abortTransaction();
-      return sendError(res, 404, "Vendor not found");
-    }
-
-    if (vendor.accountStatus === "suspended") {
-      await session.abortTransaction();
-      return sendError(res, 409, "Account is already suspended.");
-    }
-
-    if (vendor.accountStatus === "deleted") {
-      await session.abortTransaction();
-      return sendError(res, 409, "Deleted accounts cannot be suspended.");
-    }
-
-    const pendingOrder = await Order.exists({
-      vendor: vendorId,
-      orderStatus: {
-        $in: [
-          "pending",
-          "confirmed",
-          "shipped"
-        ]
-      }
-    }).session(session);
-
-    if (pendingOrder) {
-      await session.abortTransaction();
-
-      return sendError(
-        res,
-        400,
-        "Finalize all pending orders before suspending account."
-      );
-    }
-
-    vendor.accountStatus = "suspended";
-    vendor.isActive = false;
-    vendor.suspendReason = reason?.trim() || null;
-    vendor.suspendDate = new Date();
-
-    await vendor.save({ session });
-
-    await AuditLog.create([
-      {
-        user: vendor._id,
-        role: "vendor",
-        action: "SUSPEND_ACCOUNT",
-        entity: "Vendor",
-        entityId: vendor._id,
-        metadata: {
-          serialNumber: vendor.serialNumber,
-          email: vendor.email,
-          reason: vendor.suspendReason
-        }
-      }
-    ], { session });
-
-    await session.commitTransaction();
-    return sendSuccess(
-      res,
-      200,
-      "Account suspended successfully."
-    );
-  } catch (err) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-    logger.error(err);
-    return sendError(
-      res,
-      500,
-      "Internal Server Error"
-    );
-  } finally {
-    session.endSession();
-  }
-};
-
-exports.reactivateVendorAccount = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-
-    const vendorId = req.user._id;
-
-    const vendor = await vendorModel
-      .findById(vendorId)
-      .session(session);
-
-    if (!vendor) {
-      await session.abortTransaction();
-      return sendError(res, 404, "Vendor not found");
-    }
-
-    if (vendor.accountStatus !== "suspended") {
-      await session.abortTransaction();
-      return sendError(
-        res,
-        400,
-        "Account is not suspended."
-      );
-    }
-
-    vendor.accountStatus = "active";
-    vendor.isActive = true;
-    vendor.suspendReason = null;
-    vendor.suspendDate = null;
-    vendor.reactivatedAt = new Date();
-
-    await vendor.save({ session });
-
-    await AuditLog.create([
-      {
-        user: vendor._id,
-        role: "vendor",
-        action: "REACTIVATE_ACCOUNT",
-        entity: "Vendor",
-        entityId: vendor._id,
-        metadata: {
-          serialNumber: vendor.serialNumber,
-          email: vendor.email
-        }
-      }
-    ], { session });
-
-    await session.commitTransaction();
-    return sendSuccess(
-      res,
-      200,
-      "Account reactivated successfully."
-    );
-  } catch (err) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-    logger.error(err);
-    return sendError(
-      res,
-      500,
-      "Internal Server Error"
-    );
-  } finally {
-    session.endSession();
-  }
-};
-
-exports.VendorDeleteAccount = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { reason } = req.body;
-    const vendorId = req.user._id;
-
-    const vendor = await vendorModel
-      .findById(vendorId)
-      .session(session);
-
-    if (!vendor) {
-      await session.abortTransaction();
-      return sendError(res, 404, "Vendor not found");
-    }
-
-    if (vendor.deleted) {
-      await session.abortTransaction();
-      return sendError(res, 409, "Vendor account has already been deleted");
-    }
-
-    // Additional deletion metadata
-    vendor.isDeleted = true;
-    vendor.deleteReason = reason?.trim() || null;
-    vendor.deleteDate = new Date();
-    vendor.isActive = false
-    vendor.accountStatus = 'deleted'
-
-    // Soft delete plugin fields
-    vendor.deleted = true;
-    vendor.deletedAt = new Date();
-    vendor.deletedBy = vendor._id;
-    vendor.deletedByModel = "Vendor";
-
-    await vendor.save({ session });
-
-    await AuditLog.create(
-      [
-        {
-          user: vendor._id,
-          role: "vendor",
-          action: "DELETE_ACCOUNT",
-          entity: "Vendor",
-          entityId: vendor._id,
-          metadata: {
-            serialNumber: vendor.serialNumber,
-            email: vendor.email,
-            reason: reason?.trim() || null,
-          },
-        },
-      ],
-      { session }
-    );
-
-    await session.commitTransaction();
-
-    return sendSuccess(
-      res,
-      200,
-      "Your account has been deleted successfully."
-    );
-  } catch (err) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-
-    logger.error(err);
-
-    return sendError(res, 500, "Internal Server Error");
-  } finally {
-    await session.endSession();
   }
 };

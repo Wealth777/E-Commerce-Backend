@@ -7,6 +7,7 @@ const { generateSerialNumber } = require('../../utils/generateSerial');
 const { validationResult } = require('express-validator');
 const notificationService = require('../../services/notification/notification.service')
 const School = require("../../models/school.model");
+const crypto = require('crypto');
 
 const { default: mongoose } = require('mongoose');
 const { sendSuccess, sendError } = require('../../utils/responseStruture');
@@ -150,14 +151,16 @@ exports.loginUser = async (req, res) => {
       return sendError(res, 403, "Please verify your email before logging in.");
     }
 
+    const sessionId = crypto.randomUUID();
+
     const accessToken = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, sessionId, },
       process.env.JWT_KEY,
       { expiresIn: '24h' }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id },
+      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );
@@ -256,13 +259,13 @@ exports.googleLogin = async (req, res) => {
     }
 
     const accessToken = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, },
       process.env.JWT_KEY,
       { expiresIn: '24h' }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id },
+      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, },
       process.env.JWT_REFRESH_SECRET,
       { expiresIn: '7d' }
     );

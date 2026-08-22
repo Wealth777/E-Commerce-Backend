@@ -6,13 +6,10 @@ const UAParser = require("ua-parser-js");
  * Supports proxies such as Nginx, Render, Railway and Cloudflare.
  */
 function getClientIp(req) {
-    const forwarded = req.headers["x-forwarded-for"];
-
-    if (forwarded) {
-        return forwarded.split(",")[0].trim();
-    }
-
     return (
+        req.headers["cf-connecting-ip"] ||
+        req.headers["x-real-ip"] ||
+        req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
         req.ip ||
         req.socket?.remoteAddress ||
         req.connection?.remoteAddress ||
