@@ -1183,9 +1183,9 @@ exports.getActiveSessions = async (req, res) => {
 
 exports.updateNotificationPreference = async (req, res) => {
     const session = await mongoose.startSession();
-    session.startTransaction();
-
     try {
+        session.startTransaction();
+
         const { notificationPreference } = req.body;
 
         if (!notificationPreference) {
@@ -1198,14 +1198,23 @@ exports.updateNotificationPreference = async (req, res) => {
             return sendError(res, 400, "Invalid notification preference.");
         }
 
-        const user = await findUserById(req.user._id, session);
+        const user = await findUserById(
+            req.user._id,
+            session
+        );
 
         if (!user) {
             await session.abortTransaction();
             return sendError(res, 404, "User not found.");
         }
 
-        user.notificationPreference = notificationPreference;
+        if (!user.preferences) {
+            user.preferences = {};
+        }
+
+        user.preferences.notificationPreference = notificationPreference;
+
+        user.markModified("preferences.notificationPreference");
 
         await user.save({ session });
 
@@ -1221,14 +1230,16 @@ exports.updateNotificationPreference = async (req, res) => {
                         notificationPreference,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
 
         return sendSuccess(res, 200, "Notification preference updated successfully.",
             {
-                notificationPreference: user.notificationPreference,
+                notificationPreference:
+                    user.preferences.notificationPreference,
             }
         );
     } catch (error) {
@@ -1255,14 +1266,24 @@ exports.updatePromotionalMessages = async (req, res) => {
             return sendError(res, 400, "Promotional messages must be true or false.");
         }
 
-        const user = await findUserById(req.user._id, session);
+        const user = await findUserById(
+            req.user._id,
+            session
+        );
 
         if (!user) {
             await session.abortTransaction();
             return sendError(res, 404, "User not found.");
         }
 
-        user.promotionalMessages = promotionalMessages;
+        if (!user.preferences) {
+            user.preferences = {};
+        }
+
+        user.preferences.promotionalMessages =
+            promotionalMessages;
+
+        user.markModified("preferences.promotionalMessages");
 
         await user.save({ session });
 
@@ -1278,14 +1299,16 @@ exports.updatePromotionalMessages = async (req, res) => {
                         promotionalMessages,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
 
         return sendSuccess(res, 200, "Promotional message preference updated successfully.",
             {
-                promotionalMessages: user.promotionalMessages,
+                promotionalMessages:
+                    user.preferences.promotionalMessages,
             }
         );
     } catch (error) {

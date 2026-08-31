@@ -19,26 +19,52 @@ const vendorSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
       required: true,
       lowercase: true,
       trim: true,
     },
+
     emailVerified: {
       type: Boolean,
       default: false,
     },
+
     emailVerifiedDate: Date,
+
+    emailHistory: [
+      {
+        email: String,
+        changedAt: Date,
+        verifiedAt: Date
+      }
+    ],
+
+    pendingEmail: {
+      type: String,
+      default: null,
+    },
+
+    changeEmailDate: Date,
+
     phoneNo: {
       type: String,
       required: true,
       trim: true,
     },
+
     password: {
       type: String,
       required: true,
     },
+
+    updatePasswordDate: Date,
+
+    passwordResetToken: String,
+
+    passwordResetExpires: Date,
 
     onboardingCompleted: {
       type: Boolean,
@@ -198,20 +224,18 @@ const vendorSchema = new mongoose.Schema(
 
     verificationRejectionReason: String,
 
-    notificationPreference: {
-      type: String,
-      enum: [
-        "email",
-        "whatsapp",
-        "both",
-        ""
-      ],
-      default: "",
-    },
+    preferences: {
+      notificationPreference: {
+        type: String,
+        enum: ['whatsapp', 'email', 'both', ''],
+        default: "",
+        trim: true
+      },
 
-    promotionalMessages: {
-      type: Boolean,
-      default: false,
+      promotionalMessages: {
+        type: Boolean,
+        default: false,
+      },
     },
 
     profileUpdateNotificationSent: {
@@ -240,32 +264,17 @@ const vendorSchema = new mongoose.Schema(
 
     lockReason: String,
 
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+
     deleteReason: String,
 
     deleteDate: Date,
 
     reactivatedAt: Date,
-
-    pendingEmail: {
-      type: String,
-      default: null,
-    },
-
-    emailHistory: [
-      {
-        email: String,
-        changedAt: Date,
-        verifiedAt: Date
-      }
-    ],
-
-    changeEmailDate: Date,
-
-    updatePasswordDate: Date,
-
-    passwordResetToken: String,
-
-    passwordResetExpires: Date,
 
     sessionId: {
       type: String,

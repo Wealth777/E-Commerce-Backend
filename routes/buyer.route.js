@@ -4,7 +4,7 @@ const router = express.Router();
 const { verifyUser, requireRole, requireCompletedProfile, loginLimiter, apiLimiter } = require('../middleware/verifyUser');
 const imageUpload = require('../middleware/imageUpload');
 
-const { createUser, loginUser, googleLogin, logoutUser, getUsersDetails, updateBuyerProfile, completeBuyerProfile } = require('../controllers/Buyer/auth.controller');
+const { createUser, loginUser, googleLogin, getUsersDetails, updateBuyerProfile, completeBuyerProfile } = require('../controllers/Buyer/auth.controller');
 const { addToCart, getCart, updateCartItem, removeFromCart } = require('../controllers/Buyer/cart.controller');
 const { createBuyerOrder, getBuyerOrders, getSingleBuyerOrder, buyerConfirmDelivery, buyerCancelOrder, requestRefund, requestReturn } = require('../controllers/Buyer/order.controller');
 const { getWishlist, addToWishlist, removeFromWishlist, clearWishlist } = require('../controllers/Buyer/wishlist.controller');
@@ -21,8 +21,6 @@ router.post('/auth/register', validateRegister, createUser);
 router.post('/auth/google', googleLogin);
 
 router.post('/auth/login', loginLimiter, loginUser);
-
-router.post('/auth/logout', verifyUser, logoutUser);
 
 router.get('/profile/me', verifyUser, getUsersDetails);
 

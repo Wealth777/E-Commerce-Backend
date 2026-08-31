@@ -8,7 +8,6 @@ const logger = require('../../logger');
 
 const vendorModel = require('../../models/vendor.model');
 const AddProduct = require('../../models/addproduct.model');
-const Order = require("../../models/buyerOrder.model");
 const AuditLog = require('../../models/auditLog.model')
 const LoginHistory = require("../../models/loginHistory.model");
 
@@ -347,7 +346,8 @@ exports.getUsersDetails = async (req, res) => {
         bankDetails.accountName
         bankDetails.accountNumber
 
-        notificationPreference
+        preferences.notificationPreference
+        preferences.promotionalMessages
 
         isVerified
         verificationStatus
@@ -375,12 +375,7 @@ exports.getUsersDetails = async (req, res) => {
     if (!vendor) {
       return sendError(res, 404, "Vendor not found");
     }
-
-    return sendSuccess(
-      res,
-      200,
-      "Vendor profile fetched successfully",
-      VendorDTO.fromModel(vendor)
+    return sendSuccess(res, 200,  "Vendor profile fetched successfully", VendorDTO.fromModel(vendor)
     );
   } catch (err) {
     logger.error(err);
@@ -501,14 +496,11 @@ exports.getVendorDetails = async (req, res) => {
       return sendError(res, 400, 'Invalid vendor ID');
     }
 
-    const vendorDetails = await vendorModel
+    const vendor = await vendorModel
       .findById(vendorId)
-      .select(
-        'serialNumber fullName storeName storeDescription profilePhoto bannerImage country state email phoneNo socialLinks rating reviews isVerified'
-      )
       .lean();
 
-    if (!vendorDetails) {
+    if (!vendor) {
       return sendError(res, 404, 'Vendor not found');
     }
 
@@ -548,7 +540,7 @@ exports.getVendorDetails = async (req, res) => {
     const products = await AddProduct.find(filterQuery)
       .populate(
         'vendor',
-        'storeName businessName fullName profilePhoto country state'
+        'fullName business student'
       )
       .populate('category', 'name slug')
       .populate('subCategory', 'name slug')
@@ -579,10 +571,10 @@ exports.getVendorDetails = async (req, res) => {
         vendor: product.vendor || null,
 
         vendorName:
-          product.vendor?.storeName ||
-          product.vendor?.businessName ||
+          product.vendor?.business?.storeName ||
           product.vendor?.fullName ||
-          vendorDetails.storeName ||
+          vendor.business?.storeName ||
+          vendor.fullName ||
           'Unknown vendor',
 
         price,
@@ -590,7 +582,9 @@ exports.getVendorDetails = async (req, res) => {
 
         discount:
           originalPrice > price && originalPrice > 0
-            ? Math.round(((originalPrice - price) / originalPrice) * 100)
+            ? Math.round(
+              ((originalPrice - price) / originalPrice) * 100
+            )
             : 0,
 
         stock: Number(product.stock || 0),
@@ -600,33 +594,27 @@ exports.getVendorDetails = async (req, res) => {
       };
     });
 
-    return sendSuccess(res, 200, 'Vendor details fetched successfully', {
-      count: productList.length,
+    const vendorInfo = VendorDTO.publicProfile(vendor);
 
-      vendorInfo: {
-        id: vendorDetails._id,
-        _id: vendorDetails._id,
-        serialNumber: vendorDetails.serialNumber,
-        fullName: vendorDetails.fullName,
-        storeName: vendorDetails.storeName,
-        storeDescription: vendorDetails.storeDescription,
-        profilePhoto: vendorDetails.profilePhoto,
-        bannerImage: vendorDetails.bannerImage,
-        country: vendorDetails.country,
-        state: vendorDetails.state,
-        email: vendorDetails.email,
-        phoneNo: vendorDetails.phoneNo,
-        socialLinks: vendorDetails.socialLinks,
-        rating: vendorDetails.rating,
-        reviews: vendorDetails.reviews,
-        isVerified: vendorDetails.isVerified,
-      },
-
-      products: productList,
-    });
+    return sendSuccess(
+      res,
+      200,
+      'Vendor details fetched successfully',
+      {
+        count: productList.length,
+        vendorInfo,
+        products: productList,
+      }
+    );
   } catch (err) {
     logger.error('GET VENDOR DETAILS ERROR:', err);
-    return sendError(res, 500, 'Internal Server Error', err.message);
+
+    return sendError(
+      res,
+      500,
+      'Internal Server Error',
+      err.message
+    );
   }
 };
 

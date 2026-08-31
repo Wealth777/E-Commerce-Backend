@@ -6,10 +6,19 @@ const buyer = new mongoose.Schema({
     type: String,
     unique: true
   },
+
+  role: {
+    type: String,
+    enum: ['buyer'],
+    default: 'buyer',
+    trim: true
+  },
+
   fullName: {
     type: String,
     required: true
   },
+
   email: {
     type: String,
     required: true,
@@ -17,21 +26,42 @@ const buyer = new mongoose.Schema({
     lowercase: true,
     trim: true
   },
+
   emailVerified: {
     type: Boolean,
     default: false,
   },
+
+  emailVerifiedDate: Date,
+
+  emailHistory: [
+    {
+      email: String,
+      changedAt: Date,
+      verifiedAt: Date
+    }
+  ],
+
+  pendingEmail: {
+    type: String,
+    default: null,
+  },
+
+  changeEmailDate: Date,
+
   googleId: {
     type: String,
     trim: true
   },
-  school: {
+
+  institution: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "School",
     required: function () {
       return !this.googleId;
     }
   },
+
   state: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "School",
@@ -39,6 +69,7 @@ const buyer = new mongoose.Schema({
       return !this.googleId;
     }
   },
+
   phoneNo: {
     type: String,
     required: function () {
@@ -47,6 +78,7 @@ const buyer = new mongoose.Schema({
     unique: true,
     trim: true
   },
+
   password: {
     type: String,
     required: function () {
@@ -54,44 +86,96 @@ const buyer = new mongoose.Schema({
     },
     trim: true
   },
-  role: {
-    type: String,
-    enum: ['buyer'],
-    default: 'buyer',
-    trim: true
-  },
-  country: {
-    type: String,
-    enum: ['Nigeria'],
-    default: 'Nigeria',
-    trim: true
-  },
+
+  passwordResetToken: String,
+
+  passwordResetExpires: Date,
+
+  updatePasswordDate: Date,
 
   onboardingCompleted: {
     type: Boolean,
     default: false,
   },
 
-  username: {
-    type: String,
-    trim: true,
+  student: {
+    profilePhoto: {
+      type: String,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: [
+        "male",
+        "female"
+      ],
+      trim: true
+    },
+    matricNumber: {
+      type: String,
+      trim: true,
+    },
+    faculty: {
+      type: String,
+      trim: true,
+    },
+    department: {
+      type: String,
+      trim: true,
+    },
+    level: {
+      type: String,
+      trim: true,
+    },
+    residence: {
+      type: String,
+      enum: [
+        "hostel",
+        "off-campus"
+      ]
+    },
+    address: {
+      type: String,
+      trim: true
+    }
   },
-  profilePhoto: String,
-  address: String,
 
-  preferredLanguage: String,
+  preferences: {
+    notificationPreference: {
+      type: String,
+      enum: ['whatsapp', 'email', 'both', ''],
+      default: "",
+      trim: true
+    },
 
-  notificationPreference: {
-    type: String,
-    enum: ['whatsapp', 'email', 'both'],
-    trim: true
+    promotionalMessages: {
+      type: Boolean,
+      default: false,
+    },
   },
+
   profileUpdateNotificationSent: { type: Boolean, default: false },
 
   isActive: {
     type: Boolean,
     default: true
   },
+
+  isSuspend: {
+    type: Boolean,
+    default: false,
+  },
+
+  suspendReason: String,
+
+  suspendDate: Date,
+
+  isLocked: {
+    type: Boolean,
+    default: false,
+  },
+
+  lockReason: String,
 
   isDeleted: {
     type: Boolean,
@@ -101,32 +185,35 @@ const buyer = new mongoose.Schema({
 
   deleteReason: String,
 
-  passwordResetToken: String,
-
-  passwordResetExpires: Date,
+  deleteDate: Date,
 
   tokenVersion: {
     type: Number,
     default: 0,
   },
 
+  sessionId: {
+    type: String,
+    index: true
+  },
+
+  accountStatus: {
+    type: String,
+    enum: [
+      "pending",
+      "active",
+      "suspended",
+      "locked",
+      "banned",
+      "deleted"
+    ],
+    default: "active"
+  },
+
   updatedAt: Date
 }, {
   timestamps: true
 })
-
-// buyer.index(
-//   { "username": 1 },
-//   {
-//     unique: true,
-//     partialFilterExpression: {
-//       "username": {
-//         $exists: true,
-//         $ne: null,
-//       },
-//     },
-//   }
-// );
 
 buyer.index(
   { googleId: 1 },

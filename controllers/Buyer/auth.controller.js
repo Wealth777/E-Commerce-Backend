@@ -1,20 +1,26 @@
+const { default: mongoose } = require('mongoose');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
+
 const logger = require('../../logger');
+
 const buyerModel = require('../../models/buyer.model');
+const School = require("../../models/school.model");
 const AuditLog = require('../../models/auditLog.model');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { generateSerialNumber } = require('../../utils/generateSerial');
-const { validationResult } = require('express-validator');
-const notificationService = require('../../services/notification/notification.service')
-const School = require("../../models/school.model");
-const crypto = require('crypto');
+const LoginHistory = require("../../models/loginHistory.model");
 
-const { default: mongoose } = require('mongoose');
-const { sendSuccess, sendError } = require('../../utils/responseStruture');
 const BuyerDTO = require('../../dtos/buyer.dto');
-const { verifyGoogleToken } = require('../../services/googleAuth.service');
+
 const emailService = require("../../services/email.service");
+const notificationService = require('../../services/notification/notification.service')
 const verificationTokenService = require("../../services/verificationToken.service");
+const { verifyGoogleToken } = require('../../services/googleAuth.service');
+const { generateSerialNumber } = require('../../utils/generateSerial');
+
+const { sendSuccess, sendError } = require('../../utils/responseStruture');
+const getRequestInfo = require("../../utils/getRequestHelper");
 
 const saltRounds = 10;
 
@@ -127,88 +133,195 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const requestInfo = getRequestInfo(req);
+
     if (!email || !password) {
       await session.abortTransaction();
-      return sendError(res, 400, 'Email and password are required');
+
+      await LoginHistory.create({
+        role: "buyer",
+        email,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Email and password are required"
+      });
+
+      return sendError(res, 400, "Email and password are required");
     }
 
     const user = await buyerModel.findOne({ email }).session(session);
 
     if (!user) {
       await session.abortTransaction();
-      return sendError(res, 400, 'Invalid credentials');
+
+      await LoginHistory.create({
+        role: "buyer",
+        email,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Invalid email"
+      });
+
+      return sendError(res, 400, "Invalid credentials");
     }
 
     const confirmPassword = await bcrypt.compare(password, user.password);
 
     if (!confirmPassword) {
       await session.abortTransaction();
-      return sendError(res, 400, 'Invalid credentials');
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Buyer",
+        role: "buyer",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Invalid password"
+      });
+
+      return sendError(res, 400, "Invalid credentials");
     }
 
     if (!user.emailVerified) {
       await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Buyer",
+        role: "buyer",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Email not verified"
+      });
+
       return sendError(res, 403, "Please verify your email before logging in.");
     }
 
     const sessionId = crypto.randomUUID();
 
     const accessToken = jwt.sign(
-      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, sessionId, },
+      {
+        id: user._id,
+        role: user.role,
+        sessionId,
+        tokenVersion: user.tokenVersion,
+      },
       process.env.JWT_KEY,
-      { expiresIn: '24h' }
+      {
+        expiresIn: "24h"
+      }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, },
+      {
+        id: user._id,
+        sessionId,
+        tokenVersion: user.tokenVersion,
+      },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
+      {
+        expiresIn: "7d"
+      }
     );
 
-    await AuditLog.create([{
-      user: user._id,
-      role: 'buyer',
-      action: 'LOG_IN',
-      entity: 'Buyer',
-      entityId: user._id,
-      metadata: { email: user.email },
-    }], { session });
+    await LoginHistory.create(
+      [
+        {
+          user: user._id,
+          userModel: "Buyer",
+          role: "buyer",
+          email: user.email,
+          phoneNo: user.phoneNo,
+          loginMethod: "password",
+          sessionId,
+          ipAddress: requestInfo.ip,
+          userAgent: requestInfo.device.userAgent,
+          deviceInfo: requestInfo.device,
+          location: requestInfo.location,
+          success: true
+        }
+      ], { session }
+    );
+
+    await AuditLog.create(
+      [
+        {
+          user: user._id,
+          role: "buyer",
+          action: "LOG_IN",
+          entity: "Buyer",
+          entityId: user._id,
+          reason: 'Login to application',
+          metadata: {
+            email: user.email,
+            sessionId,
+            ipAddress: requestInfo.ip,
+            device: requestInfo.deviceName,
+            location: requestInfo.location
+          }
+        }
+      ], { session }
+    );
 
     if (!user.profileUpdateNotificationSent) {
-      try {
-        await notificationService.safeCreateProfileUpdateNotification({
-          userId: user._id,
-          role: 'buyer'
-        });
+      await notificationService.safeCreateProfileUpdateNotification({
+        userId: user._id,
+        role: "buyer"
+      });
 
-        await buyerModel.findByIdAndUpdate(
-          user._id,
-          { $set: { profileUpdateNotificationSent: true } },
-          { session }
-        );
-      } catch (e) {
-        logger.error(e);
-      }
+      await buyerModel.findByIdAndUpdate(
+        user._id,
+        {
+          $set: {
+            profileUpdateNotificationSent: true
+          }
+        },
+        {
+          session
+        }
+      );
     }
-
-    const responseData = {
-      user: BuyerDTO.fromModel(user),
-      accessToken,
-      refreshToken,
-      expiresIn: 86400,
-    };
 
     await session.commitTransaction();
 
-    return sendSuccess(res, 200, 'Login successful', responseData);
+    return sendSuccess(res, 200, "Login successful", {
+      user: BuyerDTO.authUser(user),
+      sessionId,
+      accessToken,
+      refreshToken,
+      expiresIn: 86400
+    });
 
   } catch (err) {
     if (session.inTransaction()) {
       await session.abortTransaction();
     }
-
     logger.error(err);
-    return sendError(res, 500, 'Internal Server Error');
+    return sendError(res, 500, "Internal Server Error");
   } finally {
     session.endSession();
   }
@@ -335,69 +448,68 @@ exports.googleLogin = async (req, res) => {
   }
 };
 
-exports.logoutUser = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-
-    if (req.user?._id) {
-      const user = await buyerModel.findById(req.user._id).select('email').session(session);
-
-      await AuditLog.create([{
-        user: req.user._id,
-        role: 'buyer',
-        action: 'LOG_OUT',
-        entity: 'Buyer',
-        entityId: req.user._id,
-        metadata: {
-          email: user.email
-        }
-      }], { session });
-    };
-
-    await session.commitTransaction();
-
-    return sendSuccess(res, 200, 'Logout successful');
-  } catch (err) {
-    await session.abortTransaction();
-    logger.error('Error occured', err)
-    return sendError(res, 500, 'Logout failed');
-  } finally {
-    session.endSession();
-  };
-};
-
 exports.getUsersDetails = async (req, res) => {
   try {
     const buyer = await buyerModel
       .findById(req.user._id)
       .select(`
         serialNumber
-        username
+        role
         fullName
         email
-        phoneNo
-        profilePhoto
-        country
-        state
-        school
-        address
-        preferredLanguage
-        notificationPreference
         emailVerified
+        phoneNo
         onboardingCompleted
-      `);
+
+        institution
+        state
+
+        student.profilePhoto
+        student.gender
+        student.matricNumber
+        student.faculty
+        student.department
+        student.level
+        student.residence
+        student.address
+
+        preferences.notificationPreference
+        preferences.promotionalMessages
+
+        isActive
+        isLocked
+        isSuspend
+        isDeleted
+        accountStatus
+
+        lockReason
+        suspendReason
+        suspendDate
+        deleteReason
+        deleteDate
+        pendingEmail
+        changeEmailDate
+        updatePasswordDate
+
+        createdAt
+        updatedAt
+      `)
+      .populate("institution", "name")
+      .populate("state", "name");
 
     if (!buyer) {
-      return sendError(res, 404, 'User not found');
+      return sendError(res, 404, "Buyer not found");
     }
 
-    return sendSuccess(res, 200, 'Buyer profile fetched successfully', BuyerDTO.fromModel(buyer));
-
+    return sendSuccess(
+      res,
+      200,
+      "Buyer profile fetched successfully",
+      BuyerDTO.fromModel(buyer)
+    );
   } catch (err) {
     logger.error(err);
-    return sendError(res, 500, 'Internal Server Error');
+    return sendError(res, 500, "Internal Server Error");
   }
 };
 
@@ -409,58 +521,101 @@ exports.updateBuyerProfile = async (req, res) => {
     const buyerId = req.user._id;
 
     const {
-      username,
       fullName,
-      country,
+      gender,
+      institution,
       state,
+      matricNumber,
+      faculty,
+      department,
+      level,
+      residence,
       address,
-      email,
-      phoneNo,
-      preferredLanguage,
-      notificationPreference,
     } = req.body;
 
     const buyer = await buyerModel
       .findById(buyerId)
-      .populate("school", "name type")
-      .populate("state", "name type");
+      .session(session);
 
     if (!buyer) {
       await session.abortTransaction();
       return sendError(res, 404, 'Buyer not found');
     }
 
-    if (username) buyer.username = username;
-    if (fullName) buyer.fullName = fullName;
-    if (country) buyer.country = country;
-    if (state) buyer.state = state;
-    if (address) buyer.address = address;
+    // Account information
+    if (fullName !== undefined) {
+      buyer.fullName = fullName;
+    }
 
-    if (preferredLanguage) buyer.preferredLanguage = preferredLanguage;
-    if (notificationPreference) buyer.notificationPreference = notificationPreference;
+    // Location information
+    if (institution !== undefined) {
+      buyer.institution = institution;
+    }
 
-    if (req.files?.profilePhoto) {
-      buyer.profilePhoto = req.files.profilePhoto[0].path;
+    if (state !== undefined) {
+      buyer.state = state;
+    }
+
+    // Student information
+    if (gender !== undefined) {
+      buyer.student.gender = gender;
+    }
+
+    if (matricNumber !== undefined) {
+      buyer.student.matricNumber = matricNumber;
+    }
+
+    if (faculty !== undefined) {
+      buyer.student.faculty = faculty;
+    }
+
+    if (department !== undefined) {
+      buyer.student.department = department;
+    }
+
+    if (level !== undefined) {
+      buyer.student.level = level;
+    }
+
+    if (residence !== undefined) {
+      buyer.student.residence = residence;
+    }
+
+    if (address !== undefined) {
+      buyer.student.address = address;
+    }
+
+    // Profile photo
+    if (req.files?.profilePhoto?.[0]) {
+      buyer.student.profilePhoto = req.files.profilePhoto[0].path;
     }
 
     await buyer.save({ session });
 
-    await AuditLog.create([{
-      user: buyer._id,
-      role: 'buyer',
-      action: 'UPDATE_ACCOUNT',
-      entity: 'Buyer',
-      entityId: buyer._id,
-      metadata: {
-        serialNumber: buyer.serialNumber,
-        email: buyer.email,
-        phoneNo: buyer.phoneNo
-      }
-    }], { session });
+    await AuditLog.create(
+      [{
+        user: buyer._id,
+        role: 'buyer',
+        action: 'UPDATE_ACCOUNT',
+        entity: 'Buyer',
+        entityId: buyer._id,
+        metadata: {
+          serialNumber: buyer.serialNumber,
+          email: buyer.email,
+          phoneNo: buyer.phoneNo
+        }
+      }],
+      { session }
+    );
 
     await session.commitTransaction();
 
-    return sendSuccess(res, 200, 'Profile updated successfully', BuyerDTO.fromModel(buyer));
+    return sendSuccess(
+      res,
+      200,
+      'Profile updated successfully',
+      BuyerDTO.fromModel(buyer)
+    );
 
   } catch (error) {
     await session.abortTransaction();

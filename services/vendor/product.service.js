@@ -116,18 +116,28 @@ const getVendorProducts = async ({ vendorId }) => {
       path: 'vendor',
       select: `
         serialNumber
-  fullName
-  role
-  email
-  phoneNo
-  student
-  business
-  isVerified
-  accountStatus
-  isActive
-  createdAt
-  updatedAt
+        fullName
+        role
+        email
+        phoneNo
+        student
+        business
+        isVerified
+        accountStatus
+        isActive
+        createdAt
+        updatedAt
       `,
+      populate: [
+        {
+          path: 'student.institution',
+          select: 'name',
+        },
+        {
+          path: 'student.state',
+          select: 'name',
+        },
+      ],
       match: {
         accountStatus: 'active',
         isActive: true,
@@ -153,18 +163,28 @@ const getAllProducts = async ({ limitParam, user }) => {
       path: 'vendor',
       select: `
         serialNumber
-  fullName
-  role
-  email
-  phoneNo
-  student
-  business
-  isVerified
-  accountStatus
-  isActive
-  createdAt
-  updatedAt
+        fullName
+        role
+        email
+        phoneNo
+        student
+        business
+        isVerified
+        accountStatus
+        isActive
+        createdAt
+        updatedAt
       `,
+      populate: [
+        {
+          path: 'student.institution',
+          select: 'name',
+        },
+        {
+          path: 'student.state',
+          select: 'name',
+        },
+      ],
       match: {
         accountStatus: 'active',
         isActive: true,
@@ -321,18 +341,28 @@ const getProductDetails = async ({ productId }) => {
       path: 'vendor',
       select: `
         serialNumber
-      fullName
-  role
-  email
-  phoneNo
-  student
-  business
-  isVerified
-  accountStatus
-  isActive
-  createdAt
-  updatedAt
+        fullName
+        role
+        email
+        phoneNo
+        student
+        business
+        isVerified
+        accountStatus
+        isActive
+        createdAt
+        updatedAt
       `,
+      populate: [
+        {
+          path: 'student.institution',
+          select: 'name',
+        },
+        {
+          path: 'student.state',
+          select: 'name',
+        },
+      ],
       match: {
         accountStatus: 'active',
         isActive: true,
@@ -344,6 +374,8 @@ const getProductDetails = async ({ productId }) => {
   if (!product || !product.vendor) {
     throw new AppError('Product not found', 404);
   }
+
+  const vendor = VendorDTO.publicProfile(product.vendor)
 
   return {
     product: {
@@ -412,18 +444,28 @@ const getVendorProductsByCategory = async ({ vendorId, category }) => {
       path: 'vendor',
       select: `
         serialNumber
-  fullName
-  role
-  email
-  phoneNo
-  student
-  business
-  isVerified
-  accountStatus
-  isActive
-  createdAt
-  updatedAt
+        fullName
+        role
+        email
+        phoneNo
+        student
+        business
+        isVerified
+        accountStatus
+        isActive
+        createdAt
+        updatedAt
       `,
+      populate: [
+        {
+          path: 'student.institution',
+          select: 'name',
+        },
+        {
+          path: 'student.state',
+          select: 'name',
+        },
+      ],
       match: {
         accountStatus: 'active',
         isActive: true,

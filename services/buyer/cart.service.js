@@ -1,108 +1,3 @@
-// const Cart = require('../../models/addToCart.model');
-// const AuditLog = require('../../models/auditLog.model');
-// const AppError = require('../common/AppError');
-
-// const formatCartItems = (cart) => cart.items.map((item) => ({
-//   id: item.product._id,
-//   name: item.product.name,
-//   price: item.product.price,
-//   image: item.product.image,
-//   quantity: item.quantity,
-//   vendorId: item.product.vendor?._id,
-//   vendorName: item.product.vendor?.storeName,
-//   vendorBankName: item.product.vendor?.bankName,
-//   vendorAccountName: item.product.vendor?.accountName,
-//   vendorAccountNumber: item.product.vendor?.accountNumber,
-// }));
-
-// const addToCart = async ({ userId, productId, quantity = 1 }) => {
-//   if (!productId) throw new AppError('Product ID is required', 400);
-
-//   let cart = await Cart.findOne({ user: userId });
-
-//   if (!cart) {
-//     cart = new Cart({ user: userId, items: [{ product: productId, quantity }] });
-//   } else {
-//     const existingItem = cart.items.find((item) => item.product.toString() === productId);
-//     if (existingItem) existingItem.quantity += quantity;
-//     else cart.items.push({ product: productId, quantity });
-//   }
-
-//   await cart.save();
-
-//   await AuditLog.create({
-//     user: userId,
-//     role: 'buyer',
-//     action: 'ADD_TO_CART',
-//     entity: 'Cart',
-//     entityId: cart._id,
-//     metadata: { productId, quantity },
-//   });
-
-//   return cart;
-// };
-
-// const getCart = async ({ userId }) => {
-//   const cart = await Cart.findOne({ user: userId }).populate({
-//     path: 'items.product',
-//     populate: { path: 'vendor', select: '_id storeName bankName accountName accountNumber' },
-//   });
-
-//   return { items: cart ? formatCartItems(cart) : [] };
-// };
-
-// const updateCartItem = async ({ userId, productId, quantity }) => {
-//   if (!productId) throw new AppError('Product ID is required', 400);
-
-//   const cart = await Cart.findOne({ user: userId });
-//   if (!cart) throw new AppError('Cart not found', 404);
-
-//   const item = cart.items.find((i) => i.product.toString() === productId);
-//   if (!item) throw new AppError('Item not found', 404);
-
-//   if (quantity <= 0) cart.items = cart.items.filter((i) => i.product.toString() !== productId);
-//   else item.quantity = quantity;
-
-//   await cart.save();
-
-//   await AuditLog.create({
-//     user: userId,
-//     role: 'buyer',
-//     action: 'UPDATE_CART_ITEM',
-//     entity: 'Cart',
-//     entityId: cart._id,
-//     metadata: { productId, quantity },
-//   });
-
-//   return cart;
-// };
-
-// const removeFromCart = async ({ userId, productId }) => {
-//   if (!productId) throw new AppError('Product ID is required', 400);
-
-//   const cart = await Cart.findOne({ user: userId });
-//   if (!cart) throw new AppError('Cart not found', 404);
-
-//   const initialLength = cart.items.length;
-//   cart.items = cart.items.filter((item) => item.product.toString() !== productId);
-//   if (cart.items.length === initialLength) throw new AppError('Item not found', 404);
-
-//   await cart.save();
-
-//   await AuditLog.create({
-//     user: userId,
-//     role: 'buyer',
-//     action: 'REMOVE_FROM_CART',
-//     entity: 'Cart',
-//     entityId: cart._id,
-//     metadata: { productId },
-//   });
-
-//   return cart;
-// };
-
-// module.exports = { addToCart, getCart, updateCartItem, removeFromCart };
-
 const mongoose = require('mongoose');
 
 const Cart = require('../../models/addToCart.model');
@@ -137,7 +32,7 @@ const validateProductId = (productId) => {
 
 const getAvailableProduct = async (productId) => {
   const product = await AddProduct.findById(productId)
-    .populate('vendor', '_id storeName businessName fullName bankName accountName accountNumber')
+    .populate('vendor', '_id business.storeName fullName  bankDetails.bankName bankDetails.accountName bankDetails.accountNumber')
     .populate('category', 'name slug')
     .populate('subCategory', 'name slug');
 
@@ -177,29 +72,15 @@ const formatCartItems = (cart) => {
         category: product.category || null,
         subCategory: product.subCategory || null,
 
-        categoryName:
-          product.category?.name || 'General',
+        categoryName: product.category?.name || 'General',
 
-        subCategoryName:
-          product.subCategory?.name || '',
+        subCategoryName: product.subCategory?.name || '',
 
-        vendorId:
-          vendor?._id || '',
-
-        vendorName:
-          vendor?.storeName ||
-          vendor?.businessName ||
-          vendor?.fullName ||
-          'Unknown Vendor',
-
-        vendorBankName:
-          vendor?.bankName || '',
-
-        vendorAccountName:
-          vendor?.accountName || '',
-
-        vendorAccountNumber:
-          vendor?.accountNumber || '',
+        vendorId: vendor?._id || '',
+        vendorName: vendor?.business?.storeName || 'Unknown Vendor',
+        vendorBankName: vendor?.bankDetails?.bankName || '',
+        vendorAccountName: vendor?.bankDetails?.accountName || '',
+        vendorAccountNumber: vendor?.bankDetails?.accountNumber || '',
       };
     });
 };
@@ -210,7 +91,7 @@ const populateCart = async (cartId) => {
     populate: [
       {
         path: 'vendor',
-        select: '_id storeName businessName fullName bankName accountName accountNumber',
+        select: '_id business.storeName fullName  bankDetails.bankName bankDetails.accountName bankDetails.accountNumber',
       },
       {
         path: 'category',
@@ -299,26 +180,16 @@ const addToCart = async ({ userId, productId, quantity = 1 }) => {
 };
 
 const getCart = async ({ userId }) => {
-  const cart = await Cart.findOne({ user: userId }).populate({
-    path: 'items.product',
-    populate: [
-      {
-        path: 'vendor',
-        select: '_id storeName businessName fullName bankName accountName accountNumber',
-      },
-      {
-        path: 'category',
-        select: 'name slug',
-      },
-      {
-        path: 'subCategory',
-        select: 'name slug',
-      },
-    ],
-  });
+  const cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    return { items: [], };
+  }
+
+  const populatedCart = await populateCart(cart._id);
 
   return {
-    items: formatCartItems(cart),
+    items: formatCartItems(populatedCart),
   };
 };
 

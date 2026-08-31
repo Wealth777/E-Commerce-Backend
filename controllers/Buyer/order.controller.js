@@ -1,278 +1,429 @@
-const logger = require('../../logger');
-const buyerModel = require('../../models/buyer.model');
-const AuditLog = require('../../models/auditLog.model');
-const AddProduct = require('../../models/addproduct.model');
+const logger = require("../../logger");
+const buyerModel = require("../../models/buyer.model");
+const AuditLog = require("../../models/auditLog.model");
+const AddProduct = require("../../models/addproduct.model");
 const BuyerOrder = require("../../models/buyerOrder.model");
 const Cart = require("../../models/addToCart.model");
 const notificationService = require("../../services/notification/notification.service");
 
-// const { getTaxRate } = require('../../config/taxRate');
 const mongoose = require("mongoose");
-const { sendResponse, sendSuccess, sendError } = require('../../utils/responseStruture');
 
-const notifyAfterOrderPlaced = async ({ buyerId, orders }) => {
-  for (const order of orders) {
-    const orderRef = order._id
-      ? `#${order._id.toString().slice(-8).toUpperCase()}`
-      : "N/A";
+const {
+  sendResponse,
+  sendSuccess,
+  sendError,
+} = require("../../utils/responseStruture");
 
-    await notificationService.safeCreateNotification({
-      recipientId: buyerId,
-      recipientRole: "buyer",
-      type: "ORDER_PLACED",
-      title: "Order placed",
-      message: `Your order ${orderRef} has been placed successfully.`,
-      metadata: { orderId: order._id, vendorId: order.vendor, orderRef },
-      dedupeKey: `buyer:${buyerId}:BUYER_ORDER_PLACED:${order._id}`,
-    });
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
 
-    await notificationService.safeCreateNotification({
-      recipientId: order.vendor,
-      recipientRole: "vendor",
-      type: "ORDER_PLACED",
-      title: "New order received",
-      message: `A buyer placed a new order ${orderRef}.`,
-      metadata: { orderId: order._id, buyerId, orderRef },
-      dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_PLACED:${order._id}`,
-    });
+const toNumber = (value, fallback = 0) => {
+  const number = Number(value);
+  if (!Number.isFinite(number)) {
+    return fallback;
+  }
+  return number;
+};
+
+
+const toPositiveNumber = (value, fallback = 0) => {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number < 0) {
+    return fallback;
+  }
+  return number;
+};
+
+const getOrderReference = (order) => {
+  if (!order?._id) {
+    return "N/A";
+  }
+  return `#${order._id.toString().slice(-8).toUpperCase()}`;
+};
+
+const abortTransaction = async (session) => {
+  if (session?.inTransaction()) {
+    await session.abortTransaction();
   }
 };
 
-// const validateOrderCreation = (body) => {
-//   const errors = [];
+const notifyAfterOrderPlaced = async ({ buyerId, orders }) => {
+  for (const order of orders) {
+    try {
+      const orderRef = getOrderReference(order);
+      await notificationService.safeCreateNotification({
+        recipientId: buyerId,
+        recipientRole: "buyer",
+        type: "ORDER_PLACED",
+        title: "Order placed",
+        message: `Your order ${orderRef} has been placed successfully.`,
+        metadata: {
+          orderId: order._id,
+          vendorId: order.vendor,
+          orderRef,
+        },
+        dedupeKey: `buyer:${buyerId}:BUYER_ORDER_PLACED:${order._id}`,
+      });
 
-//   if (!Array.isArray(body.items) || body.items.length === 0) {
-//     errors.push('Items array is required and must not be empty');
-//   }
-
-//   if (typeof body.subtotal !== 'number' || body.subtotal <= 0) {
-//     errors.push('Subtotal must be a positive number');
-//   }
-
-//   if (typeof body.deliveryFee !== 'number' || body.deliveryFee < 0) {
-//     errors.push('Delivery fee must be a non-negative number');
-//   }
-
-//   if (typeof body.orderTotal !== 'number' || body.orderTotal <= 0) {
-//     errors.push('Order total must be a positive number');
-//   }
-
-//   // Validate address fields
-//   if (!body.address || body.address.trim() === '') {
-//     errors.push('Delivery address is required');
-//   }
-
-//   if (!body.state || body.state.trim() === '') {
-//     errors.push('State is required');
-//   }
-
-//   return errors;
-// };
+      await notificationService.safeCreateNotification({
+        recipientId: order.vendor,
+        recipientRole: "vendor",
+        type: "ORDER_PLACED",
+        title: "New order received",
+        message: `A buyer placed a new order ${orderRef}.`,
+        metadata: {
+          orderId: order._id,
+          buyerId,
+          orderRef,
+        },
+        dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_PLACED:${order._id}`,
+      });
+    } catch (notificationError) {
+      logger.error(
+        "Order notification error:",
+        notificationError
+      );
+    }
+  }
+};
 
 exports.createBuyerOrder = async (req, res) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
+    session.startTransaction();
+
     const userId = req.user._id;
 
     let {
       items,
-      subtotal,
-      deliveryFee,
-      totalTax,
       orderTotal,
       delivery,
       paymentMethod,
       note,
       state,
       address,
+      deliveryFee,
     } = req.body;
 
-    // const validationErrors = validateOrderCreation(req.body);
-
-    // if (validationErrors.length > 0) {
-    //   await session.abortTransaction();
-    //   return sendResponse(res, 400, false, "Validation failed", {
-    //     errors: validationErrors,
-    //   });
-    // }
-
     try {
-      items = typeof items === "string" ? JSON.parse(items) : items;
+      items = typeof items === "string"
+        ? JSON.parse(items)
+        : items;
     } catch (error) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+      await abortTransaction(session);
       return sendResponse(res, 400, false, "Invalid items format");
     }
 
     if (!Array.isArray(items) || items.length === 0) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+      await abortTransaction(session);
       return sendResponse(res, 400, false, "Cart is empty");
+    }
+
+    if (!["pay_now", "pod"].includes(paymentMethod)) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "Invalid payment method");
+    }
+
+    if (!["standard", "express"].includes(delivery)) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "Invalid delivery method");
     }
 
     const buyer = await buyerModel.findById(userId).session(session);
 
     if (!buyer) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 404, false, "User not found");
+      await abortTransaction(session);
+      return sendResponse(res, 404, false, "Buyer not found");
     }
 
-    const productIds = items.map((item) => item.id);
+    const invalidProductId = items.some(
+      (item) => !item?.id || !isValidObjectId(item.id)
+    );
+
+    if (invalidProductId) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "One or more product IDs are invalid");
+    }
+
+    const invalidQuantity = items.some((item) => {
+      const quantity = Number(item.quantity);
+      return (!Number.isInteger(quantity) || quantity <= 0);
+    });
+
+    if (invalidQuantity) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "Product quantity must be a positive whole number");
+    }
+
+    const uniqueProductIds = [
+      ...new Set(
+        items.map((item) => item.id.toString())
+      ),
+    ];
 
     const products = await AddProduct.find({
-      _id: { $in: productIds },
-    })
-      .populate("vendor", "_id storeName")
-      .session(session);
+      _id: {
+        $in: uniqueProductIds,
+      },
+    }).populate("vendor", "_id business.storeName fullName bankDetails.bankName bankDetails.accountName bankDetails.accountNumber").session(session);
 
-    if (products.length !== productIds.length) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+
+    if (products.length !== uniqueProductIds.length) {
+      await abortTransaction(session);
       return sendResponse(res, 400, false, "One or more products do not exist");
     }
 
-    const productMap = new Map(
-      products.map((product) => [product._id.toString(), product])
-    );
+    const productMap = new Map();
 
-    const enrichedItems = items.map((item) => {
-      const product = productMap.get(item.id.toString());
+    products.forEach((product) => {
+      productMap.set(
+        product._id.toString(),
+        product
+      );
+    });
+
+    const enrichedItems = [];
+
+    for (const item of items) {
+      const product = productMap.get(
+        item.id.toString()
+      );
 
       if (!product) {
-        throw new Error(`Product ${item.id} does not exist`);
+        await abortTransaction(session);
+        return sendResponse(res, 400, false, `Product ${item.id} does not exist`);
       }
 
       if (!product.vendor) {
-        throw new Error(`Product ${item.id} has no vendor`);
+        await abortTransaction(session);
+        return sendResponse(res, 400, false, `Product ${item.id} has no vendor`);
       }
 
-      return {
-        ...item,
-        vendorId: product.vendor._id.toString(),
-        vendorName: product.vendor.storeName || "N/A",
+      const quantity = Number(item.quantity);
+
+      const productPrice = toPositiveNumber(product.price);
+
+      if (productPrice <= 0) {
+        await abortTransaction(session);
+        return sendResponse(res, 400, false, `Product ${product.name || item.id} has an invalid price`);
+      }
+
+      enrichedItems.push({
         product,
-      };
-    });
+        productId: product._id,
+        name: product.name || item.name || "Product",
+        price: productPrice,
+        quantity,
+        image:
+          product.image ||
+          product.images?.[0] ||
+          item.image ||
+          "",
+        vendorId: product.vendor._id.toString(),
+        vendorName: product.vendor.business?.storeName || "Vendor",
+      });
+    }
 
-    const grouped = enrichedItems.reduce((acc, item) => {
-      if (!acc[item.vendorId]) {
-        acc[item.vendorId] = [];
-      }
+    const grouped = enrichedItems.reduce(
+      (acc, item) => {
+        if (!acc[item.vendorId]) {
+          acc[item.vendorId] = [];
+        }
+        acc[item.vendorId].push(item);
+        return acc;
+      },
+      {}
+    );
 
-      acc[item.vendorId].push(item);
-      return acc;
-    }, {});
+    const checkoutSubtotal = enrichedItems.reduce(
+      (sum, item) => {
+        return (
+          sum + item.price * item.quantity
+        );
+      },
+      0
+    );
+
+    const checkoutDeliveryFee = toPositiveNumber(deliveryFee, 0);
+
+    const calculatedOrderTotal = checkoutSubtotal + checkoutDeliveryFee;
+
+    const frontendOrderTotal = toPositiveNumber(orderTotal, 0);
+
+    if (
+      frontendOrderTotal > 0 &&
+      Math.abs(
+        frontendOrderTotal -
+        calculatedOrderTotal
+      ) > 1
+    ) {
+      logger.warn(
+        `Order total mismatch. Frontend: ${frontendOrderTotal}, Backend: ${calculatedOrderTotal}`
+      );
+    }
 
     const checkoutRef = new mongoose.Types.ObjectId();
 
     const allProofs = [];
 
-    if (paymentMethod === "pay_now" && req.files && req.files.length > 0) {
+    if (
+      paymentMethod === "pay_now" &&
+      Array.isArray(req.files)
+    ) {
       req.files.forEach((file) => {
-        if (file.fieldname.startsWith("proof_")) {
-          const vendorId = file.fieldname.split("_")[1];
+        if (
+          file?.fieldname?.startsWith("proof_")
+        ) {
+          const vendorId =
+            file.fieldname.split("_")[1];
 
-          allProofs.push({
-            vendorId,
-            file: file.path,
-          });
+          if (
+            vendorId &&
+            isValidObjectId(vendorId)
+          ) {
+            allProofs.push({
+              vendorId,
+              file: file.path || file.location || file.filename,
+            });
+          }
         }
       });
     }
 
+    const buyerAddress = address || buyer.student?.address || "";
+
+    const buyerState = state || buyer.state || null;
+
     const createdOrders = [];
 
-    for (const vendorId of Object.keys(grouped)) {
+    const vendorIds = Object.keys(grouped);
+
+    for (const vendorId of vendorIds) {
       const vendorItems = grouped[vendorId];
 
-      const formattedItems = vendorItems.map((item) => ({
-        productId: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image,
-        vendor: item.vendorId,
-        vendorName: item.vendorName,
-      }));
-
-      const vendorSubtotal = vendorItems.reduce(
-        (sum, item) => sum + item.price * item.quantity,
-        0
-      );
-
-      const TAX_PER_VENDOR = 10;
-      const vendorDeliveryFee = delivery === "express" ? 1000 : 0;
-      const vendorTotal = vendorSubtotal + vendorDeliveryFee + TAX_PER_VENDOR;
-
-      const vendorProof = allProofs.find(
-        (proof) => proof.vendorId === vendorId
-      );
-
-      const order = await BuyerOrder.create(
-        [
-          {
-            buyer: userId,
-            vendor: vendorId,
-            checkoutRef,
-            items: formattedItems,
-
-            pricing: {
-              subtotal: vendorSubtotal,
-              deliveryFee: vendorDeliveryFee,
-              tax: TAX_PER_VENDOR,
-              total: vendorTotal,
-            },
-
-            delivery: {
-              method: delivery,
-              address: address || buyer?.location?.address || "",
-              state: state || buyer?.location?.state || "",
-            },
-
-            payment: {
-              method: paymentMethod,
-              status: "pending",
-              proofs: vendorProof ? [vendorProof] : [],
-            },
-
-            note,
+      const vendorSubtotal =
+        vendorItems.reduce(
+          (sum, item) => {
+            return (
+              sum +
+              item.price *
+              item.quantity
+            );
           },
-        ],
-        { session }
-      );
+          0
+        );
 
-      createdOrders.push(order[0]);
+      const vendorShare = checkoutSubtotal > 0 ? vendorSubtotal / checkoutSubtotal : 0;
+
+
+      const vendorDeliveryFee =
+        Number(
+          (
+            checkoutDeliveryFee *
+            vendorShare
+          ).toFixed(2)
+        );
+
+      const vendorTotal =
+        vendorSubtotal +
+        vendorDeliveryFee;
+
+      const formattedItems =
+        vendorItems.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          vendor: item.vendorId,
+          vendorName: item.vendorName,
+        }));
+
+      const vendorProof =
+        allProofs.find(
+          (proof) =>
+            proof.vendorId === vendorId
+        );
+
+
+      const [createdOrder] =
+        await BuyerOrder.create(
+          [
+            {
+              buyer: userId,
+              vendor: vendorId,
+              checkoutRef,
+              items: formattedItems,
+              pricing: {
+                subtotal: vendorSubtotal,
+                deliveryFee: vendorDeliveryFee,
+                total: vendorTotal,
+              },
+              delivery: {
+                method: delivery,
+                address: buyerAddress,
+                state: buyerState,
+              },
+              payment: {
+                method: paymentMethod,
+                status: "pending",
+                proofs: vendorProof
+                  ? [vendorProof]
+                  : [],
+              },
+              note:
+                typeof note === "string"
+                  ? note.trim()
+                  : "",
+
+              status: "pending",
+            },
+          ],
+          { session }
+        );
+
+      createdOrders.push(
+        createdOrder
+      );
     }
 
+
     await Cart.findOneAndUpdate(
-      { user: userId },
-      { $set: { items: [] } },
-      { session }
+      {
+        user: userId,
+      },
+      {
+        $set: {
+          items: [],
+        },
+      }, { session, }
     );
 
+
     const isMultiVendor = createdOrders.length > 1;
+
 
     await AuditLog.create(
       [
         {
           user: userId,
           role: "buyer",
-          action: isMultiVendor ? "CREATE_MULTI_VENDOR_ORDER" : "CREATE_ORDER",
+          action: isMultiVendor
+            ? "CREATE_MULTI_VENDOR_ORDER"
+            : "CREATE_ORDER",
           entity: "Order",
           metadata: {
             checkoutRef,
             orderCount: createdOrders.length,
-            totalAmount: orderTotal,
+            subtotal: checkoutSubtotal,
+            deliveryFee: checkoutDeliveryFee,
+            totalAmount: calculatedOrderTotal,
+            frontendTotal: frontendOrderTotal,
             paymentMethod,
             deliveryMethod: delivery,
-            vendorIds: Object.keys(grouped),
+            vendorIds,
           },
         },
       ],
@@ -283,74 +434,199 @@ exports.createBuyerOrder = async (req, res) => {
 
     await notifyAfterOrderPlaced({
       buyerId: userId,
-      orders: createdOrders
+      orders: createdOrders,
     });
 
-    return sendResponse(res, 201, true, "Orders created per vendor", {
-      data: createdOrders,
-    });
+    return sendResponse(res, 201, true, "Orders created successfully",
+      {
+        data: createdOrders,
+        checkout: {
+          checkoutRef,
+          subtotal: checkoutSubtotal,
+          deliveryFee: checkoutDeliveryFee,
+          total: calculatedOrderTotal,
+          orderCount: createdOrders.length,
+          isMultiVendor,
+        },
+      }
+    );
+
   } catch (error) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
-    logger.error("Create Order Error:", error);
-
-    return sendResponse(res, 500, false, "Internal Server Error", {
-      error: error.message,
-    });
+    await abortTransaction(session);
+    logger.error("Create Buyer Order Error:", error);
+    return sendResponse(res, 500, false, "Internal Server Error", { error: error.message, });
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
 
 exports.getBuyerOrders = async (req, res) => {
   try {
     const userId = req.user._id;
-    const page = Math.max(1, Number(req.query.page) || 1);
-    const limit = Math.min(Math.max(1, Number(req.query.limit) || 20), 100);
-    const skip = (page - 1) * limit;
 
-    const [orders, totalCount] = await Promise.all([
-      BuyerOrder.find({ buyer: userId })
-        .populate("items.vendor", "storeName")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-      BuyerOrder.countDocuments({ buyer: userId })
-    ]);
+    const page = Math.max(
+      1,
+      Number(req.query.page) || 1
+    );
 
-    return sendSuccess(res, 200, 'Orders fetched successfully', {
-      pagination: {
-        currentPage: page,
-        pageSize: limit,
-        totalItems: totalCount,
-        totalPages: Math.ceil(totalCount / limit)
-      },
-      count: orders.length,
-      orders,
-    });
+    const limit = Math.min(
+      Math.max(
+        1,
+        Number(req.query.limit) || 20
+      ),
+      100
+    );
+
+    const skip =
+      (page - 1) * limit;
+
+
+    const [orders, totalCount] =
+      await Promise.all([
+        BuyerOrder.find({
+          buyer: userId,
+        })
+          .populate(
+            "vendor",
+            "_id business.storeName fullName"
+          )
+          .populate(
+            "items.productId",
+            "name price image images"
+          )
+          .populate(
+            "items.vendor",
+            "_id business.storeName fullName"
+          )
+          .sort({
+            createdAt: -1,
+          })
+          .skip(skip)
+          .limit(limit)
+          .lean(),
+
+        BuyerOrder.countDocuments({
+          buyer: userId,
+        }),
+      ]);
+
+
+
+    const normalizedOrders =
+      orders.map((order) => ({
+        ...order,
+
+        orderRef: getOrderReference(order),
+
+        vendorName: order.vendor?.business?.storeName || order.items?.[0]?.vendorName || "Vendor",
+
+        itemCount:
+          order.items?.reduce(
+            (total, item) =>
+              total +
+              Number(item.quantity || 0),
+            0
+          ) || 0,
+
+        total: order.pricing?.total || 0,
+
+        paymentStatus: order.payment?.status || "pending",
+
+        paymentMethod: order.payment?.method || "",
+
+        deliveryMethod: order.delivery?.method || "standard",
+
+        deliveryAddress: order.delivery?.address || "",
+
+        deliveryState: order.delivery?.state || "",
+      }));
+
+
+    return sendSuccess(res, 200, "Orders fetched successfully",
+      {
+        pagination: {
+          currentPage: page,
+          pageSize: limit,
+          totalItems: totalCount,
+          totalPages:
+            Math.ceil(
+              totalCount / limit
+            ),
+        },
+        count: normalizedOrders.length,
+        orders: normalizedOrders,
+      }
+    );
 
   } catch (error) {
-    logger.error("Fetch Orders Error:", error);
-    sendResponse(res, 500, false, "Internal Server Error")
+    logger.error("Fetch Buyer Orders Error:", error);
+    return sendResponse(res, 500, false, "Internal Server Error");
   }
 };
 
 exports.getSingleBuyerOrder = async (req, res) => {
   try {
     const userId = req.user._id;
+
     const { orderId } = req.params;
 
-    const order = await BuyerOrder.findOne({
-      _id: orderId,
-      buyer: userId,
-    }).populate("items.vendor", "storeName");
+    if (!isValidObjectId(orderId)) {
+      return sendError(res, 400, "Invalid order ID");
+    }
+
+
+    const order =
+      await BuyerOrder.findOne({
+        _id: orderId,
+        buyer: userId,
+      })
+        .populate(
+          "vendor",
+          "_id business.storeName fullName"
+        )
+        .populate(
+          "items.productId",
+          "name price image images"
+        )
+        .populate(
+          "items.vendor",
+          "_id business.storeName fullName"
+        )
+        .lean();
+
 
     if (!order) {
       return sendError(res, 404, "Order not found");
     }
+    const normalizedOrder = {
+      ...order,
 
-    return sendSuccess(res, 200, "Order fetched successfully", order);
+      orderRef: getOrderReference(order),
+
+      vendorName: order.vendor?.business?.storeName || order.items?.[0]?.vendorName || "Vendor",
+
+      itemCount:
+        order.items?.reduce(
+          (total, item) =>
+            total +
+            Number(item.quantity || 0),
+          0
+        ) || 0,
+
+      total:  order.pricing?.total || 0,
+
+      paymentStatus: order.payment?.status || "pending",
+
+      paymentMethod: order.payment?.method || "",
+
+      deliveryMethod: order.delivery?.method || "standard",
+
+      deliveryAddress: order.delivery?.address || "",
+
+      deliveryState: order.delivery?.state || "",
+    };
+
+    return sendSuccess(res, 200, "Order fetched successfully", normalizedOrder);
   } catch (error) {
     logger.error("Fetch Single Buyer Order Error:", error);
     return sendError(res, 500, "Internal Server Error");
@@ -359,45 +635,49 @@ exports.getSingleBuyerOrder = async (req, res) => {
 
 exports.buyerConfirmDelivery = async (req, res) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
+    session.startTransaction();
+    const userId = req.user._id;
+
     const { orderId } = req.body;
 
-    const order = await BuyerOrder.findById(orderId).session(session);
+
+    if (!isValidObjectId(orderId)) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "Invalid order ID");
+    }
+
+    const order =
+      await BuyerOrder.findOne({
+        _id: orderId,
+        buyer: userId,
+      }).session(session);
+
 
     if (!order) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+      await abortTransaction(session);
       return sendResponse(res, 404, false, "Order not found");
     }
 
-    if (order.buyer.toString() !== req.user._id.toString()) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 403, false, "You can only confirm your own order");
-    }
-
     if (order.status !== "shipped") {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+      await abortTransaction(session);
       return sendResponse(res, 400, false, "Order is not yet shipped");
     }
 
-    const previousStatus = order.status;
 
+    const previousStatus = order.status;
+    const deliveredAt = new Date();
     order.status = "delivered";
-    order.deliveredAt = new Date();
+    order.deliveredAt = deliveredAt;
 
     await order.save({ session });
+
 
     await AuditLog.create(
       [
         {
-          user: req.user._id,
+          user: userId,
           role: "buyer",
           action: "ORDER_DELIVERED",
           entity: "ORDER",
@@ -405,127 +685,166 @@ exports.buyerConfirmDelivery = async (req, res) => {
           metadata: {
             previousStatus,
             newStatus: "delivered",
-            deliveredAt: order.deliveredAt,
+            deliveredAt,
           },
         },
-      ],
-      { session }
+      ],{ session }
     );
 
     await session.commitTransaction();
 
-    const orderRef = order._id
-      ? `#${order._id.toString().slice(-8).toUpperCase()}`
-      : "N/A";
+    const orderRef = getOrderReference(order);
 
-    await notificationService.safeCreateNotification({
-      recipientId: order.vendor,
-      recipientRole: "vendor",
-      type: "ORDER_CONFIRMED_DELIVERY",
-      title: "Buyer confirmed delivery",
-      message: `The buyer confirmed delivery for order ${orderRef}.`,
-      metadata: { orderId: order._id, buyerId: order.buyer },
-      dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_CONFIRMED_DELIVERY:${order._id}`,
-    });
-
-    return sendResponse(res, 200, true, "Order marked as delivered", {
-      status: order.status,
-      deliveredAt: order.deliveredAt,
-    });
-  } catch (err) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
+    try {
+      await notificationService.safeCreateNotification(
+        {
+          recipientId:
+            order.vendor,
+          recipientRole: "vendor",
+          type: "ORDER_CONFIRMED_DELIVERY",
+          title: "Buyer confirmed delivery",
+          message: `The buyer confirmed delivery for order ${orderRef}.`,
+          metadata: {
+            orderId: order._id,
+            buyerId: order.buyer,
+            orderRef,
+          },
+          dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_CONFIRMED_DELIVERY:${order._id}`,
+        }
+      );
+    } catch (notificationError) {
+      logger.error( "Delivery notification error:", notificationError);
     }
-    logger.error("Buyer Confirm Delivery Error:", err);
 
+    return sendResponse( res, 200, true, "Order marked as delivered",
+      {
+        orderId: order._id,
+        orderRef,
+        status: order.status,
+        deliveredAt: order.deliveredAt,
+      }
+    );
+  } catch (error) {
+    await abortTransaction(session);
+    logger.error("Buyer Confirm Delivery Error:", error);
     return sendResponse(res, 500, false, "Internal Server Error");
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
 
 exports.buyerCancelOrder = async (req, res) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
+    session.startTransaction();
+
+    const userId = req.user._id;
+
     const { orderId } = req.body;
 
-    const order = await BuyerOrder.findById(orderId).session;
+    if (!isValidObjectId(orderId)) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "Invalid order ID");
+    }
+
+    const order =
+      await BuyerOrder.findOne({
+        _id: orderId,
+        buyer: userId,
+      }).session(session);
+
     if (!order) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 404, false, "Ordre not found");
+      await abortTransaction(session);
+      return sendResponse(res, 404, false, "Order not found");
     }
 
     if (order.status !== "pending") {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+      await abortTransaction(session);
       return sendResponse(res, 400, false, "Order cannot be cancelled now");
     }
 
     const previousStatus = order.status;
+    const cancelledAt = new Date();
+
     order.status = "cancelled";
     order.cancelledBy = {
       role: "buyer",
-      user: req.user._id,
-      cancelledAt: new Date(),
+      user: userId,
+      userModel: "Buyer",
+      cancelledAt,
     };
 
-    await order.save({ session });
+    await order.save({  session });
 
-    await AuditLog.create([
-      {
-        user: req.user._id,
-        role: "buyer",
-        action: "ORDER_CANCELLED",
-        entity: "ORDER",
-        entityId: orderId,
-        metadata: {
-          previousStatus,
-          newStatus: "cancelled",
-          cancelledBy: "buyer",
-          timestamp: Date.now()
+    await AuditLog.create(
+      [
+        {
+          user: userId,
+          role: "buyer",
+          action: "ORDER_CANCELLED",
+          entity: "ORDER",
+          entityId: orderId,
+          metadata: {
+            previousStatus,
+            newStatus: "cancelled",
+            cancelledBy: "buyer",
+            timestamp: cancelledAt,
+          },
         },
-      }
-    ], { session });
+      ], { session }
+    );
 
     await session.commitTransaction();
 
-    const orderRef = order._id
-      ? `#${order._id.toString().slice(-8).toUpperCase()}`
-      : "N/A";
+    const orderRef = getOrderReference(order);
 
-    await notificationService.safeCreateNotification({
-      recipientId: order.vendor,
-      recipientRole: "vendor",
-      type: "ORDER_CANCELLED",
-      title: "Order cancelled",
-      message: `A buyer cancelled order ${orderRef}.`,
-      metadata: { orderId: order._id, buyerId: order.buyer },
-      dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_CANCELLED:${order._id}`,
-    });
 
-    return sendResponse(res, 200, true, "Order cancelled", { status: order.status });
-  } catch (err) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
+    try {
+      await notificationService.safeCreateNotification(
+        {
+          recipientId: order.vendor,
+          recipientRole: "vendor",
+          type: "ORDER_CANCELLED",
+          title: "Order cancelled",
+          message: `A buyer cancelled order ${orderRef}.`,
+          metadata: {
+            orderId: order._id,
+            buyerId: order.buyer,
+            orderRef,
+          },
+          dedupeKey: `vendor:${order.vendor}:VENDOR_ORDER_CANCELLED:${order._id}`,
+        }
+      );
+    } catch (notificationError) {
+      logger.error("Cancellation notification error:", notificationError);
     }
-    logger.error("Error happended", err)
+
+    return sendResponse(res, 200, true, "Order cancelled successfully",
+      {
+        orderId: order._id,
+        orderRef,
+        status: order.status,
+        cancelledBy: order.cancelledBy,
+      }
+    );
+  } catch (error) {
+    await abortTransaction(session);
+    logger.error("Buyer Cancel Order Error:", error);
     return sendResponse(res, 500, false, "Internal Server Error");
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
 
+
 exports.requestRefund = async (req, res) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
 
   try {
+    session.startTransaction();
     const userId = req.user._id;
+
     const { orderId } = req.params;
 
     const {
@@ -536,197 +855,457 @@ exports.requestRefund = async (req, res) => {
       accountName,
     } = req.body;
 
-    // Validation
-    if (!reason || reason.trim() === "") {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 400, false, "Reason is required for refund request");
+
+    if (!isValidObjectId(orderId)) {
+      await abortTransaction(session);
+      return sendResponse(res, 400, false, "Invalid order ID");
     }
 
-    const order = await BuyerOrder.findById(orderId).session(session);
+
+    if (
+      !reason ||
+      typeof reason !== "string" ||
+      reason.trim() === ""
+    ) {
+      await abortTransaction(session);
+      return sendResponse( res, 400, false, "Reason is required for refund request");
+    }
+
+    const order =
+      await BuyerOrder.findOne({
+        _id: orderId,
+        buyer: userId,
+      }).session(session);
+
 
     if (!order) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 404, false, "Order not found");
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Order not found"
+      );
     }
 
-    // Verify ownership
-    if (order.buyer.toString() !== userId.toString()) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 403, false, "You can only request refund for your own orders");
-    }
 
-    // Check if order is cancelled
+    /*
+    |--------------------------------------------------------------------------
+    | Check whether refund is allowed
+    |--------------------------------------------------------------------------
+    */
+
     const canRefundCancelledOrder =
       order.status === "cancelled" &&
-      order.cancelledBy?.role === "buyer";
+      order.cancelledBy?.role ===
+      "buyer";
+
 
     const canRefundReturnedOrder =
-      order.returnRequest?.requested &&
-      ["approved", "returned", "completed"].includes(
-        order.returnRequest.status
+      order.returnRequest?.requested === true &&
+      [
+        "approved",
+        "returned",
+        "completed",
+      ].includes(
+        order.returnRequest?.status
       );
 
-    if (!canRefundCancelledOrder && !canRefundReturnedOrder) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+
+    if (
+      !canRefundCancelledOrder &&
+      !canRefundReturnedOrder
+    ) {
+      await abortTransaction(session);
+
       return sendError(
         res,
         400,
-        "Refund request not allowed for this order"
+        "Refund request is not allowed for this order"
       );
     }
 
-    if (canRefundCancelledOrder) {
-      if (!order.cancelledBy || order.cancelledBy.role !== "buyer") {
-        if (session.inTransaction()) {
-          await session.abortTransaction();
-        }
-        return sendResponse(res, 400, false, "Refund request can only be made for orders cancelled by you");
-      }
-    }
 
-    // Check if refund request already exists and is pending/approved/completed
+    /*
+    |--------------------------------------------------------------------------
+    | Existing refund request
+    |--------------------------------------------------------------------------
+    */
+
+    const existingRefund =
+      order.refundRequest;
+
+
     if (
-      order.refundRequest.requested &&
+      existingRefund?.requested &&
       [
         "pending_review",
         "approved",
         "processing",
         "refunded",
-        "completed"
-      ].includes(order.refundRequest.status)
+        "completed",
+      ].includes(
+        existingRefund.status
+      )
     ) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 400, false, `A refund request already exists with status: ${order.refundRequest.status}`);
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        `A refund request already exists with status: ${existingRefund.status}`
+      );
     }
 
-    // Create/Update refund request
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refund account validation
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+      !accountNumber ||
+      !bankName ||
+      !accountName
+    ) {
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Bank account number, bank name and account name are required"
+      );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create refund request
+    |--------------------------------------------------------------------------
+    */
+
     order.refundRequest = {
       requested: true,
-      status: "pending_review",
-      reason,
-      details: details || "",
-      accountNumber: accountNumber,
-      bankName: bankName,
-      accountName: accountName,
-      refundAmount: order.pricing.total,
-      triggeredByReturn: canRefundReturnedOrder,
-      requestedAt: new Date(),
-      reviewedAt: null,
-      reviewedBy: null,
-      response: "",
+
+      status:
+        "pending_review",
+
+      reason:
+        reason.trim(),
+
+      details:
+        typeof details === "string"
+          ? details.trim()
+          : "",
+
+      accountNumber:
+        accountNumber.trim(),
+
+      bankName:
+        bankName.trim(),
+
+      accountName:
+        accountName.trim(),
+
+      refundAmount:
+        order.pricing?.total || 0,
+
+      triggeredByReturn:
+        canRefundReturnedOrder,
+
+      requestedAt:
+        new Date(),
+
+      reviewedAt:
+        null,
+
+      reviewedBy:
+        null,
+
+      response:
+        "",
     };
 
-    await order.save({ session });
 
-    await AuditLog.create([{
-      user: userId,
-      role: "buyer",
-      action: "REFUND_REQUEST_CREATED",
-      entity: "ORDER",
-      entityId: orderId,
-      metadata: {
-        reason,
-        orderStatus: order.status,
-        totalAmount: order.pricing.total,
-      },
-    }], { session });
+    await order.save({
+      session,
+    });
+
+
+    await AuditLog.create(
+      [
+        {
+          user:
+            userId,
+
+          role:
+            "buyer",
+
+          action:
+            "REFUND_REQUEST_CREATED",
+
+          entity:
+            "ORDER",
+
+          entityId:
+            orderId,
+
+          metadata: {
+            reason:
+              reason.trim(),
+
+            orderStatus:
+              order.status,
+
+            totalAmount:
+              order.pricing?.total || 0,
+
+            triggeredByReturn:
+              canRefundReturnedOrder,
+          },
+        },
+      ],
+      {
+        session,
+      }
+    );
+
 
     await session.commitTransaction();
 
-    const orderRef = order._id
-      ? `#${order._id.toString().slice(-8).toUpperCase()}`
-      : "N/A";
 
-    await notificationService.safeCreateNotification({
-      recipientId: order.vendor,
-      recipientRole: "vendor",
-      type: "ORDER_REFUND_REQUEST",
-      title: "Refund request received",
-      message: `A buyer requested a refund for order ${orderRef}.`,
-      metadata: { orderId: order._id, buyerId: order.buyer, reason },
-      dedupeKey: `vendor:${order.vendor}:VENDOR_REFUND_REQUEST:${order._id}`,
-    });
+    const orderRef =
+      getOrderReference(order);
 
-    return sendResponse(res, 201, true, "Refund request submitted successfully", {
-      data: {
-        orderId: order._id,
-        refundRequest: order.refundRequest,
-      }
-    });
-  } catch (error) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
+
+    try {
+      await notificationService.safeCreateNotification(
+        {
+          recipientId:
+            order.vendor,
+
+          recipientRole:
+            "vendor",
+
+          type:
+            "ORDER_REFUND_REQUEST",
+
+          title:
+            "Refund request received",
+
+          message:
+            `A buyer requested a refund for order ${orderRef}.`,
+
+          metadata: {
+            orderId:
+              order._id,
+
+            buyerId:
+              order.buyer,
+
+            reason:
+              reason.trim(),
+
+            orderRef,
+          },
+
+          dedupeKey:
+            `vendor:${order.vendor}:VENDOR_REFUND_REQUEST:${order._id}`,
+        }
+      );
+    } catch (notificationError) {
+      logger.error(
+        "Refund notification error:",
+        notificationError
+      );
     }
-    logger.error("Request Refund Error:", error);
-    return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
+
+
+    return sendResponse(
+      res,
+      201,
+      true,
+      "Refund request submitted successfully",
+      {
+        data: {
+          orderId:
+            order._id,
+
+          orderRef,
+
+          refundRequest:
+            order.refundRequest,
+        },
+      }
+    );
+
+  } catch (error) {
+    await abortTransaction(session);
+
+    logger.error(
+      "Request Refund Error:",
+      error
+    );
+
+    return sendResponse(
+      res,
+      500,
+      false,
+      "Internal Server Error"
+    );
+
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
 
-exports.requestReturn = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+
+/*
+|--------------------------------------------------------------------------
+| REQUEST RETURN
+|--------------------------------------------------------------------------
+*/
+
+exports.requestReturn = async (
+  req,
+  res
+) => {
+  const session =
+    await mongoose.startSession();
 
   try {
-    const userId = req.user._id;
-    const { orderId } = req.params;
-    const { reason, details } = req.body;
+    session.startTransaction();
 
-    // Validation
-    if (!reason || reason.trim() === "") {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 400, false, "Reason is required for return request");
+    const userId =
+      req.user._id;
+
+    const { orderId } =
+      req.params;
+
+    const {
+      reason,
+      details,
+    } = req.body;
+
+
+    if (!isValidObjectId(orderId)) {
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Invalid order ID"
+      );
     }
 
-    const order = await BuyerOrder.findById(orderId).session(session);
+
+    if (
+      !reason ||
+      typeof reason !== "string" ||
+      reason.trim() === ""
+    ) {
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Reason is required for return request"
+      );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Find buyer's order
+    |--------------------------------------------------------------------------
+    */
+
+    const order =
+      await BuyerOrder.findOne({
+        _id: orderId,
+        buyer: userId,
+      }).session(session);
+
 
     if (!order) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 404, false, "Order not found");
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Order not found"
+      );
     }
 
-    // Verify ownership
-    if (order.buyer.toString() !== userId.toString()) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 403, false, "You can only request return for your own orders");
-    }
 
-    // Check if order is delivered
+    /*
+    |--------------------------------------------------------------------------
+    | Return only delivered orders
+    |--------------------------------------------------------------------------
+    */
+
     if (order.status !== "delivered") {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 400, false, "Return request can only be made for delivered orders");
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Return request can only be made for delivered orders"
+      );
     }
 
-    const RETURN_WINDOW_HOURS = 72;
-    const deliveredAt = order.deliveredAt || order.updatedAt;
 
-    const returnDeadline = new Date(
-      deliveredAt.getTime() + RETURN_WINDOW_HOURS * 60 * 60 * 1000
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | Return window
+    |--------------------------------------------------------------------------
+    */
 
-    if (Date.now() > returnDeadline.getTime()) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
+    const RETURN_WINDOW_HOURS =
+      72;
+
+
+    const deliveredAt =
+      order.deliveredAt ||
+      order.updatedAt;
+
+
+    if (!deliveredAt) {
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Delivery date could not be determined"
+      );
+    }
+
+
+    const returnDeadline =
+      new Date(
+        deliveredAt.getTime() +
+        RETURN_WINDOW_HOURS *
+        60 *
+        60 *
+        1000
+      );
+
+
+    if (
+      Date.now() >
+      returnDeadline.getTime()
+    ) {
+      await abortTransaction(session);
+
       return sendResponse(
         res,
         400,
@@ -735,82 +1314,160 @@ exports.requestReturn = async (req, res) => {
       );
     }
 
-    // Check if return request already exists and is pending/approved/completed
+
+    /*
+    |--------------------------------------------------------------------------
+    | Existing return request
+    |--------------------------------------------------------------------------
+    */
+
+    const existingReturn =
+      order.returnRequest;
+
+
     if (
-      order.returnRequest.requested &&
+      existingReturn?.requested &&
       [
         "pending_review",
         "approved",
         "buyer_shipping",
         "returned",
         "inspection",
-        "completed"
-      ].includes(order.returnRequest.status)
+        "completed",
+      ].includes(
+        existingReturn.status
+      )
     ) {
-      if (session.inTransaction()) {
-        await session.abortTransaction();
-      }
-      return sendResponse(res, 400, false, `A return request already exists with status: ${order.returnRequest.status}`
+      await abortTransaction(session);
+
+      return sendResponse(
+        res,
+        400,
+        false,
+        `A return request already exists with status: ${existingReturn.status}`
       );
     }
 
-    // Create/Update return request
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create return request
+    |--------------------------------------------------------------------------
+    */
+
     order.returnRequest = {
-      requested: true,
-      status: "pending_review",
-      reason,
-      details: details || "",
-      requestedAt: new Date(),
-      reviewedAt: null,
-      reviewedBy: null,
-      response: "",
+      requested:
+        true,
+
+      status:
+        "pending_review",
+
+      reason:
+        reason.trim(),
+
+      details:
+        typeof details === "string"
+          ? details.trim()
+          : "",
+
+      requestedAt:
+        new Date(),
+
+      reviewedAt:
+        null,
+
+      reviewedBy:
+        null,
+
+      returnedAt:
+        null,
+
+      response:
+        "",
     };
 
-    await order.save({ session });
 
-    await AuditLog.create([{
-      user: userId,
-      role: "buyer",
-      action: "RETURN_REQUEST_CREATED",
-      entity: "ORDER",
-      entityId: orderId,
-      metadata: {
-        reason,
-        orderStatus: order.status,
-        totalAmount: order.pricing.total,
-      },
-    }], { session });
+    await order.save({
+      session,
+    });
+
+
+    await AuditLog.create(
+      [
+        {
+          user:
+            userId,
+
+          role:
+            "buyer",
+
+          action:
+            "RETURN_REQUEST_CREATED",
+
+          entity:
+            "ORDER",
+
+          entityId:
+            orderId,
+
+          metadata: {
+            reason:
+              reason.trim(),
+
+            orderStatus:
+              order.status,
+
+            totalAmount:
+              order.pricing?.total || 0,
+          },
+        },
+      ],
+      {
+        session,
+      }
+    );
+
 
     await session.commitTransaction();
 
-    const orderRef = order._id
-      ? `#${order._id.toString().slice(-8).toUpperCase()}`
-      : "N/A";
+    const orderRef = getOrderReference(order);
 
-    await notificationService.safeCreateNotification({
-      recipientId: order.vendor,
-      recipientRole: "vendor",
-      type: "ORDER_RETURN_REQUEST",
-      title: "Return request received",
-      message: `A buyer requested a return for order ${orderRef}.`,
-      metadata: { orderId: order._id, buyerId: order.buyer, reason },
-      dedupeKey: `vendor:${order.vendor}:VENDOR_RETURN_REQUEST:${order._id}`,
-    });
+
+    try {
+      await notificationService.safeCreateNotification(
+        {
+          recipientId: order.vendor,
+          recipientRole: "vendor",
+          type: "ORDER_RETURN_REQUEST",
+          title: "Return request received",
+          message: `A buyer requested a return for order ${orderRef}.`,
+          metadata: {
+            orderId: order._id,
+            buyerId: order.buyer,
+            reason: reason.trim(),
+            orderRef,
+          },
+          dedupeKey: `vendor:${order.vendor}:VENDOR_RETURN_REQUEST:${order._id}`,
+        }
+      );
+    } catch (notificationError) {
+      logger.error("Return notification error:", notificationError);
+    }
 
     return sendResponse(res, 201, true, "Return request submitted successfully",
       {
         data: {
           orderId: order._id,
+          orderRef,
           returnRequest: order.returnRequest,
-        }
-      });
+        },
+      }
+    );
   } catch (error) {
-    if (session.inTransaction()) {
-      await session.abortTransaction();
-    }
+    await abortTransaction(session);
     logger.error("Request Return Error:", error);
-    return sendResponse(res, 500, false, "Internal Server Error", { error: error.message });
+    return sendResponse(res, 500, false, "Internal Server Error");
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
