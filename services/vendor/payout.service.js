@@ -17,9 +17,9 @@ const saveVendorPayout = async ({ userId, bankName, accountName, accountNumber, 
   const vendor = await vendorModel.findById(userId).session(session);
   if (!vendor) throw new AppError('Vendor not found', 404);
 
-  vendor.bankName = bankName;
-  vendor.accountName = accountName;
-  vendor.accountNumber = accountNumber;
+  vendor.bankDetails.bankName = bankName;
+  vendor.bankDetails.accountName = accountName;
+  vendor.bankDetails.accountNumber = accountNumber;
   await vendor.save({ session });
 
   await AuditLog.create([{
