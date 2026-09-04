@@ -1,10 +1,16 @@
+const mongoose = require('mongoose');
+
 const logger = require('../../logger');
+const { sendResponse, sendSuccess } = require('../../utils/responseStruture');
+
 const AuditLog = require('../../models/auditLog.model');
 const BuyerOrder = require("../../models/buyerOrder.model");
-const notificationService = require("../../services/notification/notification.service");
+
 const { updateProductStockAfterOrder, restoreProductStockAfterReturn } = require("../../utils/feedAlgorithm");
-const mongoose = require('mongoose');
-const { sendResponse, sendSuccess } = require('../../utils/responseStruture');
+
+const notificationService = require("../../services/notification/notification.service");
+
+const orderSocket = require("../../sockets/order.socket");
 
 const sendLowStockNotifications = async ({ vendorId, order }) => {
   const productIds = order.items.map((item) => item.productId);
@@ -36,7 +42,7 @@ exports.getVendorOrders = async (req, res) => {
 
     const [orders, totalCount] = await Promise.all([
       BuyerOrder.find({ vendor: vendorId })
-        .populate("buyer", "username email")
+        .populate("buyer", "fullName email")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -69,7 +75,7 @@ exports.getSingleVendorOrder = async (req, res) => {
       _id: orderId,
       vendor: vendorId,
     })
-      .populate("buyer", "username fullName email")
+      .populate("buyer", "fullName email")
       .populate("items.vendor", "storeName");
 
     if (!order) {
@@ -97,7 +103,7 @@ exports.vendorConfirmPayment = async (req, res) => {
     }
 
     const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id }).session(session)
-    if (!order){
+    if (!order) {
       await session.commitTransaction();
       return sendResponse(res, 404, false, "Order not found")
     };
@@ -109,6 +115,16 @@ exports.vendorConfirmPayment = async (req, res) => {
     await order.save({ session });
 
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitPaymentUpdated({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Payment update socket error:", socketError);
+    }
 
     const orderRef = order._id
       ? `#${order._id.toString().slice(-8).toUpperCase()}`
@@ -180,6 +196,16 @@ exports.vendorConfirmOrder = async (req, res) => {
 
     await session.commitTransaction();
 
+    try {
+      orderSocket.emitOrderConfirmed({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Order confirmation socket error:", socketError);
+    }
+
     const orderRef = order._id
       ? `#${order._id.toString().slice(-8).toUpperCase()}`
       : "N/A";
@@ -228,7 +254,7 @@ exports.vendorShipOrder = async (req, res) => {
     const { orderId } = req.body;
 
     const order = await BuyerOrder.findOne({ _id: orderId, vendor: req.user._id }).session(session);
-    if (!order){
+    if (!order) {
       await session.abortTransaction();
       return sendResponse(res, 400, false, "Order not found")
     };
@@ -244,6 +270,16 @@ exports.vendorShipOrder = async (req, res) => {
     await order.save({ session });
 
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitOrderShipped({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Order shipped socket error:", socketError);
+    }
 
     const orderRef = order._id
       ? `#${order._id.toString().slice(-8).toUpperCase()}`
@@ -435,12 +471,8 @@ exports.reviewRefundRequest = async (req, res) => {
     };
 
     if (!allowedTransitions[currentStatus]?.includes(action)) {
-      return sendResponse(
-        res,
-        400,
-        false,
-        `Cannot move refund request from ${currentStatus} to ${action}`
-      );
+      await session.abortTransaction();
+      return sendResponse(res, 400, false, `Cannot move refund request from ${currentStatus} to ${action}`);
     }
 
     const previousStatus = currentStatus;
@@ -461,6 +493,16 @@ exports.reviewRefundRequest = async (req, res) => {
     await order.save({ session });
 
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitRefundUpdated({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Refund update socket error:", socketError);
+    }
 
     const orderRef = order._id
       ? `#${order._id.toString().slice(-8).toUpperCase()}`
@@ -566,12 +608,7 @@ exports.reviewReturnRequest = async (req, res) => {
 
     if (!allowedTransitions[currentStatus]?.includes(action)) {
       await session.abortTransaction();
-      return sendResponse(
-        res,
-        400,
-        false,
-        `Cannot move return request from ${currentStatus} to ${action}`
-      );
+      return sendResponse(res, 400, false, `Cannot move return request from ${currentStatus} to ${action}`);
     }
 
     const previousStatus = currentStatus;
@@ -603,6 +640,16 @@ exports.reviewReturnRequest = async (req, res) => {
     await order.save({ session });
 
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitReturnUpdated({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Return update socket error:", socketError);
+    }
 
     const orderRef = order._id
       ? `#${order._id.toString().slice(-8).toUpperCase()}`

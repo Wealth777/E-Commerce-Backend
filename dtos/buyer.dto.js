@@ -133,41 +133,29 @@ class BuyerDTO {
 
   static authUser(buyer) {
     return {
-      id:
-        buyer._id?.toString(),
+      id: buyer._id?.toString(),
 
-      role:
-        buyer.role || 'buyer',
+      role: buyer.role || 'buyer',
 
-      serialNumber:
-        buyer.serialNumber || '',
+      serialNumber: buyer.serialNumber || '',
 
-      fullName:
-        buyer.fullName || '',
+      fullName: buyer.fullName || '',
 
-      email:
-        buyer.email || '',
+      email: buyer.email || '',
 
-      profilePhoto:
-        buyer.student?.profilePhoto || '',
+      profilePhoto: buyer.student?.profilePhoto || '',
 
-      emailVerified:
-        buyer.emailVerified ?? false,
+      emailVerified: buyer.emailVerified ?? false,
 
-      onboardingCompleted:
-        buyer.onboardingCompleted ?? false,
+      onboardingCompleted: buyer.onboardingCompleted ?? false,
 
-      accountStatus:
-        buyer.accountStatus || 'active',
+      accountStatus: buyer.accountStatus || 'active',
 
-      isActive:
-        buyer.isActive ?? true,
+      isActive: buyer.isActive ?? true,
 
-      isSuspended:
-        buyer.isSuspend ?? false,
+      isSuspended: buyer.isSuspend ?? false,
 
-      isLocked:
-        buyer.isLocked ?? false,
+      isLocked: buyer.isLocked ?? false,
 
       preferences: {
         notificationPreference: buyer.preferences?.notificationPreference,

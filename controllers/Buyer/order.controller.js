@@ -5,6 +5,7 @@ const AddProduct = require("../../models/addproduct.model");
 const BuyerOrder = require("../../models/buyerOrder.model");
 const Cart = require("../../models/addToCart.model");
 const notificationService = require("../../services/notification/notification.service");
+const orderSocket = require("../../sockets/order.socket");
 
 const mongoose = require("mongoose");
 
@@ -437,6 +438,17 @@ exports.createBuyerOrder = async (req, res) => {
       orders: createdOrders,
     });
 
+    for (const order of createdOrders) {
+      try {
+        orderSocket.emitNewOrderToVendor({
+          order,
+          vendorId: order.vendor,
+        });
+      } catch (socketError) {
+        logger.error("New order socket error:", socketError);
+      }
+    }
+
     return sendResponse(res, 201, true, "Orders created successfully",
       {
         data: createdOrders,
@@ -613,7 +625,7 @@ exports.getSingleBuyerOrder = async (req, res) => {
           0
         ) || 0,
 
-      total:  order.pricing?.total || 0,
+      total: order.pricing?.total || 0,
 
       paymentStatus: order.payment?.status || "pending",
 
@@ -688,10 +700,20 @@ exports.buyerConfirmDelivery = async (req, res) => {
             deliveredAt,
           },
         },
-      ],{ session }
+      ], { session }
     );
 
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitOrderDelivered({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Order delivered socket error:", socketError);
+    }
 
     const orderRef = getOrderReference(order);
 
@@ -713,10 +735,10 @@ exports.buyerConfirmDelivery = async (req, res) => {
         }
       );
     } catch (notificationError) {
-      logger.error( "Delivery notification error:", notificationError);
+      logger.error("Delivery notification error:", notificationError);
     }
 
-    return sendResponse( res, 200, true, "Order marked as delivered",
+    return sendResponse(res, 200, true, "Order marked as delivered",
       {
         orderId: order._id,
         orderRef,
@@ -749,10 +771,7 @@ exports.buyerCancelOrder = async (req, res) => {
     }
 
     const order =
-      await BuyerOrder.findOne({
-        _id: orderId,
-        buyer: userId,
-      }).session(session);
+      await BuyerOrder.findOne({ _id: orderId, buyer: userId, }).session(session);
 
     if (!order) {
       await abortTransaction(session);
@@ -775,7 +794,7 @@ exports.buyerCancelOrder = async (req, res) => {
       cancelledAt,
     };
 
-    await order.save({  session });
+    await order.save({ session });
 
     await AuditLog.create(
       [
@@ -796,6 +815,16 @@ exports.buyerCancelOrder = async (req, res) => {
     );
 
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitOrderCancelled({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Order cancellation socket error:", socketError);
+    }
 
     const orderRef = getOrderReference(order);
 
@@ -868,39 +897,17 @@ exports.requestRefund = async (req, res) => {
       reason.trim() === ""
     ) {
       await abortTransaction(session);
-      return sendResponse( res, 400, false, "Reason is required for refund request");
+      return sendResponse(res, 400, false, "Reason is required for refund request");
     }
 
-    const order =
-      await BuyerOrder.findOne({
-        _id: orderId,
-        buyer: userId,
-      }).session(session);
-
+    const order = await BuyerOrder.findOne({ _id: orderId, buyer: userId, }).session(session);
 
     if (!order) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        404,
-        false,
-        "Order not found"
-      );
+      return sendResponse(res, 404, false, "Order not found");
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Check whether refund is allowed
-    |--------------------------------------------------------------------------
-    */
-
-    const canRefundCancelledOrder =
-      order.status === "cancelled" &&
-      order.cancelledBy?.role ===
-      "buyer";
-
+    const canRefundCancelledOrder = order.status === "cancelled" && order.cancelledBy?.role === "buyer";
 
     const canRefundReturnedOrder =
       order.returnRequest?.requested === true &&
@@ -912,30 +919,12 @@ exports.requestRefund = async (req, res) => {
         order.returnRequest?.status
       );
 
-
-    if (
-      !canRefundCancelledOrder &&
-      !canRefundReturnedOrder
-    ) {
+    if (!canRefundCancelledOrder && !canRefundReturnedOrder) {
       await abortTransaction(session);
-
-      return sendError(
-        res,
-        400,
-        "Refund request is not allowed for this order"
-      );
+      return sendError(res, 400, "Refund request is not allowed for this order");
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Existing refund request
-    |--------------------------------------------------------------------------
-    */
-
-    const existingRefund =
-      order.refundRequest;
-
+    const existingRefund = order.refundRequest;
 
     if (
       existingRefund?.requested &&
@@ -950,21 +939,8 @@ exports.requestRefund = async (req, res) => {
       )
     ) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        `A refund request already exists with status: ${existingRefund.status}`
-      );
+      return sendResponse(res, 400, false, `A refund request already exists with status: ${existingRefund.status}`);
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Refund account validation
-    |--------------------------------------------------------------------------
-    */
 
     if (
       !accountNumber ||
@@ -972,237 +948,115 @@ exports.requestRefund = async (req, res) => {
       !accountName
     ) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        "Bank account number, bank name and account name are required"
-      );
+      return sendResponse(res, 400, false, "Bank account number, bank name and account name are required");
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Create refund request
-    |--------------------------------------------------------------------------
-    */
 
     order.refundRequest = {
       requested: true,
-
-      status:
-        "pending_review",
-
-      reason:
-        reason.trim(),
-
-      details:
-        typeof details === "string"
-          ? details.trim()
-          : "",
-
-      accountNumber:
-        accountNumber.trim(),
-
-      bankName:
-        bankName.trim(),
-
-      accountName:
-        accountName.trim(),
-
-      refundAmount:
-        order.pricing?.total || 0,
-
-      triggeredByReturn:
-        canRefundReturnedOrder,
-
-      requestedAt:
-        new Date(),
-
-      reviewedAt:
-        null,
-
-      reviewedBy:
-        null,
-
-      response:
-        "",
+      status: "pending_review",
+      reason: reason.trim(),
+      details: typeof details === "string" ? details.trim() : "",
+      accountNumber: accountNumber.trim(),
+      bankName: bankName.trim(),
+      accountName: accountName.trim(),
+      refundAmount: order.pricing?.total || 0,
+      triggeredByReturn: canRefundReturnedOrder,
+      requestedAt: new Date(),
+      reviewedAt: null,
+      reviewedBy: null,
+      response: "",
     };
 
-
-    await order.save({
-      session,
-    });
-
+    await order.save({ session, });
 
     await AuditLog.create(
       [
         {
-          user:
-            userId,
-
-          role:
-            "buyer",
-
-          action:
-            "REFUND_REQUEST_CREATED",
-
-          entity:
-            "ORDER",
-
-          entityId:
-            orderId,
-
+          user: userId,
+          role: "buyer",
+          action: "REFUND_REQUEST_CREATED",
+          entity: "ORDER",
+          entityId: orderId,
           metadata: {
-            reason:
-              reason.trim(),
-
-            orderStatus:
-              order.status,
-
-            totalAmount:
-              order.pricing?.total || 0,
-
-            triggeredByReturn:
-              canRefundReturnedOrder,
+            reason: reason.trim(),
+            orderStatus: order.status,
+            totalAmount: order.pricing?.total || 0,
+            triggeredByReturn: canRefundReturnedOrder,
           },
         },
-      ],
-      {
-        session,
-      }
+      ], { session, }
     );
-
 
     await session.commitTransaction();
 
+    try {
+      orderSocket.emitRefundRequested({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Refund request socket error:", socketError);
+    }
 
-    const orderRef =
-      getOrderReference(order);
-
+    const orderRef = getOrderReference(order);
 
     try {
       await notificationService.safeCreateNotification(
         {
-          recipientId:
-            order.vendor,
-
-          recipientRole:
-            "vendor",
-
-          type:
-            "ORDER_REFUND_REQUEST",
-
-          title:
-            "Refund request received",
-
-          message:
-            `A buyer requested a refund for order ${orderRef}.`,
-
+          recipientId: order.vendor,
+          recipientRole: "vendor",
+          type: "ORDER_REFUND_REQUEST",
+          title: "Refund request received",
+          message: `A buyer requested a refund for order ${orderRef}.`,
           metadata: {
-            orderId:
-              order._id,
-
-            buyerId:
-              order.buyer,
-
-            reason:
-              reason.trim(),
-
+            orderId: order._id,
+            buyerId: order.buyer,
+            reason: reason.trim(),
             orderRef,
           },
-
-          dedupeKey:
-            `vendor:${order.vendor}:VENDOR_REFUND_REQUEST:${order._id}`,
+          dedupeKey: `vendor:${order.vendor}:VENDOR_REFUND_REQUEST:${order._id}`,
         }
       );
     } catch (notificationError) {
-      logger.error(
-        "Refund notification error:",
-        notificationError
-      );
+      logger.error("Refund notification error:", notificationError);
     }
 
-
-    return sendResponse(
-      res,
-      201,
-      true,
-      "Refund request submitted successfully",
+    return sendResponse(res, 201, true, "Refund request submitted successfully",
       {
         data: {
-          orderId:
-            order._id,
-
+          orderId: order._id,
           orderRef,
-
-          refundRequest:
-            order.refundRequest,
+          refundRequest: order.refundRequest,
         },
       }
     );
 
   } catch (error) {
     await abortTransaction(session);
-
-    logger.error(
-      "Request Refund Error:",
-      error
-    );
-
-    return sendResponse(
-      res,
-      500,
-      false,
-      "Internal Server Error"
-    );
-
+    logger.error("Request Refund Error:", error);
+    return sendResponse(res, 500, false, "Internal Server Error");
   } finally {
     await session.endSession();
   }
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| REQUEST RETURN
-|--------------------------------------------------------------------------
-*/
-
-exports.requestReturn = async (
-  req,
-  res
-) => {
-  const session =
-    await mongoose.startSession();
+exports.requestReturn = async (req, res) => {
+  const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
 
-    const userId =
-      req.user._id;
+    const userId = req.user._id;
 
-    const { orderId } =
-      req.params;
+    const { orderId } = req.params;
 
-    const {
-      reason,
-      details,
-    } = req.body;
-
+    const { reason, details, } = req.body;
 
     if (!isValidObjectId(orderId)) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        "Invalid order ID"
-      );
+      return sendResponse(res, 400, false, "Invalid order ID");
     }
-
 
     if (
       !reason ||
@@ -1210,94 +1064,32 @@ exports.requestReturn = async (
       reason.trim() === ""
     ) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        "Reason is required for return request"
-      );
+      return sendResponse(res, 400, false, "Reason is required for return request");
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Find buyer's order
-    |--------------------------------------------------------------------------
-    */
-
-    const order =
-      await BuyerOrder.findOne({
-        _id: orderId,
-        buyer: userId,
-      }).session(session);
-
+    const order = await BuyerOrder.findOne({ _id: orderId, buyer: userId, }).session(session);
 
     if (!order) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        404,
-        false,
-        "Order not found"
-      );
+      return sendResponse(res, 404, false, "Order not found");
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Return only delivered orders
-    |--------------------------------------------------------------------------
-    */
 
     if (order.status !== "delivered") {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        "Return request can only be made for delivered orders"
-      );
+      return sendResponse(res, 400, false, "Return request can only be made for delivered orders");
     }
 
+    const RETURN_WINDOW_HOURS = 72;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Return window
-    |--------------------------------------------------------------------------
-    */
-
-    const RETURN_WINDOW_HOURS =
-      72;
-
-
-    const deliveredAt =
-      order.deliveredAt ||
-      order.updatedAt;
-
+    const deliveredAt = order.deliveredAt || order.updatedAt;
 
     if (!deliveredAt) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        "Delivery date could not be determined"
-      );
+      return sendResponse(res, 400, false, "Delivery date could not be determined");
     }
 
 
-    const returnDeadline =
-      new Date(
-        deliveredAt.getTime() +
-        RETURN_WINDOW_HOURS *
-        60 *
-        60 *
-        1000
-      );
+    const returnDeadline = new Date(deliveredAt.getTime() + RETURN_WINDOW_HOURS * 60 * 60 * 1000);
 
 
     if (
@@ -1306,24 +1098,10 @@ exports.requestReturn = async (
     ) {
       await abortTransaction(session);
 
-      return sendResponse(
-        res,
-        400,
-        false,
-        "Return window has expired. Returns are only allowed within 72 hours after delivery confirmation."
-      );
+      return sendResponse(res, 400, false, "Return window has expired. Returns are only allowed within 72 hours after delivery confirmation.");
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Existing return request
-    |--------------------------------------------------------------------------
-    */
-
-    const existingReturn =
-      order.returnRequest;
-
+    const existingReturn = order.returnRequest;
 
     if (
       existingReturn?.requested &&
@@ -1339,96 +1117,51 @@ exports.requestReturn = async (
       )
     ) {
       await abortTransaction(session);
-
-      return sendResponse(
-        res,
-        400,
-        false,
-        `A return request already exists with status: ${existingReturn.status}`
-      );
+      return sendResponse(res, 400, false, `A return request already exists with status: ${existingReturn.status}`);
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Create return request
-    |--------------------------------------------------------------------------
-    */
-
     order.returnRequest = {
-      requested:
-        true,
-
-      status:
-        "pending_review",
-
-      reason:
-        reason.trim(),
-
-      details:
-        typeof details === "string"
-          ? details.trim()
-          : "",
-
-      requestedAt:
-        new Date(),
-
-      reviewedAt:
-        null,
-
-      reviewedBy:
-        null,
-
-      returnedAt:
-        null,
-
-      response:
-        "",
+      requested: true,
+      status: "pending_review",
+      reason: reason.trim(),
+      details: typeof details === "string" ? details.trim() : "",
+      requestedAt: new Date(),
+      reviewedAt: null,
+      reviewedBy: null,
+      returnedAt: null,
+      response: "",
     };
 
-
-    await order.save({
-      session,
-    });
-
+    await order.save({ session, });
 
     await AuditLog.create(
       [
         {
-          user:
-            userId,
-
-          role:
-            "buyer",
-
-          action:
-            "RETURN_REQUEST_CREATED",
-
-          entity:
-            "ORDER",
-
-          entityId:
-            orderId,
-
+          user: userId,
+          role: "buyer",
+          action: "RETURN_REQUEST_CREATED",
+          entity: "ORDER",
+          entityId: orderId,
           metadata: {
-            reason:
-              reason.trim(),
-
-            orderStatus:
-              order.status,
-
-            totalAmount:
-              order.pricing?.total || 0,
+            reason: reason.trim(),
+            orderStatus: order.status,
+            totalAmount: order.pricing?.total || 0,
           },
         },
-      ],
-      {
-        session,
-      }
+      ], { session, }
     );
 
-
     await session.commitTransaction();
+
+    try {
+      orderSocket.emitReturnRequested({
+        order,
+        buyerId: order.buyer,
+        vendorId: order.vendor,
+      });
+    } catch (socketError) {
+      logger.error("Return request socket error:", socketError);
+    }
 
     const orderRef = getOrderReference(order);
 

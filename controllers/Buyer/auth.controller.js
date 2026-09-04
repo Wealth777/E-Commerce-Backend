@@ -333,54 +333,119 @@ exports.googleLogin = async (req, res) => {
 
   try {
     const { idToken } = req.body;
+    const requestInfo = getRequestInfo(req);
 
     if (!idToken) {
       await session.abortTransaction();
-      return sendError(res, 400, 'idToken required');
+      return sendError(res, 400, "idToken required");
     }
 
     const payload = await verifyGoogleToken(idToken);
 
     if (!payload) {
       await session.abortTransaction();
-      return sendError(res, 401, 'Invalid Google token');
+      return sendError(res, 401, "Invalid Google token");
     }
 
-    const { email, name, picture, sub: googleId } = payload;
+    const { email, name, picture, sub: googleId, } = payload;
 
+    if (!email || !googleId) {
+      await session.abortTransaction();
+      return sendError(res, 400, "Google account information is incomplete");
+    }
 
-    let user = await buyerModel.findOne({ email }).session(session);
+    const normalizedEmail = email.toLowerCase().trim();
+
+    let user = await buyerModel.findOne({ email: normalizedEmail }).session(session);
 
     let isNewUser = false;
 
     if (!user) {
-      const serialNo = await generateSerialNumber("buyer", session);
+      const existingGoogleUser = await buyerModel.findOne({ googleId }).session(session);
 
-      user = await buyerModel.create([{
-        serialNumber: serialNo,
-        email,
-        fullName: name,
-        profilePhoto: picture,
-        googleId,
-        emailVerified: true,
-        role: 'buyer',
-        onboardingCompleted: false,
-      }], { session });
+      if (existingGoogleUser) {
+        user = existingGoogleUser;
+      } else {
+        const serialNo = await generateSerialNumber("buyer", session);
 
-      user = user[0];
-      isNewUser = true;
+        const createdUsers = await buyerModel.create(
+          [
+            {
+              serialNumber: serialNo,
+              email: normalizedEmail,
+              fullName: name,
+
+              student: {
+                profilePhoto: picture || "",
+              },
+
+              googleId,
+              emailVerified: true,
+              role: "buyer",
+              onboardingCompleted: false,
+            },
+          ], { session }
+        );
+
+        user = createdUsers[0];
+        isNewUser = true;
+      }
     }
 
+    if (!user.googleId) {
+      user.googleId = googleId;
+      user.emailVerified = true;
+
+      await user.save({ session });
+    }
+
+    if (user.accountStatus && user.accountStatus !== "active") {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Buyer",
+        role: "buyer",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: `Account is ${user.accountStatus}`,
+      });
+
+      return sendError(res, 403, "Your account is not active. Please contact support.");
+    }
+
+    const sessionId = crypto.randomUUID();
+
     const accessToken = jwt.sign(
-      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, },
+      {
+        id: user._id,
+        role: user.role,
+        sessionId,
+        tokenVersion: user.tokenVersion,
+      },
       process.env.JWT_KEY,
-      { expiresIn: '24h' }
+      {
+        expiresIn: "24h",
+      }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id, role: user.role, tokenVersion: user.tokenVersion, },
+      {
+        id: user._id,
+        sessionId,
+        tokenVersion: user.tokenVersion,
+      },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
+      {
+        expiresIn: "7d",
+      }
     );
 
     if (isNewUser) {
@@ -398,53 +463,87 @@ exports.googleLogin = async (req, res) => {
       }
     }
 
-    await AuditLog.create([{
-      user: user._id,
-      role: 'buyer',
-      action: 'GOOGLE_LOGIN',
-      entity: 'Buyer',
-      entityId: user._id,
-      metadata: { email: user.email }
-    }], { session });
+    await LoginHistory.create(
+      [
+        {
+          user: user._id,
+          userModel: "Buyer",
+          role: "buyer",
+          email: user.email,
+          phoneNo: user.phoneNo,
+          loginMethod: "google",
+          sessionId,
+          ipAddress: requestInfo.ip,
+          userAgent: requestInfo.device.userAgent,
+          deviceInfo: requestInfo.device,
+          location: requestInfo.location,
+          success: true,
+        },
+      ],
+      { session }
+    );
+
+    await AuditLog.create(
+      [
+        {
+          user: user._id,
+          role: "buyer",
+          action: "GOOGLE_LOGIN",
+          entity: "Buyer",
+          entityId: user._id,
+          reason: "Google login to application",
+          metadata: {
+            email: user.email,
+            sessionId,
+            ipAddress: requestInfo.ip,
+            device: requestInfo.deviceName,
+            location: requestInfo.location,
+          },
+        },
+      ],
+      { session }
+    );
 
     if (!user.profileUpdateNotificationSent) {
-      try {
-        await notificationService.safeCreateProfileUpdateNotification({
-          userId: user._id,
-          role: 'buyer'
-        });
+      await notificationService.safeCreateProfileUpdateNotification({
+        userId: user._id,
+        role: "buyer",
+      });
 
-        await buyerModel.findByIdAndUpdate(
-          user._id,
-          { $set: { profileUpdateNotificationSent: true } },
-          { session }
-        );
-      } catch (e) {
-        logger.error(e);
-      }
+      await buyerModel.findByIdAndUpdate(
+        user._id,
+        {
+          $set: {
+            profileUpdateNotificationSent: true,
+          },
+        },
+        { session }
+      );
     }
 
-    const responseData = {
-      user: BuyerDTO.fromModel(user),
+    await session.commitTransaction();
+
+    return sendSuccess(res, 200, "Google login successful", {
+      user: BuyerDTO.authUser(user),
+      sessionId,
       accessToken,
       refreshToken,
       expiresIn: 86400,
       onboardingCompleted: user.onboardingCompleted,
-    };
-
-    await session.commitTransaction();
-
-    return sendSuccess(res, 200, 'Google login successful', responseData);
-
+    });
   } catch (error) {
     if (session.inTransaction()) {
       await session.abortTransaction();
     }
 
-    logger.error(error);
-    return sendError(res, 401, 'Google authentication failed');
+    logger.error("Google login error", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    return sendError(res, 401, "Google authentication failed");
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };
 

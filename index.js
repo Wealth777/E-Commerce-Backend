@@ -13,6 +13,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app');
 const { initializeSocket } = require('./sockets/notification.socket');
+const { initializeOrderSocket } = require('./sockets/order.socket');
 const { connectChatDatabase } = require('./config/chatDatabase');
 const { verifyEmailConnection } = require('./config/email')
 
@@ -115,6 +116,7 @@ async function startServer() {
     });
 
     initializeSocket(io);
+    initializeOrderSocket(io);
 
     server.listen(port, () => {
       logger.info(`🚀 Server running on port ${port}`);
