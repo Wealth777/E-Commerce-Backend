@@ -19,7 +19,7 @@ const getRecipient = async ({ recipientId, recipientRole }) => {
   const config = roleModelMap[recipientRole];
   if (!config) throw new Error(`Unsupported notification recipient role: ${recipientRole}`);
 
-  const user = await config.model.findById(recipientId).select('email phoneNo notificationPreference fullName');
+  const user = await config.model.findById(recipientId).select('email phoneNo preferences.notificationPreference fullName');
   if (!user) throw new Error(`${config.modelName} recipient not found`);
 
   return { user, recipientModel: config.modelName };

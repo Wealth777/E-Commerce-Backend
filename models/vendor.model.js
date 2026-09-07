@@ -227,10 +227,16 @@ const vendorSchema = new mongoose.Schema(
     preferences: {
       notificationPreference: {
         type: String,
-        enum: ['whatsapp', 'email', 'both', ''],
+        enum: ['email', ''],
         default: "",
         trim: true
       },
+      // notificationPreference: {
+      //   type: String,
+      //   enum: ['whatsapp', 'email', 'both', ''],
+      //   default: "",
+      //   trim: true
+      // },
 
       promotionalMessages: {
         type: Boolean,
