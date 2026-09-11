@@ -96,7 +96,7 @@ const buyerOrderSchema = new mongoose.Schema(
     cancelledBy: {
       role: {
         type: String,
-        enum: ["buyer", "vendor", "admin"],
+        enum: ["buyer", "vendor", "founder", "system"],
       },
       user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -109,6 +109,11 @@ const buyerOrderSchema = new mongoose.Schema(
       cancelledAt: Date,
     },
 
+    cancellationReason: {
+      type: String,
+      default: null,
+    },
+    
     refundRequest: {
       requested: {
         type: Boolean,

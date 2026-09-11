@@ -88,6 +88,10 @@ class BuyerDTO {
       promotionalMessages: buyer.preferences?.promotionalMessages,
     };
 
+    this.order = {
+      totalOrder: buyer.totalOrder
+    }
+
     this.security = {
       passwordUpdatedAt:
         buyer.updatePasswordDate || null,

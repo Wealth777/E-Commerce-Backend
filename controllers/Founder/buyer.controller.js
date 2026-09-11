@@ -1,52 +1,219 @@
-const buyerService = require('../../services/founder/buyer.service');
-const usersService = require('../../services/founder/users.service');
-const { sendSuccess } = require('../../utils/responseStruture');
-const { actorFromReq, handleError } = require('./common.controller');
+const { getAllBuyers, getBuyerById, lockBuyer, unlockBuyer, banBuyer, deleteBuyer, } = require("../../services/founder/buyer.service");
 
-exports.getBuyers = async (req, res) => {
+const { sendSuccess, sendError } = require("../../utils/responseStruture");
+const logger = require("../../logger");
+
+
+/* Get all buyers */
+const getAllBuyersController = async (req, res) => {
   try {
-    const data = await buyerService.getBuyers(req.query);
-    return sendSuccess(res, 200, 'Buyers fetched successfully', data);
+    const buyers = await getAllBuyers();
+
+    return sendSuccess(
+      res,
+      200,
+      "Buyers fetched successfully",
+      buyers
+    );
   } catch (error) {
-    return handleError(res, error, 'Failed to fetch buyers');
-  }
-};
-
-exports.getBuyerDetails = async (req, res) => {
-  try {
-    const data = await buyerService.getBuyerDetails(req.params.buyerId);
-    return sendSuccess(res, 200, 'Buyer details fetched successfully', data);
-  } catch (error) {
-    return handleError(res, error, 'Failed to fetch buyer details');
-  }
-};
-
-exports.banBuyer = async (req, res) => {
-  try {
-    const data = await usersService.changeUserActiveState({
-      id: req.params.buyerId,
-      active: false,
-      actor: actorFromReq(req),
-      reason: req.body.reason || 'Buyer banned',
-      action: 'BAN_BUYER',
+    logger.error("Failed to fetch buyers", {
+      error: error.message,
+      stack: error.stack,
     });
-    return sendSuccess(res, 200, 'Buyer banned successfully', data);
-  } catch (error) {
-    return handleError(res, error, 'Failed to ban buyer');
+
+    return sendError(
+      res,
+      error.statusCode || 500,
+      error.message || "Failed to fetch buyers"
+    );
   }
 };
 
-exports.unbanBuyer = async (req, res) => {
+
+/* Get one buyer */
+const getBuyerByIdController = async (req, res) => {
   try {
-    const data = await usersService.changeUserActiveState({
-      id: req.params.buyerId,
-      active: true,
-      actor: actorFromReq(req),
-      reason: req.body.reason,
-      action: 'UNBAN_BUYER',
-    });
-    return sendSuccess(res, 200, 'Buyer unbanned successfully', data);
+    const { buyerId } = req.params;
+
+    const buyer = await getBuyerById(buyerId);
+
+    return sendSuccess(
+      res,
+      200,
+      "Buyer fetched successfully",
+      buyer
+    );
   } catch (error) {
-    return handleError(res, error, 'Failed to unban buyer');
+    logger.error("Failed to fetch buyer", {
+      buyerId: req.params.buyerId,
+      error: error.message,
+      stack: error.stack,
+    });
+
+    return sendError(
+      res,
+      error.statusCode || 500,
+      error.message || "Failed to fetch buyer"
+    );
   }
+};
+
+
+/* Lock buyer */
+const lockBuyerController = async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+    const { reason } = req.body;
+
+    const founderId = req.user._id;
+
+    const buyer = await lockBuyer(
+      buyerId,
+      founderId,
+      reason,
+      req
+    );
+
+    return sendSuccess(
+      res,
+      200,
+      "Buyer account locked successfully",
+      buyer
+    );
+  } catch (error) {
+    logger.error("Failed to lock buyer", {
+      buyerId: req.params.buyerId,
+      founderId: req.user?._id,
+      error: error.message,
+      stack: error.stack,
+    });
+
+    return sendError(
+      res,
+      error.statusCode || 500,
+      error.message || "Failed to lock buyer"
+    );
+  }
+};
+
+
+/* Unlock buyer */
+const unlockBuyerController = async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+
+    const founderId = req.user._id;
+
+    const buyer = await unlockBuyer(
+      buyerId,
+      founderId,
+      req
+    );
+
+    return sendSuccess(
+      res,
+      200,
+      "Buyer account unlocked successfully",
+      buyer
+    );
+  } catch (error) {
+    logger.error("Failed to unlock buyer", {
+      buyerId: req.params.buyerId,
+      founderId: req.user?._id,
+      error: error.message,
+      stack: error.stack,
+    });
+
+    return sendError(
+      res,
+      error.statusCode || 500,
+      error.message || "Failed to unlock buyer"
+    );
+  }
+};
+
+
+/* Ban buyer */
+const banBuyerController = async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+    const { reason } = req.body;
+
+    const founderId = req.user._id;
+
+    const buyer = await banBuyer(
+      buyerId,
+      founderId,
+      reason,
+      req
+    );
+
+    return sendSuccess(
+      res,
+      200,
+      "Buyer account banned successfully",
+      buyer
+    );
+  } catch (error) {
+    logger.error("Failed to ban buyer", {
+      buyerId: req.params.buyerId,
+      founderId: req.user?._id,
+      error: error.message,
+      stack: error.stack,
+    });
+
+    return sendError(
+      res,
+      error.statusCode || 500,
+      error.message || "Failed to ban buyer"
+    );
+  }
+};
+
+
+/* Delete buyer */
+const deleteBuyerController = async (req, res) => {
+  try {
+    const { buyerId } = req.params;
+    const { reason } = req.body;
+
+    const founderId = req.user._id;
+
+    const buyer = await deleteBuyer(
+      buyerId,
+      founderId,
+      reason,
+      req
+    );
+
+    return sendSuccess(
+      res,
+      200,
+      "Buyer account deleted successfully",
+      buyer
+    );
+  } catch (error) {
+    logger.error("Failed to delete buyer", {
+      buyerId: req.params.buyerId,
+      founderId: req.user?._id,
+      error: error.message,
+      stack: error.stack,
+    });
+
+    return sendError(
+      res,
+      error.statusCode || 500,
+      error.message || "Failed to delete buyer"
+    );
+  }
+};
+
+
+module.exports = {
+  getAllBuyersController,
+  getBuyerByIdController,
+  lockBuyerController,
+  unlockBuyerController,
+  banBuyerController,
+  deleteBuyerController,
 };

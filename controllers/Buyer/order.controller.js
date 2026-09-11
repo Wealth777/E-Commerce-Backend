@@ -390,6 +390,19 @@ exports.createBuyerOrder = async (req, res) => {
       );
     }
 
+    // Update buyer's total order count
+    await buyerModel.findByIdAndUpdate(
+      userId,
+      {
+        $inc: {
+          totalOrder: createdOrders.length,
+        },
+      },
+      {
+        session,
+        new: true,
+      }
+    );
 
     await Cart.findOneAndUpdate(
       {
@@ -865,7 +878,6 @@ exports.buyerCancelOrder = async (req, res) => {
     await session.endSession();
   }
 };
-
 
 exports.requestRefund = async (req, res) => {
   const session = await mongoose.startSession();

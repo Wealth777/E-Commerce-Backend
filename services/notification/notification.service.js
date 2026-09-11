@@ -4,7 +4,7 @@ const Vendor = require('../../models/vendor.model');
 const Founder = require('../../models/founder.model');
 const logger = require('../../logger');
 const { sendNotificationEmail } = require('../messaging/email.service');
-const { sendNotificationWhatsApp } = require('../messaging/whatsapp.service');
+// const { sendNotificationWhatsApp } = require('../messaging/whatsapp.service');
 const { emitNotification, emitUnreadCount } = require('../../sockets/notification.socket');
 
 const roleModelMap = {
@@ -28,7 +28,7 @@ const getRecipient = async ({ recipientId, recipientRole }) => {
 const buildChannelConfig = (preference) => ({
   inApp: { enabled: true, sent: true, sentAt: new Date(), read: false, readAt: null, error: null },
   email: { enabled: preference === 'email' || preference === 'both', sent: false, sentAt: null, read: false, readAt: null, error: null },
-  whatsapp: { enabled: preference === 'whatsapp' || preference === 'both', sent: false, sentAt: null, read: false, readAt: null, error: null },
+  // whatsapp: { enabled: preference === 'whatsapp' || preference === 'both', sent: false, sentAt: null, read: false, readAt: null, error: null },
 });
 
 const getUnreadCount = async ({ userId, role }) => Notification.countDocuments({
@@ -64,20 +64,20 @@ const dispatchExternalChannels = async ({ notification, user }) => {
     }
   }
 
-  if (notification.channels.whatsapp.enabled) {
-    try {
-      const result = await sendNotificationWhatsApp({
-        to: user.phoneNo,
-        message: `${notification.title}\n${notification.message}`,
-      });
-      updates['channels.whatsapp.sent'] = Boolean(result.sent);
-      updates['channels.whatsapp.sentAt'] = result.sent ? new Date() : null;
-      updates['channels.whatsapp.error'] = result.sent ? null : result.reason || null;
-    } catch (error) {
-      logger.error('WhatsApp notification failed', { notificationId: notification._id, error: error.message });
-      updates['channels.whatsapp.error'] = error.message;
-    }
-  }
+  // if (notification.channels.whatsapp.enabled) {
+  //   try {
+  //     const result = await sendNotificationWhatsApp({
+  //       to: user.phoneNo,
+  //       message: `${notification.title}\n${notification.message}`,
+  //     });
+  //     updates['channels.whatsapp.sent'] = Boolean(result.sent);
+  //     updates['channels.whatsapp.sentAt'] = result.sent ? new Date() : null;
+  //     updates['channels.whatsapp.error'] = result.sent ? null : result.reason || null;
+  //   } catch (error) {
+  //     logger.error('WhatsApp notification failed', { notificationId: notification._id, error: error.message });
+  //     updates['channels.whatsapp.error'] = error.message;
+  //   }
+  // }
 
   if (Object.keys(updates).length > 0) {
     await Notification.findByIdAndUpdate(notification._id, { $set: updates });
@@ -171,7 +171,8 @@ const getUserNotifications = async ({ userId, role, page = 1, limit = 20 }) => {
 };
 
 const markOneAsRead = async ({ userId, role, notificationId, channel = 'inApp' }) => {
-  const allowedChannels = ['inApp', 'email', 'whatsapp'];
+  // const allowedChannels = ['inApp', 'email', 'whatsapp'];
+  const allowedChannels = ['inApp', 'email'];
   if (!allowedChannels.includes(channel)) throw new Error('Invalid notification channel');
 
   const notification = await Notification.findOneAndUpdate(
@@ -197,7 +198,8 @@ const markOneAsRead = async ({ userId, role, notificationId, channel = 'inApp' }
 };
 
 const markAllAsRead = async ({ userId, role, channel = 'inApp' }) => {
-  const allowedChannels = ['inApp', 'email', 'whatsapp'];
+  // const allowedChannels = ['inApp', 'email', 'whatsapp'];
+  const allowedChannels = ['inApp', 'email'];
   if (!allowedChannels.includes(channel)) throw new Error('Invalid notification channel');
 
   const filter = {

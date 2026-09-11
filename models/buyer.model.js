@@ -162,6 +162,11 @@ const buyer = new mongoose.Schema({
 
   profileUpdateNotificationSent: { type: Boolean, default: false },
 
+  totalOrder: {
+    type: Number,
+    default: 0
+  },
+
   isActive: {
     type: Boolean,
     default: true
@@ -206,7 +211,6 @@ const buyer = new mongoose.Schema({
   accountStatus: {
     type: String,
     enum: [
-      "pending",
       "active",
       "suspended",
       "locked",

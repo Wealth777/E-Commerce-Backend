@@ -7,15 +7,15 @@ const handleError = (res, error, fallbackMessage) => {
   return sendError(res, error.statusCode || 500, error.statusCode ? error.message : fallbackMessage, error.errors || null);
 };
 
-exports.createUser = async (req, res) => {
+exports.googleLogin = async (req, res) => {
   try {
-    await founderAuthService.createUser(req.body);
-    return sendSuccess(res, 201, '🎉 User Account Created Successfully!.');
+    const idToken = req.idToken
+    const result = await founderAuthService.loginUser({ idToken });
+    return sendSuccess(res, 200, '🎉 Founder Login Successfully!.', result);
   } catch (error) {
     return handleError(res, error, 'Internal Server Error');
   }
 };
-
 exports.loginUser = async (req, res) => {
   try {
     const result = await founderAuthService.loginUser(req.body, req);
