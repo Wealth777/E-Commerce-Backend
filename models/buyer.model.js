@@ -194,9 +194,23 @@ const buyer = new mongoose.Schema({
     index: true
   },
 
-  deleteReason: String,
+  delete: {
+    deleteReason: String,
 
-  deleteDate: Date,
+    deleteDate: Date,
+
+    deletedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "deletedByModel",
+      default: null
+    },
+
+    deletedByModel: {
+      type: String,
+      enum: ["Buyer", "Founder"],
+      default: null
+    },
+  },
 
   tokenVersion: {
     type: Number,

@@ -41,6 +41,8 @@ const buyerOrderSchema = new mongoose.Schema(
       index: true
     },
 
+    code: String,
+
     checkoutRef: {
       type: mongoose.Schema.Types.ObjectId,
       required: false,

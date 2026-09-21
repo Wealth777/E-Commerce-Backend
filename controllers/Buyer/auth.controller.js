@@ -221,6 +221,41 @@ exports.loginUser = async (req, res) => {
       return sendError(res, 403, "Please verify your email before logging in.");
     }
 
+    if (
+      user.accountStatus === "locked" ||
+      user.accountStatus === "banned" ||
+      user.accountStatus === "deleted" ||
+      user.isDeleted || 
+      user.isLocked
+    ) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Buyer",
+        role: "buyer",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "password",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: `Account is ${user.accountStatus}`,
+      });
+
+      const message =
+        user.accountStatus === "banned"
+          ? "Your account has been banned. Please contact support."
+          : user.accountStatus === "locked"
+            ? "Your account is locked. Please contact support."
+            : "Your account has been deleted.";
+
+      return sendError(res, 403, message);
+    }
+
     const sessionId = crypto.randomUUID();
 
     const accessToken = jwt.sign(
@@ -399,7 +434,13 @@ exports.googleLogin = async (req, res) => {
       await user.save({ session });
     }
 
-    if (user.accountStatus && user.accountStatus !== "active") {
+    if (
+      user.accountStatus === "locked" ||
+      user.accountStatus === "banned" ||
+      user.accountStatus === "deleted" ||
+      user.isDeleted || 
+      user.isLocked
+    ) {
       await session.abortTransaction();
 
       await LoginHistory.create({
@@ -418,7 +459,14 @@ exports.googleLogin = async (req, res) => {
         failureReason: `Account is ${user.accountStatus}`,
       });
 
-      return sendError(res, 403, "Your account is not active. Please contact support.");
+      const message =
+        user.accountStatus === "banned"
+          ? "Your account has been banned. Please contact support."
+          : user.accountStatus === "locked"
+            ? "Your account is locked. Please contact support."
+            : "Your account has been deleted.";
+
+      return sendError(res, 403, message);
     }
 
     const sessionId = crypto.randomUUID();

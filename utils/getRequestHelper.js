@@ -1,10 +1,6 @@
 const geoip = require("geoip-lite");
 const UAParser = require("ua-parser-js");
 
-/**
- * Extract the client's real IP address.
- * Supports proxies such as Nginx, Render, Railway and Cloudflare.
- */
 function getClientIp(req) {
     return (
         req.headers["cf-connecting-ip"] ||
@@ -17,9 +13,6 @@ function getClientIp(req) {
     );
 }
 
-/**
- * Convert IPv6 localhost (::1) and IPv4 mapped IPv6 (::ffff:127.0.0.1)
- */
 function normalizeIp(ip) {
     if (!ip) return null;
 
@@ -34,9 +27,6 @@ function normalizeIp(ip) {
     return ip;
 }
 
-/**
- * Parse browser/device information.
- */
 function getDeviceInfo(userAgent) {
     const parser = new UAParser(userAgent);
     const result = parser.getResult();
@@ -54,10 +44,6 @@ function getDeviceInfo(userAgent) {
     };
 }
 
-/**
- * Convert IP into an approximate location.
- * Only city, region and country are stored.
- */
 function getLocation(ip) {
     if (!ip) {
         return {
@@ -87,9 +73,6 @@ function getLocation(ip) {
     };
 }
 
-/**
- * Build a readable device string.
- */
 function getDeviceName(device) {
     return [
         device.browser,
@@ -99,9 +82,6 @@ function getDeviceName(device) {
         .join(" on ");
 }
 
-/**
- * Main helper
- */
 function getRequestInfo(req) {
     const rawIp = getClientIp(req);
     const ip = normalizeIp(rawIp);

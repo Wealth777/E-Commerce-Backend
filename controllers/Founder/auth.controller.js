@@ -10,7 +10,7 @@ const handleError = (res, error, fallbackMessage) => {
 exports.googleLogin = async (req, res) => {
   try {
     const idToken = req.idToken
-    const result = await founderAuthService.loginUser({ idToken });
+    const result = await founderAuthService.googleLogin(req.body, req);
     return sendSuccess(res, 200, '🎉 Founder Login Successfully!.', result);
   } catch (error) {
     return handleError(res, error, 'Internal Server Error');

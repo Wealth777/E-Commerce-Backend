@@ -88,6 +88,8 @@ const lockBuyer = async (buyerId, founderId, reason, req) => {
   }
 
   buyer.isLocked = true;
+  buyer.isActive = false;
+  buyer.isSuspend = false;
   buyer.lockReason = reason || "Locked by Founder";
   buyer.accountStatus = "locked";
   buyer.tokenVersion += 1;
@@ -188,8 +190,14 @@ const banBuyer = async (buyerId, founderId, reason, req) => {
     throw new AppError("Deleted buyer accounts cannot be banned", 400);
   }
 
+  if (buyer.accountStatus === "banned") {
+    throw new AppError("Buyer account is already banned", 400);
+  }
+
   buyer.accountStatus = "banned";
   buyer.isActive = false;
+  buyer.isLocked = false;
+  buyer.isSuspend = false;
   buyer.tokenVersion += 1;
 
   await buyer.save();
@@ -237,6 +245,8 @@ const deleteBuyer = async (buyerId, founderId, reason, req) => {
   }
 
   buyer.isDeleted = true;
+  buyer.deletedBy = founderId;
+  buyer.deletedByModel = "Founder";
   buyer.isActive = false;
   buyer.accountStatus = "deleted";
   buyer.deleteReason = reason || "Deleted by Founder";

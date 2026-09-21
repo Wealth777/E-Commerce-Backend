@@ -8,6 +8,7 @@ const notificationService = require("../../services/notification/notification.se
 const orderSocket = require("../../sockets/order.socket");
 
 const mongoose = require("mongoose");
+const crypto = require('crypto');
 
 const {
   sendResponse,
@@ -137,6 +138,11 @@ exports.createBuyerOrder = async (req, res) => {
     if (!buyer) {
       await abortTransaction(session);
       return sendResponse(res, 404, false, "Buyer not found");
+    }
+
+    if (!buyer.isActive || buyer.accountStatus !== "active") {
+      await abortTransaction(session);
+      return sendResponse(res, 403, false, "Your account is not active and you are not allowed to place orders");
     }
 
     const invalidProductId = items.some(
@@ -348,6 +354,10 @@ exports.createBuyerOrder = async (req, res) => {
             proof.vendorId === vendorId
         );
 
+      const codeId = crypto.randomUUID()
+                      .toString()
+                      .toLocaleUpperCase()
+
 
       const [createdOrder] =
         await BuyerOrder.create(
@@ -356,6 +366,7 @@ exports.createBuyerOrder = async (req, res) => {
               buyer: userId,
               vendor: vendorId,
               checkoutRef,
+              code: codeId,
               items: formattedItems,
               pricing: {
                 subtotal: vendorSubtotal,

@@ -18,239 +18,220 @@ const FounderDTO = require('../../dtos/founder.dto');
 const { verifyGoogleToken } = require('../googleAuth.service');
 
 const googleLogin = async ({ idToken }, req = null) => {
-  const requestInfo = getRequestInfo(req);
 
-  if (!idToken) {
-    throw new AppError(400, "idToken required");
-  }
+    const requestInfo = getRequestInfo(req);
 
-  const payload = await verifyGoogleToken(idToken);
+    if (!idToken) {
+        throw new AppError("idToken required", 400);
+    }
 
-  if (!payload) {
-    throw new AppError(401, "Invalid Google token");
-  }
+    const payload = await verifyGoogleToken(idToken);
 
-  const {
-    email,
-    name,
-    picture,
-    sub: googleId,
-    email_verified: googleEmailVerified
-  } = payload;
+    if (!payload) {
+        throw new AppError("Invalid Google token", 401);
+    }
 
-  if (!email || !googleId) {
-    await loginHistory.create({
-      req,
-      role: 'founder',
-      email,
-      loginMethod: "google",
-      sessionId: crypto.randomUUID(),
-      ipAddress: requestInfo.ip,
-      userAgent: requestInfo.device.userAgent,
-      deviceInfo: requestInfo.device,
-      location: requestInfo.location,
-      success: false,
-      failureReason: 'Google account information is incomplete'
+    const {
+        email,
+        name,
+        picture,
+        sub: googleId,
+        email_verified: googleEmailVerified
+    } = payload;
+
+    if (!email || !googleId) {
+        await loginHistory.create({
+            role: "founder",
+            email,
+            loginMethod: "google",
+            sessionId: crypto.randomUUID(),
+            ipAddress: requestInfo.ip,
+            userAgent: requestInfo.device.userAgent,
+            deviceInfo: requestInfo.device,
+            location: requestInfo.location,
+            success: false,
+            failureReason: "Google account information is incomplete"
+        });
+
+        throw new AppError(
+            "Google account information is incomplete",
+            400
+        );
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    let user = await founderModel.findOne({
+        email: normalizedEmail
     });
 
-    throw new AppError('Google account information is incomplete', 400);
-  }
+    if (!user) {
+        await loginHistory.create({
+            role: "founder",
+            email: normalizedEmail,
+            loginMethod: "google",
+            sessionId: crypto.randomUUID(),
+            ipAddress: requestInfo.ip,
+            userAgent: requestInfo.device.userAgent,
+            deviceInfo: requestInfo.device,
+            location: requestInfo.location,
+            success: false,
+            failureReason:
+                "No Founder account exists with this Google account."
+        });
 
-  const normalizedEmail = email.toLowerCase().trim();
+        throw new AppError(
+            "No Founder account exists with this Google account.",
+            403
+        );
+    }
 
-  // ======================================================
-  // FIND EXISTING FOUNDER
-  // ======================================================
+    if (!googleEmailVerified) {
+        await loginHistory.create({
+            user: user._id,
+            role: "founder",
+            email: user.email,
+            phoneNo: user.phoneNo,
+            loginMethod: "google",
+            sessionId: crypto.randomUUID(),
+            ipAddress: requestInfo.ip,
+            userAgent: requestInfo.device.userAgent,
+            deviceInfo: requestInfo.device,
+            location: requestInfo.location,
+            success: false,
+            failureReason: "Google email is not verified"
+        });
 
-  let user = await founderModel.findOne({
-    email: normalizedEmail
-  });
+        throw new AppError(
+            "Your Google email address is not verified.",
+            403
+        );
+    }
 
-  if (!user) {
-    await loginHistory.create({
-      req,
-      role: 'founder',
-      email,
-      loginMethod: "google",
-      sessionId: crypto.randomUUID(),
-      ipAddress: requestInfo.ip,
-      userAgent: requestInfo.device.userAgent,
-      deviceInfo: requestInfo.device,
-      location: requestInfo.location,
-      success: false,
-      failureReason: 'No Founder account exists with this Google account.'
-    });
+    if (!user.googleId) {
+        user.googleId = googleId;
+        user.emailVerified = true;
+        user.emailVerifiedDate = new Date();
 
-    throw new AppError('No Founder account exists with this Google account.', 403);
-  }
+        await user.save();
+    } else if (user.googleId !== googleId) {
+        await loginHistory.create({
+            user: user._id,
+            role: "founder",
+            email: user.email,
+            phoneNo: user.phoneNo,
+            loginMethod: "google",
+            sessionId: crypto.randomUUID(),
+            ipAddress: requestInfo.ip,
+            userAgent: requestInfo.device.userAgent,
+            deviceInfo: requestInfo.device,
+            location: requestInfo.location,
+            success: false,
+            failureReason:
+                "Google account does not match linked account"
+        });
 
-  // ======================================================
-  // CHECK GOOGLE EMAIL VERIFICATION
-  // ======================================================
+        throw new AppError(
+            "This Google account is not linked to your Founder account.",
+            403
+        );
+    }
 
-  if (!googleEmailVerified) {
-    await loginHistory.create({
-      req,
-      user,
-      role: "founder",
-      email: user.email,
-      phoneNo: user.phoneNo,
-      loginMethod: "google",
-      sessionId: crypto.randomUUID(),
-      ipAddress: requestInfo.ip,
-      userAgent: requestInfo.device.userAgent,
-      deviceInfo: requestInfo.device,
-      location: requestInfo.location,
-      success: false,
-      failureReason: "Google email is not verified"
-    });
+    if (user.accountStatus !== "active" || !user.isActive) {
+        await loginHistory.create({
+            user: user._id,
+            role: "founder",
+            email: user.email,
+            phoneNo: user.phoneNo,
+            loginMethod: "google",
+            sessionId: crypto.randomUUID(),
+            ipAddress: requestInfo.ip,
+            userAgent: requestInfo.device.userAgent,
+            deviceInfo: requestInfo.device,
+            location: requestInfo.location,
+            success: false,
+            failureReason: `Account is ${user.accountStatus}`
+        });
 
-    throw new AppError("Your Google email address is not verified.", 403);
-  }
+        throw new AppError(
+            "Your Founder account is not active. Please contact support.",
+            403
+        );
+    }
 
-  // ======================================================
-  // LINK GOOGLE ACCOUNT
-  // ======================================================
+    const serialNumber = await generateSerialNumber("founder");
 
-  if (!user.googleId) {
-    user.googleId = googleId;
-    user.emailVerified = true;
-    user.emailVerifiedDate = new Date();
+    user.serialNumber = serialNumber;
 
     await user.save();
-  } else if (user.googleId !== googleId) {
+
+    const sessionId = crypto.randomUUID();
+
+    const accessToken = jwt.sign(
+        {
+            id: user._id,
+            role: "founder",
+            sessionId,
+            tokenVersion: user.tokenVersion
+        },
+        process.env.JWT_KEY,
+        {
+            expiresIn: "24h"
+        }
+    );
+
+    const refreshToken = jwt.sign(
+        {
+            id: user._id,
+            sessionId,
+            tokenVersion: user.tokenVersion
+        },
+        process.env.JWT_REFRESH_SECRET,
+        {
+            expiresIn: "7d"
+        }
+    );
+
     await loginHistory.create({
-      req,
-      user,
-      role: "founder",
-      email: user.email,
-      phoneNo: user.phoneNo,
-      loginMethod: "google",
-      sessionId: crypto.randomUUID(),
-      ipAddress: requestInfo.ip,
-      userAgent: requestInfo.device.userAgent,
-      deviceInfo: requestInfo.device,
-      location: requestInfo.location,
-      success: false,
-      failureReason: "Google account does not match linked account"
+        user: user._id,
+        role: "founder",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "google",
+        sessionId,
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: true
     });
 
-    throw new AppError("This Google account is not linked to your Founder account.", 403);
-  }
-
-  // ======================================================
-  // ACCOUNT STATUS
-  // ======================================================
-
-  if (user.accountStatus !== "active" || !user.isActive) {
-    await loginHistory.create({
-      req,
-      user,
-      role: "founder",
-      email: user.email,
-      phoneNo: user.phoneNo,
-      loginMethod: "google",
-      sessionId: crypto.randomUUID(),
-      ipAddress: requestInfo.ip,
-      userAgent: requestInfo.device.userAgent,
-      deviceInfo: requestInfo.device,
-      location: requestInfo.location,
-      success: false,
-      failureReason: `Account is ${user.accountStatus}`
+    await auditLogModel.create({
+        user: user._id,
+        role: "founder",
+        action: "GOOGLE_LOGIN",
+        entity: "Founder",
+        entityId: user._id,
+        reason: "Google login to application",
+        metadata: {
+            email: user.email,
+            sessionId,
+            ipAddress: requestInfo.ip,
+            device: requestInfo.deviceName,
+            location: requestInfo.location
+        }
     });
-
-    throw new AppError("Your Founder account is not active. Please contact support.", 403);
-  }
-
-  const serialNumber = await generateSerialNumber('founder');
-
-  user.serialNumber = serialNumber
-
-  await user.save()
-
-  // ======================================================
-  // CREATE SESSION
-  // ======================================================
-
-  const sessionId = crypto.randomUUID();
-
-  const accessToken = jwt.sign(
-    {
-      id: user._id,
-      role: "founder",
-      sessionId,
-      tokenVersion: user.tokenVersion
-    },
-    process.env.JWT_KEY,
-    {
-      expiresIn: "24h"
-    }
-  );
-
-  const refreshToken = jwt.sign(
-    {
-      id: user._id,
-      sessionId,
-      tokenVersion: user.tokenVersion
-    },
-    process.env.JWT_REFRESH_SECRET,
-    {
-      expiresIn: "7d"
-    }
-  );
-
-  // ======================================================
-  // LOGIN HISTORY
-  // ======================================================
-
-  await loginHistory.create({
-    req,
-    user,
-    role: "founder",
-    email: user.email,
-    phoneNo: user.phoneNo,
-    loginMethod: "google",
-    sessionId,
-    ipAddress: requestInfo.ip,
-    userAgent: requestInfo.device.userAgent,
-    deviceInfo: requestInfo.device,
-    location: requestInfo.location,
-    success: true
-  });
-
-  // ======================================================
-  // AUDIT LOG
-  // ======================================================
-
-  await auditLogModel.create({
-    user: user._id,
-    role: "founder",
-    action: "GOOGLE_LOGIN",
-    entity: "Founder",
-    entityId: user._id,
-    reason: "Google login to application",
-    metadata: {
-      email: user.email,
-      sessionId,
-      ipAddress: requestInfo.ip,
-      device: requestInfo.deviceName,
-      location: requestInfo.location
-    }
-  });
-
-  // ======================================================
-  // RESPONSE
-  // ======================================================
-
-  return {
-    user: FounderDTO.authUser(user),
-    sessionId,
-    accessToken,
-    refreshToken,
-    expiresIn: 86400,
-    onboardingCompleted: user.onboardingCompleted
-  };
+    
+    return {
+        user: FounderDTO.authUser(user),
+        sessionId,
+        accessToken,
+        refreshToken,
+        expiresIn: 86400,
+        onboardingCompleted: user.onboardingCompleted
+    };
 };
+
 
 const loginUser = async ({ email, password }, req = null) => {
   const requestInfo = getRequestInfo(req);

@@ -4,7 +4,6 @@ const { sendSuccess, sendError } = require("../../utils/responseStruture");
 const logger = require("../../logger");
 
 
-/* Get all buyers */
 const getAllBuyersController = async (req, res) => {
   try {
     const buyers = await getAllBuyers();
