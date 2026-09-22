@@ -156,7 +156,7 @@ class VendorDTO {
       role: vendor.role,
 
       emailVerified: vendor.emailVerified,
-      onboardingCompleted: vendor.onboardingCompleted,
+      verificationStatus: vendor.verificationStatus,
 
       verificationStatus: vendor.verificationStatus,
       isVerified: vendor.isVerified,

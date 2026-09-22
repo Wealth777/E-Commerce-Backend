@@ -93,7 +93,7 @@ const lockVendor = async (vendorId, founderId, reason, req) => {
 
     await auditLogModel.create({
         user: vendor._id,
-        userModel: "vendor",
+        userModel: "Vendor",
 
         actor: founderId,
         actorModel: "Founder",
@@ -147,7 +147,7 @@ const unlockVendor = async (vendorId, founderId, req) => {
 
     await auditLogModel.create({
         user: vendor._id,
-        userModel: "vendor",
+        userModel: "Vendor",
 
         actor: founderId,
         actorModel: "Founder",
@@ -199,7 +199,7 @@ const banVendor = async (vendorId, founderId, reason, req) => {
 
     await auditLogModel.create({
         user: vendor._id,
-        userModel: "vendor",
+        userModel: "Vendor",
 
         actor: founderId,
         actorModel: "Founder",
@@ -252,7 +252,7 @@ const deleteVendor = async (vendorId, founderId, reason, req) => {
 
     await auditLogModel.create({
         user: vendor._id,
-        userModel: "vendor",
+        userModel: "Vendor",
 
         actor: founderId,
         actorModel: "Founder",

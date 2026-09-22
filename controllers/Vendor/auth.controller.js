@@ -768,7 +768,7 @@ exports.completeOnboarding = async (req, res) => {
     };
 
     vendor.onboardingCompleted = true;
-    vendor.onboardingCompletedAt = new Date();
+    vendor.onboardingSentAt = new Date();
 
     await vendor.save({ session });
 
@@ -777,10 +777,10 @@ exports.completeOnboarding = async (req, res) => {
         {
           user: vendor._id,
           role: "vendor",
-          action: "COMPLETE_ONBOARDING",
+          action: "ONBOARDING_REQUEST",
           entity: "Vendor",
           entityId: vendor._id,
-          reason: 'Completed Verifing account',
+          reason: 'Request Verifing account',
           metadata: {
             serialNumber: vendor.serialNumber,
             institution: student.institution,
@@ -798,7 +798,7 @@ exports.completeOnboarding = async (req, res) => {
     return sendSuccess(
       res,
       200,
-      "Vendor onboarding completed successfully. Your account is awaiting verification.",
+      "Vendor onboarding reqeust sent successfully. Your account is awaiting verification.",
       VendorDTO.fromModel(vendor)
     );
   } catch (err) {

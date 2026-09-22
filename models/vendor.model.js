@@ -71,6 +71,8 @@ const vendorSchema = new mongoose.Schema(
       default: false,
     },
 
+    onboardingSentAt: Date,
+
     onboardingCompletedAt: Date,
 
     student: {

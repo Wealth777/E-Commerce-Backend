@@ -6,6 +6,9 @@ const { getAllBuyersController, getBuyerByIdController, lockBuyerController, unl
 
 const { getAllVendorController, getVendorByIdController, lockVendorController, unlockVendorController, banVendorController, deleteVendorController, } = require("../controllers/Founder/vendor.controller");
 
+const { getPendingVendorApprovalsController, getVendorOnboardingDetailsController, approveVendorController, rejectVendorController, } = require("../controllers/Founder/vendorApproval.controller");
+
+
 const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
 
 const { founderOnly } = require("../middleware/founderAccess");
@@ -25,6 +28,12 @@ router.get( "/profile/me", verifyUser, founderOnly, getUsersDetails );
 
 router.get( "/buyers", verifyUser, founderOnly, getAllBuyersController );
 
+router.get( "/vendors", verifyUser, founderOnly, getAllVendorController );
+
+router.get("/vendors/approvals", verifyUser, founderOnly, getPendingVendorApprovalsController);
+
+
+
 router.get( "/buyers/:buyerId", verifyUser, founderOnly, getBuyerByIdController );
 
 router.patch( "/buyers/:buyerId/lock", verifyUser, founderOnly, lockBuyerController );
@@ -35,12 +44,6 @@ router.patch( "/buyers/:buyerId/ban", verifyUser, founderOnly, banBuyerControlle
 
 router.delete( "/buyers/:buyerId", verifyUser, founderOnly, deleteBuyerController );
 
-
-
-
-
-router.get( "/vendors", verifyUser, founderOnly, getAllVendorController );
-
 router.get( "/vendors/:vendorId", verifyUser, founderOnly, getVendorByIdController );
 
 router.patch( "/vendors/:vendorId/lock", verifyUser, founderOnly, lockVendorController );
@@ -50,6 +53,12 @@ router.patch( "/vendors/:vendorId/unlock", verifyUser, founderOnly, unlockVendor
 router.patch( "/vendors/:vendorId/ban", verifyUser, founderOnly, banVendorController );
 
 router.delete( "/vendors/:vendorId", verifyUser, founderOnly, deleteVendorController );
+
+router.get("/vendors/:vendorId/onboarding", verifyUser, founderOnly, getVendorOnboardingDetailsController );
+
+router.patch("/vendors/:vendorId/approve", verifyUser, founderOnly, approveVendorController );
+
+router.patch("/vendors/:vendorId/reject", verifyUser, founderOnly, rejectVendorController );
 
 
 module.exports = router;
