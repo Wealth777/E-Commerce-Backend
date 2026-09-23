@@ -8,6 +8,8 @@ const { getAllVendorController, getVendorByIdController, lockVendorController, u
 
 const { getPendingVendorApprovalsController, getVendorOnboardingDetailsController, approveVendorController, rejectVendorController, } = require("../controllers/Founder/vendorApproval.controller");
 
+const { getAllOrders, getOrderById, getOrderStats } = require("../controllers/Founder/orders.controller")
+
 
 const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
 
@@ -31,6 +33,10 @@ router.get( "/buyers", verifyUser, founderOnly, getAllBuyersController );
 router.get( "/vendors", verifyUser, founderOnly, getAllVendorController );
 
 router.get("/vendors/approvals", verifyUser, founderOnly, getPendingVendorApprovalsController);
+
+router.get('/orders', verifyUser, founderOnly, getAllOrders);
+
+router.get('/orders/stats', verifyUser, founderOnly, getOrderStats);
 
 
 
@@ -59,6 +65,8 @@ router.get("/vendors/:vendorId/onboarding", verifyUser, founderOnly, getVendorOn
 router.patch("/vendors/:vendorId/approve", verifyUser, founderOnly, approveVendorController );
 
 router.patch("/vendors/:vendorId/reject", verifyUser, founderOnly, rejectVendorController );
+
+router.get('/orders/:orderId', verifyUser, founderOnly, getOrderById);
 
 
 module.exports = router;

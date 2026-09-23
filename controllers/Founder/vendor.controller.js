@@ -15,33 +15,19 @@ const getAllVendorController = async (req, res) => {
       vendor
     );
   } catch (error) {
-    logger.error("Failed to fetch vendor", {
-      error: error.message,
-      stack: error.stack,
-    });
+    logger.error("Failed to fetch vendor", { error: error.message, stack: error.stack,});
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to fetch vendor"
-    );
+    return sendError( res, error.statusCode || 500, error.message || "Failed to fetch vendor" );
   }
 };
 
-
-/* Get one Vendor */
 const getVendorByIdController = async (req, res) => {
   try {
     const { vendorId } = req.params;
 
     const vendor = await getVendorById(vendorId);
 
-    return sendSuccess(
-      res,
-      200,
-      "Vendor fetched successfully",
-      vendor
-    );
+    return sendSuccess( res, 200, "Vendor fetched successfully", vendor);
   } catch (error) {
     logger.error("Failed to fetch vendor", {
       vendorId: req.params.vendorId,
@@ -49,16 +35,11 @@ const getVendorByIdController = async (req, res) => {
       stack: error.stack,
     });
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to fetch vendor"
-    );
+    return sendError( res, error.statusCode || 500, error.message || "Failed to fetch vendor" );
   }
 };
 
 
-/* Lock Vendor */
 const lockVendorController = async (req, res) => {
   try {
     const { vendorId } = req.params;
@@ -73,12 +54,7 @@ const lockVendorController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Vendor account locked successfully",
-      vendor
-    );
+    return sendSuccess( res, 200, "Vendor account locked successfully", vendor );
   } catch (error) {
     logger.error("Failed to lock vendor", {
       vendorId: req.params.vendorId,
@@ -87,16 +63,11 @@ const lockVendorController = async (req, res) => {
       stack: error.stack,
     });
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to lock vendor"
-    );
+    return sendError( res, error.statusCode || 500, error.message || "Failed to lock vendor" );
   }
 };
 
 
-/* Unlock Vendor */
 const unlockVendorController = async (req, res) => {
   try {
     const { vendorId } = req.params;
@@ -109,12 +80,7 @@ const unlockVendorController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Vendor account unlocked successfully",
-      vendor
-    );
+    return sendSuccess( res, 200, "Vendor account unlocked successfully",  );
   } catch (error) {
     logger.error("Failed to unlock vendor", {
       vendorId: req.params.vendorId,
@@ -123,16 +89,10 @@ const unlockVendorController = async (req, res) => {
       stack: error.stack,
     });
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to unlock vendor"
-    );
+    return sendError(res, error.statusCode || 500, error.message || "Failed to unlock vendor" );
   }
 };
 
-
-/* Ban Vendor */
 const banVendorController = async (req, res) => {
   try {
     const { vendorId } = req.params;
@@ -147,12 +107,7 @@ const banVendorController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Vendor account banned successfully",
-      vendor
-    );
+    return sendSuccess( res, 200, "Vendor account banned successfully", vendor );
   } catch (error) {
     logger.error("Failed to ban vendor", {
       vendorId: req.params.vendorId,
@@ -161,16 +116,11 @@ const banVendorController = async (req, res) => {
       stack: error.stack,
     });
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to ban vendor"
-    );
+    return sendError( res, error.statusCode || 500, error.message || "Failed to ban vendor" );
   }
 };
 
 
-/* Delete Vendor */
 const deleteVendorController = async (req, res) => {
   try {
     const { vendorId } = req.params;
@@ -185,12 +135,7 @@ const deleteVendorController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Vendor account deleted successfully",
-      vendor
-    );
+    return sendSuccess(res, 200, "Vendor account deleted successfully", vendor );
   } catch (error) {
     logger.error("Failed to delete vendor", {
       endorId: req.params.vendorId,
@@ -199,11 +144,7 @@ const deleteVendorController = async (req, res) => {
       stack: error.stack,
     });
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to delete vendor"
-    );
+    return sendError( res, error.statusCode || 500, error.message || "Failed to delete vendor" );
   }
 };
 

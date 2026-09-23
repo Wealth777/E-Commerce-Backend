@@ -8,12 +8,7 @@ const getAllBuyersController = async (req, res) => {
   try {
     const buyers = await getAllBuyers();
 
-    return sendSuccess(
-      res,
-      200,
-      "Buyers fetched successfully",
-      buyers
-    );
+    return sendSuccess( res, 200, "Buyers fetched successfully", buyers );
   } catch (error) {
     logger.error("Failed to fetch buyers", {
       error: error.message,
@@ -29,19 +24,13 @@ const getAllBuyersController = async (req, res) => {
 };
 
 
-/* Get one buyer */
 const getBuyerByIdController = async (req, res) => {
   try {
     const { buyerId } = req.params;
 
     const buyer = await getBuyerById(buyerId);
 
-    return sendSuccess(
-      res,
-      200,
-      "Buyer fetched successfully",
-      buyer
-    );
+    return sendSuccess( res, 200, "Buyer fetched successfully", buyer );
   } catch (error) {
     logger.error("Failed to fetch buyer", {
       buyerId: req.params.buyerId,
@@ -58,7 +47,6 @@ const getBuyerByIdController = async (req, res) => {
 };
 
 
-/* Lock buyer */
 const lockBuyerController = async (req, res) => {
   try {
     const { buyerId } = req.params;
@@ -73,12 +61,7 @@ const lockBuyerController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Buyer account locked successfully",
-      buyer
-    );
+    return sendSuccess(res, 200, "Buyer account locked successfully",  buyer);
   } catch (error) {
     logger.error("Failed to lock buyer", {
       buyerId: req.params.buyerId,
@@ -87,16 +70,10 @@ const lockBuyerController = async (req, res) => {
       stack: error.stack,
     });
 
-    return sendError(
-      res,
-      error.statusCode || 500,
-      error.message || "Failed to lock buyer"
-    );
+    return sendError(res, error.statusCode || 500, error.message || "Failed to lock buyer");
   }
 };
 
-
-/* Unlock buyer */
 const unlockBuyerController = async (req, res) => {
   try {
     const { buyerId } = req.params;
@@ -109,12 +86,7 @@ const unlockBuyerController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Buyer account unlocked successfully",
-      buyer
-    );
+    return sendSuccess( res, 200, "Buyer account unlocked successfully", buyer );
   } catch (error) {
     logger.error("Failed to unlock buyer", {
       buyerId: req.params.buyerId,
@@ -130,9 +102,7 @@ const unlockBuyerController = async (req, res) => {
     );
   }
 };
-
-
-/* Ban buyer */
+ 
 const banBuyerController = async (req, res) => {
   try {
     const { buyerId } = req.params;
@@ -147,12 +117,7 @@ const banBuyerController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Buyer account banned successfully",
-      buyer
-    );
+    return sendSuccess( res, 200, "Buyer account banned successfully", buyer );
   } catch (error) {
     logger.error("Failed to ban buyer", {
       buyerId: req.params.buyerId,
@@ -185,12 +150,7 @@ const deleteBuyerController = async (req, res) => {
       req
     );
 
-    return sendSuccess(
-      res,
-      200,
-      "Buyer account deleted successfully",
-      buyer
-    );
+    return sendSuccess( res, 200, "Buyer account deleted successfully", buyer );
   } catch (error) {
     logger.error("Failed to delete buyer", {
       buyerId: req.params.buyerId,

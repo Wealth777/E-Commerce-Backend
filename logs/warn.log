@@ -2107,3 +2107,100 @@
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:43:46.756Z"}
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:43:46.771Z"}
 {"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:44:09.216Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:47:10.861Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:48:41.825Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:48:47.919Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:48:47.923Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:51.555Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:51.569Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:52.576Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:52.601Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:52.794Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:52.800Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:53.977Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:53.997Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:54.083Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:54.113Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:55.046Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:55.226Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:55.425Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:55.450Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:56.198Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:56.623Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:56.628Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:56.633Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:57.272Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:57.595Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:57.728Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:57.751Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:58.321Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:58.579Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:58.763Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:58.767Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:58.899Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:59.280Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:59.566Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:59.753Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:59.765Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:48:59.777Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:49:00.193Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:49:00.598Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:49:00.718Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:49:00.761Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:49:00.777Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6a8310ea36f2ec2c2e31432e","role":"vendor","sessionId":"4fe3ad68-1f28-465d-8f9d-e960b52258ef"},"timestamp":"2026-09-22T20:49:01.974Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:50:29.373Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:50:29.377Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:52:19.507Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:52:19.522Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:54:11.572Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:54:11.582Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:55:02.447Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:55:02.463Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:55:28.853Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:55:51.728Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-22T20:55:51.734Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T11:10:28.810Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T11:10:28.892Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T11:24:37.562Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T11:24:51.692Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T11:24:51.696Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T12:09:53.509Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T13:58:18.122Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T13:58:18.136Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T13:58:56.135Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T13:59:16.744Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T13:59:27.153Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T13:59:27.154Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T14:01:08.617Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T14:01:08.740Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T14:01:08.742Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T15:14:10.541Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T15:14:10.896Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T15:14:10.897Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T15:31:45.136Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T15:31:45.251Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T15:31:56.359Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:16:09.750Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:16:09.813Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:16:51.553Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:16:51.576Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:19:52.042Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:19:52.049Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:20:18.148Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:22:59.316Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:22:59.326Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:22:59.334Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:25:21.359Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:25:21.426Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:25:21.428Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:26:33.557Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:26:54.377Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:26:54.491Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:26:56.172Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:28:17.483Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:28:17.499Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:28:49.877Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:29:30.341Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:29:30.356Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-09-23T18:35:32.788Z"}

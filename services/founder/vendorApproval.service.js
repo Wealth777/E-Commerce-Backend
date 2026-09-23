@@ -111,6 +111,9 @@ const getVendorOnboardingDetails = async (vendorId) => {
 
                 "onboardingCompleted",
                 "onboardingSentAt",
+                "isLocked",
+                "isSuspend",
+                "isActive",
 
                 "verificationStatus",
                 "verificationApprovedAt",

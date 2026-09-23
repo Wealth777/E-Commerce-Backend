@@ -115,7 +115,7 @@ const buyerOrderSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    
+
     refundRequest: {
       requested: {
         type: Boolean,
@@ -158,7 +158,13 @@ const buyerOrderSchema = new mongoose.Schema(
 
       reviewedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Vendor",
+        refPath: "reviewedByModel",
+      },
+
+      reviewedByModel: {
+        type: String,
+        enum: ["Vendor", "Founder"],
+        default: null,
       },
 
       response: String,
@@ -194,7 +200,13 @@ const buyerOrderSchema = new mongoose.Schema(
 
       reviewedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Vendor",
+        refPath: "reviewedByModel",
+      },
+
+      reviewedByModel: {
+        type: String,
+        enum: ["Vendor", "Founder"],
+        default: null,
       },
 
       inspectionNote: String,
@@ -205,3 +217,5 @@ const buyerOrderSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Order', buyerOrderSchema);
+
+// https://www.netacad.com/launch?id=e38d8d2d-39db-4c01-8722-0924a495415f&tab=curriculum&view=2c4d3db6-ac89-5b95-b98b-6c0d641956ef
