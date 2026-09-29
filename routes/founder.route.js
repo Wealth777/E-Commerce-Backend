@@ -2,6 +2,8 @@ const express = require("express");
 
 const { loginUser, getUsersDetails, googleLogin } = require("../controllers/Founder/auth.controller");
 
+const { getDashboardStatsController } = require("../controllers/Founder/dashboard.controller");
+
 const { getAllBuyersController, getBuyerByIdController, lockBuyerController, unlockBuyerController, banBuyerController, deleteBuyerController, } = require("../controllers/Founder/buyer.controller");
 
 const { getAllVendorController, getVendorByIdController, lockVendorController, unlockVendorController, banVendorController, deleteVendorController, } = require("../controllers/Founder/vendor.controller");
@@ -10,6 +12,9 @@ const { getPendingVendorApprovalsController, getVendorOnboardingDetailsControlle
 
 const { getAllOrders, getOrderById, getOrderStats } = require("../controllers/Founder/orders.controller")
 
+const { getAllProducts, getProductById, getProductStats, updateProductVisibility } = require("../controllers/Founder/products.controller")
+
+const { getActivities } = require("../controllers/Founder/activities.controller");
 
 const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
 
@@ -24,9 +29,11 @@ router.post("/auth/login", loginLimiter, loginUser);
 
 router.post("/auth/google", loginLimiter, googleLogin);
 
-router.get( "/get/me", verifyUser, founderOnly, getUsersDetails );
+router.get("/get/me", verifyUser, founderOnly, getUsersDetails );
 
 router.get( "/profile/me", verifyUser, founderOnly, getUsersDetails );
+
+router.get("/dashboard/stats", verifyUser, founderOnly, getDashboardStatsController);
 
 router.get( "/buyers", verifyUser, founderOnly, getAllBuyersController );
 
@@ -37,6 +44,12 @@ router.get("/vendors/approvals", verifyUser, founderOnly, getPendingVendorApprov
 router.get('/orders', verifyUser, founderOnly, getAllOrders);
 
 router.get('/orders/stats', verifyUser, founderOnly, getOrderStats);
+
+router.get('/products', verifyUser, founderOnly, getAllProducts)
+
+router.get('/products/stats', verifyUser, founderOnly, getProductById)
+
+router.get('/activities', verifyUser, founderOnly, getActivities)
 
 
 
@@ -68,5 +81,8 @@ router.patch("/vendors/:vendorId/reject", verifyUser, founderOnly, rejectVendorC
 
 router.get('/orders/:orderId', verifyUser, founderOnly, getOrderById);
 
+router.get('/products/:productId/stats', verifyUser, founderOnly, getProductStats);
+
+router.patch("/products/:productId/visibility", verifyUser, founderOnly, updateProductVisibility );
 
 module.exports = router;

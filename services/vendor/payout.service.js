@@ -24,6 +24,12 @@ const saveVendorPayout = async ({ userId, bankName, accountName, accountNumber, 
 
   await AuditLog.create([{
     user: userId,
+    userModel: "Vendor",
+
+    actor: userId,
+    actorModel: "Vendor",
+    actorRole: "vendor",
+
     role: 'vendor',
     action: 'UPDATE_PAYOUT',
     entity: 'Vendor',

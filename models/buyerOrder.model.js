@@ -217,5 +217,3 @@ const buyerOrderSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Order', buyerOrderSchema);
-
-// https://www.netacad.com/launch?id=e38d8d2d-39db-4c01-8722-0924a495415f&tab=curriculum&view=2c4d3db6-ac89-5b95-b98b-6c0d641956ef

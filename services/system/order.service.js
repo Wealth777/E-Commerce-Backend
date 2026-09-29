@@ -82,9 +82,9 @@ const autoCancelExpiredOrders = async () => {
 
             const orderRef = cancelledOrder._id
                 ? `#${cancelledOrder._id
-                      .toString()
-                      .slice(-8)
-                      .toUpperCase()}`
+                    .toString()
+                    .slice(-8)
+                    .toUpperCase()}`
                 : "N/A";
 
             await safeCreateNotification({

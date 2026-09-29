@@ -162,6 +162,12 @@ const addToCart = async ({ userId, productId, quantity = 1 }) => {
 
   await AuditLog.create({
     user: userId,
+    userModel: "Buyer",
+
+    actor: userId,
+    actorModel: "Buyer",
+    actorRole: "buyer",
+
     role: 'buyer',
     action: 'ADD_TO_CART',
     entity: 'Cart',
@@ -238,6 +244,12 @@ const updateCartItem = async ({ userId, productId, quantity }) => {
 
   await AuditLog.create({
     user: userId,
+    userModel: "Buyer",
+
+    actor: userId,
+    actorModel: "Buyer",
+    actorRole: "buyer",
+
     role: 'buyer',
     action: 'UPDATE_CART_ITEM',
     entity: 'Cart',
@@ -278,6 +290,12 @@ const removeFromCart = async ({ userId, productId }) => {
 
   await AuditLog.create({
     user: userId,
+    userModel: "Buyer",
+
+    actor: userId,
+    actorModel: "Buyer",
+    actorRole: "buyer",
+
     role: 'buyer',
     action: 'REMOVE_FROM_CART',
     entity: 'Cart',

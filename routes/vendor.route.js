@@ -21,9 +21,6 @@ const { createVendorCategory, getCategories, rejectCategory, approveCategory } =
 
 router.use(apiLimiter);
 
-/* -------------------------------------------------------------------------- */
-/*                               PUBLIC ROUTES                                */
-/* -------------------------------------------------------------------------- */
 
 router.post("/auth/register", validateRegister, createUser);
 
@@ -32,10 +29,6 @@ router.post("/auth/login", loginLimiter, loginUser);
 router.get("/product/all", getAllProducts);
 
 router.get("/categories", getCategories);
-
-/* -------------------------------------------------------------------------- */
-/*                          AUTHENTICATED ROUTES                              */
-/* -------------------------------------------------------------------------- */
 
 router.get("/profile/me", verifyUser, getUsersDetails);
 
@@ -50,10 +43,6 @@ router.put(
     updateVendorProfile
 );
 
-/* -------------------------------------------------------------------------- */
-/*                         VERIFIED ACCOUNT ROUTES                            */
-/* -------------------------------------------------------------------------- */
-
 router.post(
     "/profile/onboarding",
     verifyUser,
@@ -66,10 +55,6 @@ router.post(
     ]),
     completeOnboarding
 );
-
-/* -------------------------------------------------------------------------- */
-/*                        ACTIVE VENDOR ROUTES                                */
-/* -------------------------------------------------------------------------- */
 
 router.post(
     "/product/add",
@@ -222,10 +207,6 @@ router.get(
     requireRole(["vendor"]),
     getUsersActivities
 );
-
-/* -------------------------------------------------------------------------- */
-/*                        ALL VENDOR DYNAMIC ROUTES                           */
-/* -------------------------------------------------------------------------- */
 
 router.get("/product/:productId", getProductDetails);
 

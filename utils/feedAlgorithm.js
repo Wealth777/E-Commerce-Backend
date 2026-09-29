@@ -168,6 +168,7 @@ const updateProductStockAfterOrder = async (items, session) => {
 
     product.stock = newStock;
     product.status = newStatus;
+    product.sold = (product.sold || 0) + item.quantity;
 
     await product.save({ session });
   }

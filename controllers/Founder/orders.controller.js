@@ -4,7 +4,7 @@ const { sendSuccess, sendError } = require("../../utils/responseStruture");
 const logger = require('../../logger')
 
 const handleError = (res, error, fallbackMessage) => {
-    logger.error("Failed to fetch buyer", error);
+    logger.error("Failed to fetch order", error);
     return sendError(res, error.statusCode || 500, error.statusCode ? error.message : fallbackMessage, error.errors || null);
 };
 

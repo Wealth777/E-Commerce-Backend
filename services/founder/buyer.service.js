@@ -10,7 +10,6 @@ const AppError = require('../common/AppError');
 const logger = require("../../logger");
 
 
-/* Get all buyers for Founder management */
 const getAllBuyers = async () => {
   try {
     const buyers = await buyerModel
@@ -34,10 +33,6 @@ const getAllBuyers = async () => {
   }
 };
 
-
-/**
- * Get one buyer by ID
- */
 const getBuyerById = async (buyerId) => {
   if (!mongoose.Types.ObjectId.isValid(buyerId)) {
     throw new AppError("Invalid buyer ID", 400);
@@ -67,7 +62,6 @@ const getBuyerById = async (buyerId) => {
 };
 
 
-/* Lock buyer account */
 const lockBuyer = async (buyerId, founderId, reason, req) => {
   if (!mongoose.Types.ObjectId.isValid(buyerId)) {
     throw new AppError("Invalid buyer ID", 400);

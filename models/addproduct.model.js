@@ -60,8 +60,31 @@ const addProduct = new mongoose.Schema(
             default: 0,
             min: 0
         },
+        visibility: {
+            type: Boolean,
+            default: true,
+        },
+        visibilityActionBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            refPath: "visibilityActionModel",
+            default: null,
+        },
+        visibilityActionModel: {
+            type: String,
+            enum: ["Vendor", "Founder"],
+            default: null,
+        },
+        visibilityActionAt: {
+            type: Date,
+            default: null,
+        },
+        visibilityReason: {
+            type: String,
+            trim: true,
+            default: null,
+        },
         ratingSummary: {
-            averageRating: { type: Number, default: 0, min: 0, max: 1 },
+            averageRating: { type: Number, default: 0, min: 0, max: 5 },
             totalRatings: { type: Number, default: 0, min: 0 },
             breakdown: {
                 1: { type: Number, default: 0 },

@@ -23,6 +23,7 @@ const addProduct = async ({ vendorId, body, file, session }) => {
     originalPrice,
     stock,
     imageUrl,
+    visibility
   } = body;
 
   if (!name || !category || price === undefined || stock === undefined) {
@@ -66,6 +67,11 @@ const addProduct = async ({ vendorId, body, file, session }) => {
     throw new AppError('Price and stock must be valid numbers', 400);
   }
 
+  const parsedVisibility =
+    visibility === undefined || visibility === ""
+      ? true
+      : visibility === true || visibility === "true";
+
   const [product] = await AddProduct.create(
     [
       {
@@ -78,6 +84,11 @@ const addProduct = async ({ vendorId, body, file, session }) => {
         price: parsedPrice,
         originalPrice: originalPrice || parsedPrice,
         stock: parsedStock,
+        visibility: parsedVisibility,
+        visibilityActionBy: vendorId,
+        visibilityActionModel: "Vendor",
+        visibilityActionAt: new Date(),
+        visibilityReason: null,
         status: getStockStatus(parsedStock),
       },
     ],
@@ -88,6 +99,12 @@ const addProduct = async ({ vendorId, body, file, session }) => {
     [
       {
         user: vendorId,
+        userModel: "Vendor",
+
+        actor: vendorId,
+        actorModel: "Vendor",
+        actorRole: "vendor",
+
         role: 'vendor',
         action: 'ADD_PRODUCT',
         entity: 'Product',
@@ -97,6 +114,7 @@ const addProduct = async ({ vendorId, body, file, session }) => {
           price: product.price,
           category: mainCategory.name,
           subCategory: selectedSubCategory?.name || null,
+          visibility: product.visibility,
         },
       },
     ],
@@ -158,7 +176,7 @@ const getVendorProducts = async ({ vendorId }) => {
 const getAllProducts = async ({ limitParam, user }) => {
   const limit = validateLimit(limitParam);
 
-  const products = await AddProduct.find()
+  const products = await AddProduct.find({ visibility: true })
     .populate({
       path: 'vendor',
       select: `
@@ -209,6 +227,12 @@ const getAllProducts = async ({ limitParam, user }) => {
   if (user?._id) {
     await AuditLog.create({
       user: user._id,
+      userModel: "Vendor",
+
+      actor: vendorId,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
       role: user.role || 'buyer',
       action: 'VIEW_PRODUCT_FEED',
       entity: 'Feed',
@@ -239,8 +263,20 @@ const updateProduct = async ({ productId, vendorId, body, file, session }) => {
   if (!product) throw new AppError('Product not found', 404);
   if (product.vendor.toString() !== vendorId.toString()) throw new AppError('Unauthorized', 403);
 
-  const { name, description, category, subCategory, price, stock, imageUrl } = body;
+  const { name, description, category, subCategory, price, stock, imageUrl, visibility } = body;
   if (name) product.name = name;
+
+  if (visibility !== undefined) {
+    const parsedVisibility =
+      visibility === true ||
+      visibility === "true";
+
+    product.visibility = parsedVisibility;
+    product.visibilityActionBy = vendorId;
+    product.visibilityActionModel = "Vendor";
+    product.visibilityActionAt = new Date();
+    product.visibilityReason = null;
+  }
 
   if (description) product.description = description;
 
@@ -310,10 +346,25 @@ const updateProduct = async ({ productId, vendorId, body, file, session }) => {
 
   await AuditLog.create([{
     user: vendorId,
+    userModel: "Vendor",
+
+    actor: vendorId,
+    actorModel: "Vendor",
+    actorRole: "vendor",
+
     role: 'vendor',
+
     action: 'UPDATE_PRODUCT',
     entity: 'Product',
     entityId: product._id,
+    metadata: {
+      visibilityChanged:
+        visibility !== undefined,
+      visibility:
+        visibility !== undefined
+          ? product.visibility
+          : undefined,
+    },
   }], { session });
 
   return product;
@@ -328,6 +379,12 @@ const softDeleteProduct = async ({ productId, vendorId, session }) => {
 
   await AuditLog.create([{
     user: vendorId,
+    userModel: "Vendor",
+
+    actor: vendorId,
+    actorModel: "Vendor",
+    actorRole: "vendor",
+
     role: 'vendor',
     action: 'DELETE_PRODUCT',
     entity: 'Product',

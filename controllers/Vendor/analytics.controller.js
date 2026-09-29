@@ -187,6 +187,12 @@ exports.exportVendorAnalyticsPDF = async (req, res) => {
 
     await AuditLog.create({
       user: req.user._id,
+      userModel: "Vendor",
+  
+      actor: req.user._id,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
       role: 'vendor',
       action: 'DOWNLOAD_ANALTYIC_PDF',
       entity: 'Vendor'

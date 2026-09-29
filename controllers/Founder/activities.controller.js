@@ -1,4 +1,4 @@
-const { getDashboardStats } = require("../../services/founder/dashboard.service");
+const { getActivities } = require("../../services/founder/activities.service");
 
 const { sendSuccess, sendError } = require("../../utils/responseStruture");
 
@@ -18,25 +18,24 @@ const handleError = (res, error, fallbackMessage) => {
     );
 };
 
-const getDashboardStatsController = async (req, res) => {
+exports.getActivities = async (req, res) => {
     try {
-        const stats = await getDashboardStats();
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+
+        const result = await getActivities(page, limit);
 
         return sendSuccess(
             res,
             200,
-            "Founder dashboard statistics retrieved successfully",
-            stats
+            "Activities retrieved successfully",
+            result
         );
     } catch (error) {
         return handleError(
             res,
             error,
-            "Failed to retrieve founder dashboard statistics"
+            "Failed to retrieve users activites"
         );
     }
-};
-
-module.exports = {
-    getDashboardStatsController,
-};
+}

@@ -70,6 +70,12 @@ exports.createUser = async (req, res) => {
     await AuditLog.create([
       {
         user: createAcc._id,
+        userModel: "Vendor",
+
+        actor: createAcc._id,
+        actorModel: "Vendor",
+        actorRole: "vendor",
+
         role: 'vendor',
         action: 'REGISTER_ACCOUNT',
         entity: 'Vendor',
@@ -287,6 +293,12 @@ exports.loginUser = async (req, res) => {
       [
         {
           user: user._id,
+          userModel: "Vendor",
+
+          actor: user._id,
+          actorModel: "Vendor",
+          actorRole: "vendor",
+
           role: "vendor",
           action: "LOG_IN",
           entity: "Vendor",
@@ -493,6 +505,12 @@ exports.updateVendorProfile = async (req, res) => {
       [
         {
           user: vendor._id,
+          userModel: "Vendor",
+
+          actor: vendor._id,
+          actorModel: "Vendor",
+          actorRole: "vendor",
+          
           role: "vendor",
           action: "UPDATE_ACCOUNT",
           entity: "Vendor",
@@ -776,6 +794,12 @@ exports.completeOnboarding = async (req, res) => {
       [
         {
           user: vendor._id,
+          userModel: "Vendor",
+      
+          actor: vendor._id,
+          actorModel: "Vendor",
+          actorRole: "vendor",
+
           role: "vendor",
           action: "ONBOARDING_REQUEST",
           entity: "Vendor",

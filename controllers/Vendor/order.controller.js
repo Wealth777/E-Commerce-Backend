@@ -142,6 +142,13 @@ exports.vendorConfirmPayment = async (req, res) => {
 
     await AuditLog.create({
       user: req.user._id,
+      userModel: "Vendor",
+
+      actor: req.user._id,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
+      targetUser: order.buyer._id,
       role: "vendor",
       action: "PAYMENT_STATUS_UPDATED",
       entity: "ORDER",
@@ -224,6 +231,13 @@ exports.vendorConfirmOrder = async (req, res) => {
 
     await AuditLog.create({
       user: req.user._id,
+      userModel: "Vendor",
+
+      actor: req.user._id,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
+      targetUser: order.buyer._id,
       role: "vendor",
       action: "ORDER_CONFIRMED",
       entity: "ORDER",
@@ -297,6 +311,13 @@ exports.vendorShipOrder = async (req, res) => {
 
     await AuditLog.create({
       user: req.user._id,
+      userModel: "Vendor",
+
+      actor: req.user._id,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
+      targetUser: order.buyer._id,
       role: "vendor",
       action: "ORDER_SHIPPED",
       entity: "ORDER",
@@ -520,6 +541,13 @@ exports.reviewRefundRequest = async (req, res) => {
 
     await AuditLog.create({
       user: vendorId,
+      userModel: "Vendor",
+
+      actor: vendorId,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
+      targetUser: order.buyer._id,
       role: "vendor",
       action: `REFUND_REQUEST_${action.toUpperCase()}`,
       entity: "ORDER",
@@ -580,8 +608,8 @@ exports.reviewReturnRequest = async (req, res) => {
     }
 
     const order = await BuyerOrder.findOne({
-      _id: orderId,
       vendor: vendorId,
+      _id: orderId,
     }).session(session);
 
     if (!order) {
@@ -667,6 +695,13 @@ exports.reviewReturnRequest = async (req, res) => {
 
     await AuditLog.create({
       user: vendorId,
+      userModel: "Vendor",
+
+      actor: vendorId,
+      actorModel: "Vendor",
+      actorRole: "vendor",
+
+      targetUser: order.buyer._id,
       role: "vendor",
       action: `RETURN_REQUEST_${action.toUpperCase()}`,
       entity: "ORDER",

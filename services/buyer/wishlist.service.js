@@ -16,6 +16,12 @@ const addToWishlist = async ({ userId, productId }) => {
 
   await AuditLog.create({
     user: userId,
+    userModel: "Buyer",
+
+    actor: buyerId,
+    actorModel: "Buyer",
+    actorRole: "buyer",
+
     role: 'buyer',
     action: 'ADD_TO_WISHLIST',
     entity: 'Wishlist',
@@ -38,6 +44,12 @@ const removeFromWishlist = async ({ userId, productId }) => {
 
   await AuditLog.create({
     user: userId,
+    userModel: "Buyer",
+
+    actor: userId,
+    actorModel: "Buyer",
+    actorRole: "buyer",
+
     role: 'buyer',
     action: 'REMOVE_FROM_WISHLIST',
     entity: 'Wishlist',

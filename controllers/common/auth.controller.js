@@ -128,10 +128,18 @@ exports.logoutUser = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "LOG_OUT",
                     entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
                     metadata: {
                         email: user.email,
                         sessionId,
@@ -200,15 +208,24 @@ exports.verifyEmail = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "VERIFY_EMAIL",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
                     metadata: {
                         email: user.email,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -444,11 +461,20 @@ exports.resetPassword = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "RESET_PASSWORD",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
-                    reason: 'Resent my password',
+
+                    reason: "Password reset by user",
+
                     metadata: {
                         email: user.email,
                         browser: deviceInfo.browser,
@@ -457,7 +483,8 @@ exports.resetPassword = async (req, res) => {
                         location: deviceInfo.location,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -532,11 +559,20 @@ exports.changePassword = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "CHANGE_PASSWORD",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
-                    reason: 'I want to update my pasword',
+
+                    reason: "User changed their password",
+
                     metadata: {
                         email: user.email,
                         device: deviceInfo.device,
@@ -613,11 +649,20 @@ exports.changeEmail = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "REQUEST_EMAIL_CHANGE",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
-                    reason: 'I want to change my email address',
+
+                    reason: "User requested an email address change",
+
                     metadata: {
                         oldEmail: user.email,
                         newEmail: user.pendingEmail,
@@ -627,7 +672,8 @@ exports.changeEmail = async (req, res) => {
                         location: deviceInfo.location,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -723,11 +769,20 @@ exports.verifyChangedEmail = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "CHANGE_EMAIL",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
-                    reason: "I've Changes email address",
+
+                    reason: "User changed their email address",
+
                     metadata: {
                         oldEmail,
                         newEmail: user.email,
@@ -738,7 +793,8 @@ exports.verifyChangedEmail = async (req, res) => {
                         location: deviceInfo.location,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -863,11 +919,20 @@ exports.suspendUserAccount = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "SUSPEND_ACCOUNT",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
                     reason: user.suspendReason,
+
                     metadata: {
                         serialNumber: user.serialNumber,
                         email: user.email,
@@ -875,7 +940,8 @@ exports.suspendUserAccount = async (req, res) => {
                         suspendedAt: user.suspendDate,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -929,18 +995,28 @@ exports.reactivateUserAccount = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "REACTIVATE_ACCOUNT",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
-                    reason: 'I want to reactivivate my account',
+
+                    reason: "User reactivated their account",
+
                     metadata: {
                         serialNumber: user.serialNumber,
                         email: user.email,
                         reactivatedAt: user.reactivatedAt,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -1005,18 +1081,29 @@ exports.UserDeleteAccount = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "DELETE_ACCOUNT",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
                     reason: user.deleteReason,
+
                     metadata: {
                         serialNumber: user.serialNumber,
                         email: user.email,
                         reason: user.deleteReason,
+                        deletedAt: user.deleteDate,
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -1127,16 +1214,27 @@ exports.logoutAllDevices = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "LOGOUT_ALL_DEVICES",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
+                    reason: "User logged out from all other devices",
+
                     metadata: {
                         email: user.email,
                         performedAt: new Date(),
                     },
                 },
-            ], { session }
+            ],
+            { session }
         );
 
         await session.commitTransaction();
@@ -1222,10 +1320,20 @@ exports.updateNotificationPreference = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "UPDATE_NOTIFICATION_PREFERENCE",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
+                    reason: "User updated notification preference",
+
                     metadata: {
                         notificationPreference,
                     },
@@ -1291,10 +1399,20 @@ exports.updatePromotionalMessages = async (req, res) => {
             [
                 {
                     user: user._id,
+                    userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+                    actor: user._id,
+                    actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+                    actorRole: user.role,
+
                     role: user.role,
+
                     action: "UPDATE_PROMOTIONAL_MESSAGES",
-                    entity: user.role,
+                    entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
                     entityId: user._id,
+
+                    reason: "User updated promotional message preference",
+
                     metadata: {
                         promotionalMessages,
                     },
