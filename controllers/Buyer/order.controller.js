@@ -354,9 +354,9 @@ exports.createBuyerOrder = async (req, res) => {
             proof.vendorId === vendorId
         );
 
-      const codeId = crypto.randomUUID()
-                      .toString()
-                      .toLocaleUpperCase()
+      const codeId = `#${crypto.randomUUID()
+        .split("-")[0]
+        .toUpperCase()}`;
 
 
       const [createdOrder] =

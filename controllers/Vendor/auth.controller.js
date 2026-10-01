@@ -355,6 +355,329 @@ exports.loginUser = async (req, res) => {
   }
 };
 
+exports.googleLogin = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { idToken } = req.body;
+    const requestInfo = getRequestInfo(req);
+
+    if (!idToken) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        role: "vendor",
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Google ID token is required"
+      });
+
+      return sendError(res, 400, "Google ID token is required");
+    }
+
+    const payload = await verifyGoogleToken(idToken);
+
+    if (!payload) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        role: "vendor",
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Invalid Google token"
+      });
+
+      return sendError(res, 401, "Invalid Google token");
+    }
+
+    const {
+      email,
+      sub: googleId,
+      email_verified: googleEmailVerified
+    } = payload;
+
+    if (!email || !googleId) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        role: "vendor",
+        email: email || null,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Google account information is incomplete"
+      });
+
+      return sendError(res, 400, "Google account information is incomplete");
+    }
+
+    if (!googleEmailVerified) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        role: "vendor",
+        email: email.toLowerCase().trim(),
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Google email is not verified"
+      });
+
+      return sendError(res, 403, "Your Google email address is not verified.");
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await vendorModel.findOne({ email: normalizedEmail }).session(session);
+
+    if (!user) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        role: "vendor",
+        email: normalizedEmail,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "No vendor account is linked to this Google account"
+      });
+
+      return sendError(res, 403, "No vendor account is linked to this Google account.");
+    }
+
+    if (user.email.toLowerCase().trim() !== normalizedEmail) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Vendor",
+        role: "vendor",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: "Google email does not match the vendor account email"
+      });
+
+      return sendError(res, 403, "This Google account does not match your vendor account.");
+    }
+
+    if (!user.googleId) {
+      user.googleId = googleId;
+      user.emailVerified = true;
+      user.emailVerifiedDate = new Date();
+
+      await user.save();
+    } else if (user.googleId !== googleId) {
+      await loginHistory.create({
+        user: user._id,
+        role: "founder",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason:
+          "Google account does not match linked account"
+      });
+
+      return sendError(res,403, "This Google account is not linked to your Founder account.");
+    }
+
+    if (
+      user.accountStatus === "locked" ||
+      user.accountStatus === "banned" ||
+      user.accountStatus === "deleted" ||
+      user.isDeleted ||
+      user.isLocked
+    ) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Vendor",
+        role: "vendor",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: `Account is ${user.accountStatus}`
+      });
+
+      const message =
+        user.accountStatus === "banned"
+          ? "Your account has been banned. Please contact support."
+          : user.accountStatus === "locked" || user.isLocked
+            ? "Your account is locked. Please contact support."
+            : "Your account has been deleted.";
+
+      return sendError(res, 403, message);
+    }
+
+    if (user.accountStatus !== "active" || !user.isActive
+    ) {
+      await session.abortTransaction();
+
+      await LoginHistory.create({
+        user: user._id,
+        userModel: "Vendor",
+        role: "vendor",
+        email: user.email,
+        phoneNo: user.phoneNo,
+        loginMethod: "google",
+        sessionId: crypto.randomUUID(),
+        ipAddress: requestInfo.ip,
+        userAgent: requestInfo.device.userAgent,
+        deviceInfo: requestInfo.device,
+        location: requestInfo.location,
+        success: false,
+        failureReason: `Account is ${user.accountStatus || "inactive"}`
+      });
+
+      return sendError(res, 403, "Your vendor account is not active. Please contact support.");
+    }
+
+    const sessionId = crypto.randomUUID();
+
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+        role: "vendor",
+        sessionId,
+        tokenVersion: user.tokenVersion
+      },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "24h"
+      }
+    );
+
+    const refreshToken = jwt.sign(
+      {
+        id: user._id,
+        sessionId,
+        tokenVersion: user.tokenVersion
+      },
+      process.env.JWT_REFRESH_SECRET,
+      {
+        expiresIn: "7d"
+      }
+    );
+
+    await LoginHistory.create(
+      [
+        {
+          user: user._id,
+          userModel: "Vendor",
+          role: "vendor",
+          email: user.email,
+          phoneNo: user.phoneNo,
+          loginMethod: "google",
+          sessionId,
+          ipAddress: requestInfo.ip,
+          userAgent: requestInfo.device.userAgent,
+          deviceInfo: requestInfo.device,
+          location: requestInfo.location,
+          success: true
+        }
+      ],
+      { session }
+    );
+
+    await AuditLog.create(
+      [
+        {
+          user: user._id,
+          userModel: "Vendor",
+
+          actor: user._id,
+          actorModel: "Vendor",
+          actorRole: "vendor",
+
+          role: "vendor",
+          action: "GOOGLE_LOGIN",
+          entity: "Vendor",
+          entityId: user._id,
+
+          reason: "Login with linked Google account",
+
+          metadata: {
+            email: user.email,
+            sessionId,
+            ipAddress: requestInfo.ip,
+            device: requestInfo.deviceName,
+            location: requestInfo.location
+          }
+        }
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    return sendSuccess(res, 200, "Login successful",
+      {
+        user: VendorDTO.authUser(user),
+        sessionId,
+        accessToken,
+        refreshToken,
+        expiresIn: 86400,
+        onboardingCompleted: user.onboardingCompleted
+      }
+    );
+  } catch (err) {
+    if (session.inTransaction()) {
+      await session.abortTransaction();
+    }
+
+    logger.error("GOOGLE LOGIN ERROR", {
+      error: err.message,
+      stack: err.stack
+    });
+
+    return sendError(res, 500, "Internal Server Error");
+  } finally {
+    await session.endSession();
+  }
+};
+
 exports.getUsersDetails = async (req, res) => {
   try {
     const vendor = await vendorModel
@@ -510,7 +833,7 @@ exports.updateVendorProfile = async (req, res) => {
           actor: vendor._id,
           actorModel: "Vendor",
           actorRole: "vendor",
-          
+
           role: "vendor",
           action: "UPDATE_ACCOUNT",
           entity: "Vendor",
@@ -795,7 +1118,7 @@ exports.completeOnboarding = async (req, res) => {
         {
           user: vendor._id,
           userModel: "Vendor",
-      
+
           actor: vendor._id,
           actorModel: "Vendor",
           actorRole: "vendor",

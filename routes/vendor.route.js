@@ -5,7 +5,7 @@ const imageUpload = require('../middleware/imageUpload');
 const vendorOnboardingUpload = require('../middleware/imageUpload');
 const { verifyUser, requireRole, loginLimiter, apiLimiter, requireVerifiedEmail, requireCompletedOnboarding } = require('../middleware/verifyUser');
 
-const { createUser, loginUser, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding } = require('../controllers/Vendor/auth.controller');
+const { createUser, loginUser, googleLogin, getUsersDetails, updateVendorProfile, getVendorDetails, completeOnboarding } = require('../controllers/Vendor/auth.controller');
 const { addProduct, getVendorProducts, getAllProducts, getProductDetails, updateProduct, deleteProduct, getVendorProductsByCategory } = require('../controllers/Vendor/product.controller');
 const { saveVendorPayout } = require('../controllers/Vendor/payout.controller');
 const { getVendorOrders, vendorConfirmPayment, vendorConfirmOrder, vendorShipOrder, getRefundRequests, getReturnRequests, getSingleVendorOrder, reviewRefundRequest, reviewReturnRequest } = require('../controllers/Vendor/order.controller');
@@ -25,6 +25,8 @@ router.use(apiLimiter);
 router.post("/auth/register", validateRegister, createUser);
 
 router.post("/auth/login", loginLimiter, loginUser);
+
+router.post("/auth/google", loginLimiter, googleLogin);
 
 router.get("/product/all", getAllProducts);
 
