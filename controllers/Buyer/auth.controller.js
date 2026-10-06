@@ -89,16 +89,31 @@ exports.createUser = async (req, res) => {
         "Buyer"
       );
 
-    await AuditLog.create([{
-      user: createAcc._id,
-      role: 'buyer',
-      action: 'REGISTER_ACCOUNT',
-      entity: 'Buyer',
-      entityId: createAcc._id,
-      metadata: {
-        email: createAcc.email
-      }
-    }], { session });
+    await AuditLog.create(
+      [
+        {
+          user: createAcc._id,
+          userModel: "Buyer",
+
+          actor: createAcc._id,
+          actorModel: "Buyer",
+          actorRole: "buyer",
+
+          role: "buyer",
+
+          action: "REGISTER_ACCOUNT",
+          entity: "Buyer",
+          entityId: createAcc._id,
+
+          reason: "New users create account",
+
+          metadata: {
+            email: createAcc.email,
+          },
+        },
+      ],
+      { session }
+    );
 
     await session.commitTransaction();
 
@@ -225,7 +240,7 @@ exports.loginUser = async (req, res) => {
       user.accountStatus === "locked" ||
       user.accountStatus === "banned" ||
       user.accountStatus === "deleted" ||
-      user.isDeleted || 
+      user.isDeleted ||
       user.isLocked
     ) {
       await session.abortTransaction();
@@ -306,20 +321,30 @@ exports.loginUser = async (req, res) => {
       [
         {
           user: user._id,
-          role: "buyer",
+          userModel: "Buyer",
+
+          actor: user._id,
+          actorModel: "Buyer",
+          actorRole: "buyer",
+
+          role: 'buyer',
+
           action: "LOG_IN",
-          entity: "Buyer",
+          entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
           entityId: user._id,
+
           reason: 'Login to application',
+
           metadata: {
             email: user.email,
             sessionId,
             ipAddress: requestInfo.ip,
             device: requestInfo.deviceName,
             location: requestInfo.location
-          }
-        }
-      ], { session }
+          },
+        },
+      ],
+      { session }
     );
 
     if (!user.profileUpdateNotificationSent) {
@@ -438,7 +463,7 @@ exports.googleLogin = async (req, res) => {
       user.accountStatus === "locked" ||
       user.accountStatus === "banned" ||
       user.accountStatus === "deleted" ||
-      user.isDeleted || 
+      user.isDeleted ||
       user.isLocked
     ) {
       await session.abortTransaction();
@@ -535,11 +560,20 @@ exports.googleLogin = async (req, res) => {
       [
         {
           user: user._id,
-          role: "buyer",
+          userModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+
+          actor: user._id,
+          actorModel: user.role.charAt(0).toUpperCase() + user.role.slice(1),
+          actorRole: user.role,
+
+          role: user.role,
+
           action: "GOOGLE_LOGIN",
-          entity: "Buyer",
+          entity: user.role.charAt(0).toUpperCase() + user.role.slice(1),
           entityId: user._id,
+
           reason: "Google login to application",
+
           metadata: {
             email: user.email,
             sessionId,
@@ -740,29 +774,36 @@ exports.updateBuyerProfile = async (req, res) => {
     await buyer.save({ session });
 
     await AuditLog.create(
-      [{
-        user: buyer._id,
-        role: 'buyer',
-        action: 'UPDATE_ACCOUNT',
-        entity: 'Buyer',
-        entityId: buyer._id,
-        metadata: {
-          serialNumber: buyer.serialNumber,
-          email: buyer.email,
-          phoneNo: buyer.phoneNo
-        }
-      }],
+      [
+        {
+          user: buyer._id,
+          userModel: "Buyer",
+
+          actor: user._id,
+          actorModel: 'Buyer',
+          actorRole: buyer.role,
+
+          role: buyer.role,
+
+          action: "UPDATE_ACCOUNT",
+          entity: buyer.role.charAt(0).toUpperCase() + buyer.role.slice(1),
+          entityId: buyer._id,
+
+          reason: "Update profile detail to have better experience",
+
+          metadata: {
+            serialNumber: buyer.serialNumber,
+            email: buyer.email,
+            phoneNo: buyer.phoneNo
+          },
+        },
+      ],
       { session }
     );
 
     await session.commitTransaction();
 
-    return sendSuccess(
-      res,
-      200,
-      'Profile updated successfully',
-      BuyerDTO.fromModel(buyer)
-    );
+    return sendSuccess(res, 200, 'Profile updated successfully', BuyerDTO.fromModel(buyer));
 
   } catch (error) {
     await session.abortTransaction();
@@ -849,10 +890,20 @@ exports.completeBuyerProfile = async (req, res) => {
       [
         {
           user: buyer._id,
+          userModel: "Buyer",
+
+          actor: buyer._id,
+          actorModel: "Buyer",
+          actorRole: "buyer",
+          
           role: "buyer",
+
           action: "COMPLETE_PROFILE",
-          entity: "Buyer",
+          entity: buyer.role.charAt(0).toUpperCase() + buyer.role.slice(1),
           entityId: buyer._id,
+
+          reason: "Buyer completed profile onboarding",
+
           metadata: {
             school: schoolRecord.name,
             state: stateRecord.name,

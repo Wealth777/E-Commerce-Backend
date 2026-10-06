@@ -1,4 +1,6 @@
 const School = require("../models/school.model");
+const logger = require('../logger')
+const { sendSuccess, sendError } = require('../utils/responseStruture');
 
 const getSchools = async (req, res) => {
   try {
@@ -11,18 +13,11 @@ const getSchools = async (req, res) => {
       .select("_id name slug")
       .sort({ name: 1 });
 
-    return res.status(200).json({
-      success: true,
-      count: schools.length,
-      data: schools,
-    });
+    return sendSuccess(res, 200, true, schools, schools.length)
   } catch (error) {
-    console.error("Get Schools Error:", error);
+    logger.error("Get Schools Error:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch schools",
-    });
+    return sendError(res, 500, false, "Failed to fetch schools")
   }
 };
 
@@ -38,10 +33,7 @@ const getStatesBySchool = async (req, res) => {
     });
 
     if (!school) {
-      return res.status(404).json({
-        success: false,
-        message: "School not found",
-      });
+      return sendError(res, 404, false, "School not found") 
     }
 
     const states = await School.find({
@@ -54,18 +46,11 @@ const getStatesBySchool = async (req, res) => {
       .select("_id name slug")
       .sort({ name: 1 });
 
-    return res.status(200).json({
-      success: true,
-      count: states.length,
-      data: states,
-    });
+    return sendSuccess(res, 200, true, states, states.length) 
   } catch (error) {
-    console.error("Get States Error:", error);
+    logger.error("Get States Error:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch states",
-    });
+    return sendError(res, 500, false, "Failed to fetch states") 
   }
 };
 
@@ -81,10 +66,7 @@ const getLocationsByState = async (req, res) => {
     });
 
     if (!state) {
-      return res.status(404).json({
-        success: false,
-        message: "State not found",
-      });
+      return sendError(res, 404, false, "State not found")
     }
 
     const locations = await School.find({
@@ -97,18 +79,11 @@ const getLocationsByState = async (req, res) => {
       .select("_id name slug")
       .sort({ name: 1 });
 
-    return res.status(200).json({
-      success: true,
-      count: locations.length,
-      data: locations,
-    });
+    return sendSuccess(res, 200, true, locations, locations.length)
   } catch (error) {
-    console.error("Get Locations Error:", error);
+    logger.error("Get Locations Error:", error);
 
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch locations",
-    });
+    return sendError(res, 500, false, "Failed to fetch locations")
   }
 };
 

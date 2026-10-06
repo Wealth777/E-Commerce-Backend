@@ -47,6 +47,15 @@ const vendorOnboardingStorage = new CloudinaryStorage({
   }),
 });
 
+const contactMessageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "campustrade/contact-messages",
+    public_id: crypto.randomBytes(16).toString("hex"),
+    resource_type: "image",
+  }),
+});
+
 const supportAttachmentStorage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
@@ -85,7 +94,7 @@ const imageUpload = multer({
 const paymentProofUpload = multer({
   storage: paymentProofStorage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB limit for proofs
+    fileSize: 5 * 1024 * 1024
   },
   fileFilter: (req, file, cb) => {
     const allowed = ["image/jpeg", "image/png", "image/jpg", "application/pdf"];
@@ -123,6 +132,30 @@ const vendorOnboardingUpload = multer({
   },
 });
 
+const contactMessageUpload = multer({
+  storage: contactMessageStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      "image/jpeg",
+      "image/png",
+      "image/jpg",
+      "image/webp",
+    ];
+
+    if (!allowed.includes(file.mimetype)) {
+      return cb(
+        new Error("Only JPG, JPEG, PNG and WEBP images are allowed"),
+        false
+      );
+    }
+
+    cb(null, true);
+  },
+});
+
 const supportAttachmentUpload = multer({
   storage: supportAttachmentStorage,
   limits: {
@@ -151,4 +184,5 @@ const supportAttachmentUpload = multer({
 module.exports = imageUpload;
 module.exports.paymentProofUpload = paymentProofUpload;
 module.exports.vendorOnboardingUpload = vendorOnboardingUpload;
+module.exports.contactMessageUpload = contactMessageUpload;
 module.exports.supportAttachmentUpload = supportAttachmentUpload;

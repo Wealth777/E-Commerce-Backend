@@ -16,6 +16,10 @@ const { getAllProducts, getProductById, getProductStats, updateProductVisibility
 
 const { getActivities } = require("../controllers/Founder/activities.controller");
 
+const { sendNotification, } = require("../controllers/Founder/notification.controller");
+
+const { getContactMessages, getContactMessageById } = require("../controllers/Founder/contactMessage.controller");
+
 const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
 
 const { founderOnly } = require("../middleware/founderAccess");
@@ -51,27 +55,33 @@ router.get('/products/stats', verifyUser, founderOnly, getProductById)
 
 router.get('/activities', verifyUser, founderOnly, getActivities)
 
+router.post("/notifications/send", verifyUser, founderOnly, sendNotification );
+
+router.get('/contact/message', verifyUser, founderOnly, getContactMessages)
+
+router.post('/contact/message/:messageId', verifyUser, founderOnly, getContactMessageById)
 
 
-router.get( "/buyers/:buyerId", verifyUser, founderOnly, getBuyerByIdController );
 
-router.patch( "/buyers/:buyerId/lock", verifyUser, founderOnly, lockBuyerController );
+router.get("/buyers/:buyerId", verifyUser, founderOnly, getBuyerByIdController );
 
-router.patch( "/buyers/:buyerId/unlock", verifyUser, founderOnly, unlockBuyerController );
+router.patch("/buyers/:buyerId/lock", verifyUser, founderOnly, lockBuyerController );
 
-router.patch( "/buyers/:buyerId/ban", verifyUser, founderOnly, banBuyerController );
+router.patch("/buyers/:buyerId/unlock", verifyUser, founderOnly, unlockBuyerController );
 
-router.delete( "/buyers/:buyerId", verifyUser, founderOnly, deleteBuyerController );
+router.patch("/buyers/:buyerId/ban", verifyUser, founderOnly, banBuyerController );
 
-router.get( "/vendors/:vendorId", verifyUser, founderOnly, getVendorByIdController );
+router.delete("/buyers/:buyerId", verifyUser, founderOnly, deleteBuyerController );
 
-router.patch( "/vendors/:vendorId/lock", verifyUser, founderOnly, lockVendorController );
+router.get("/vendors/:vendorId", verifyUser, founderOnly, getVendorByIdController );
 
-router.patch( "/vendors/:vendorId/unlock", verifyUser, founderOnly, unlockVendorController );
+router.patch("/vendors/:vendorId/lock", verifyUser, founderOnly, lockVendorController );
 
-router.patch( "/vendors/:vendorId/ban", verifyUser, founderOnly, banVendorController );
+router.patch("/vendors/:vendorId/unlock", verifyUser, founderOnly, unlockVendorController );
 
-router.delete( "/vendors/:vendorId", verifyUser, founderOnly, deleteVendorController );
+router.patch("/vendors/:vendorId/ban", verifyUser, founderOnly, banVendorController );
+
+router.delete("/vendors/:vendorId", verifyUser, founderOnly, deleteVendorController );
 
 router.get("/vendors/:vendorId/onboarding", verifyUser, founderOnly, getVendorOnboardingDetailsController );
 
