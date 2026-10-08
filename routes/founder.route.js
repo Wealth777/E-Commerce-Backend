@@ -18,7 +18,7 @@ const { getActivities } = require("../controllers/Founder/activities.controller"
 
 const { sendNotification, } = require("../controllers/Founder/notification.controller");
 
-const { getContactMessages, getContactMessageById } = require("../controllers/Founder/contactMessage.controller");
+const { getContactMessages, getContactMessageById, markContactMessageAsRead, deleteContactMessage, resolveContactMessage } = require("../controllers/Founder/contactMessage.controller");
 
 const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
 
@@ -59,7 +59,13 @@ router.post("/notifications/send", verifyUser, founderOnly, sendNotification );
 
 router.get('/contact/message', verifyUser, founderOnly, getContactMessages)
 
-router.post('/contact/message/:messageId', verifyUser, founderOnly, getContactMessageById)
+router.get("/contact/messages/:messageId", verifyUser, founderOnly, getContactMessageById);
+
+router.patch("/contact/messages/:messageId/read", verifyUser, founderOnly, markContactMessageAsRead );
+
+router.patch("/contact/messages/:messageId/resolve", verifyUser, founderOnly, resolveContactMessage);
+
+router.delete("/contact/messages/:messageId", verifyUser, founderOnly, deleteContactMessage);
 
 
 

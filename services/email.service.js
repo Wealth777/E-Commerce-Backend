@@ -8,6 +8,8 @@ const vendorWelcome = require('../templates/auth/vendor.welcomeMail')
 const buyerWelcome = require('../templates/auth/buyer.welcomeMail')
 const resetPasswordMail = require('../templates/auth/forgetPasswordMail')
 
+const contactReplyMail = require("../templates/contact/contactReplyMail");
+
 const securityRecoveryStartedMail = require('../templates/Security/sendSecurityRecoveryStarted')
 
 const EMAIL_SUBJECTS = {
@@ -17,6 +19,7 @@ const EMAIL_SUBJECTS = {
     VENDOR_WELCOME: "Welcome to CampusTrade",
     BUYER_WELCOME: "Welcome to CampusTrade",
     PASSWORD_RESET: "Reset Your CampusTrade Password",
+    CONTACT_REPLY: "Response to Your CampusTrade Contact Message",
     SECURITY_RECOVERY_STARTED: "Your CampusTrade account has been secured",
 };
 
@@ -234,7 +237,30 @@ class EmailService {
         });
     }
 
+    /* CONTACT MAILS */
 
+    /* Send Response To Contact Message */
+    async sendContactReplyEmail({
+        email,
+        name,
+        originalSubject,
+        replyMessage,
+    }) {
+        const html = contactReplyMail({
+            name,
+            originalSubject,
+            replyMessage,
+            appName: process.env.APP_NAME,
+            supportEmail: process.env.EMAIL_SUPPORT,
+        });
+
+        return this.sendEmail({
+            to: email,
+            subject: EMAIL_SUBJECTS.CONTACT_REPLY,
+            html,
+            replyTo: process.env.EMAIL_SUPPORT,
+        });
+    }
 
 
     /* SECURITY MAILS */

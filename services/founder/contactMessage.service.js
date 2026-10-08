@@ -4,6 +4,8 @@ const Founder = require("../../models/founder.model");
 const AuditLog = require("../../models/auditLog.model");
 const ContactMessage = require("../../models/contactMessage.model");
 
+const emailService = require("../../services/email.service");
+
 const logger = require("../../logger");
 const AppError = require("../common/AppError");
 
@@ -46,7 +48,6 @@ const getContactMessages = async ({ page = 1, limit = 20, status } = {}) => {
     }
 };
 
-
 const getContactMessageById = async (messageId) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(messageId)) {
@@ -70,7 +71,6 @@ const getContactMessageById = async (messageId) => {
         throw new AppError("Failed to retrieve contact message", 500);
     }
 };
-
 
 const markContactMessageAsRead = async (messageId, founderId) => {
     try {
@@ -113,11 +113,14 @@ const markContactMessageAsRead = async (messageId, founderId) => {
     }
 };
 
-
-const resolveContactMessage = async (messageId, founderId) => {
+const resolveContactMessage = async (messageId, founderId, replyMessage) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(messageId)) {
             throw new AppError("Invalid contact message ID", 400);
+        }
+
+        if (!replyMessage || !replyMessage.trim()) {
+            throw new AppError("Reply message is required", 400);
         }
 
         const message = await ContactMessage.findById(messageId);
@@ -130,6 +133,14 @@ const resolveContactMessage = async (messageId, founderId) => {
             return message;
         }
 
+        await emailService.sendContactReplyEmail({
+            email: message.email,
+            name: message.name,
+            originalSubject: message.subject,
+            originalContent: message.message,
+            replyMessage: replyMessage.trim(),
+        });
+
         message.status = "resolved";
         message.resolvedAt = new Date();
         message.resolvedBy = founderId;
@@ -137,14 +148,29 @@ const resolveContactMessage = async (messageId, founderId) => {
         await message.save();
 
         await AuditLog.create({
-            action: "CONTACT_MESSAGE_RESOLVED",
+            user: founderId,
+            userModel: "Founder",
+
             actor: founderId,
             actorModel: "Founder",
-            target: message._id,
-            targetModel: "ContactMessage",
+            actorRole: "founder",
+
+            targetUser: founderId,
+            role: "founder",
+
+            action: "CONTACT_MESSAGE_RESOLVED",
+            entity: "ContactMessage",
+            entityId: message._id,
+
+            metadata: {
+                contactEmail: message.email,
+                subject: message.subject,
+                request: requestInfo(req),
+            },
         });
 
         return message;
+
     } catch (error) {
         logger.error(error);
 
@@ -155,7 +181,6 @@ const resolveContactMessage = async (messageId, founderId) => {
         throw new AppError("Failed to resolve contact message", 500);
     }
 };
-
 
 const deleteContactMessage = async (messageId, founderId) => {
     try {
@@ -172,11 +197,25 @@ const deleteContactMessage = async (messageId, founderId) => {
         await ContactMessage.findByIdAndDelete(messageId);
 
         await AuditLog.create({
-            action: "CONTACT_MESSAGE_DELETED",
+            user: founderId,
+            userModel: "Founder",
+
             actor: founderId,
             actorModel: "Founder",
-            target: message._id,
-            targetModel: "ContactMessage",
+            actorRole: "founder",
+
+            targetUser: founderId,
+            role: "founder",
+
+            action: "CONTACT_MESSAGE_DELETED",
+            entity: "ContactMessage",
+            entityId: message._id,
+
+            metadata: {
+                contactEmail: message.email,
+                subject: message.subject,
+                request: requestInfo(req),
+            },
         });
 
         return { messageId: message._id, };

@@ -62,7 +62,9 @@ exports.markContactMessageAsRead = async (req, res) => {
 
 exports.resolveContactMessage = async (req, res) => {
     try {
-        const result = await founderContactMessageService.resolveContactMessage(req.params.messageId, req.user._id);
+        const { replyMessage } = req.body;
+
+        const result = await founderContactMessageService.resolveContactMessage(req.params.messageId, req.user._id, replyMessage);
 
         return sendSuccess(res, 200, "Contact message resolved successfully", result);
     } catch (error) {
