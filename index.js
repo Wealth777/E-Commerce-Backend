@@ -14,6 +14,8 @@ const { Server } = require('socket.io');
 const app = require('./app');
 const { initializeSocket } = require('./sockets/notification.socket');
 const { initializeOrderSocket } = require('./sockets/order.socket');
+const { initializeAdvertisementSocket } = require('./sockets/advertisement.socket');
+const advertisementService = require('./services/founder/adverts.service');
 const { connectChatDatabase } = require('./config/chatDatabase');
 const { verifyEmailConnection } = require('./config/email')
 
@@ -117,6 +119,13 @@ async function startServer() {
 
     initializeSocket(io);
     initializeOrderSocket(io);
+    initializeAdvertisementSocket(io);
+    // A periodic tick activates and expires campaigns without relying on page requests.
+    const advertisementTimer = setInterval(() => {
+      advertisementService.syncAdvertisementStatuses().catch(err => logger.error('Advertisement scheduler failed', err));
+    }, 30000);
+    advertisementTimer.unref();
+    advertisementService.syncAdvertisementStatuses().catch(err => logger.error('Initial advertisement sync failed', err));
 
     server.listen(port, () => {
       logger.info(`🚀 Server running on port ${port}`);

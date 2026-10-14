@@ -181,8 +181,48 @@ const supportAttachmentUpload = multer({
   }
 });
 
+
+const advertisementStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "campustrade/advertisements",
+    public_id: crypto.randomBytes(16).toString("hex"),
+    resource_type: "image",
+  }),
+});
+
+const advertisementUpload = multer({
+  storage: advertisementStorage,
+  limits: {
+    files: 2,
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter(req, file, cb) {
+    const allowedFields = ["desktop", "mobile"];
+    const allowedMimes = [
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+    ];
+
+    if (!allowedFields.includes(file.fieldname)) {
+      return cb(new Error("Invalid advertisement image field."));
+    }
+
+    if (!allowedMimes.includes(file.mimetype)) {
+      return cb(
+        new Error("Only JPEG, PNG and WebP images are allowed.")
+      );
+    }
+
+    cb(null, true);
+  },
+});
+
+
 module.exports = imageUpload;
 module.exports.paymentProofUpload = paymentProofUpload;
 module.exports.vendorOnboardingUpload = vendorOnboardingUpload;
 module.exports.contactMessageUpload = contactMessageUpload;
 module.exports.supportAttachmentUpload = supportAttachmentUpload;
+module.exports.advertisementUpload = advertisementUpload;

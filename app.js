@@ -13,8 +13,7 @@ app.use(cors({
 }))
 
 // Body parsing
-app.use(express.json());
-app.use(express.json({ limit: '1mb' }))
+app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ limit: '1mb', extended: true }));
 
 const commonAuth = require('./routes/commonAuth.route');
@@ -27,6 +26,7 @@ const schoolRoute = require('./routes/school.route')
 const supportRoute = require('./routes/support.routes')
 const securityRoute = require('./routes/security.route');
 const commonRoute = require('./routes/common.route');
+const advertsRoute = require('./routes/advertisement.route');
 
 const requestLogger = require('./middleware/requestLogger');
 
@@ -42,6 +42,7 @@ app.use('/api/schools', schoolRoute);
 app.use('/api/support', supportRoute);
 app.use('/api/security', securityRoute);
 app.use('/api/common', commonRoute);
+app.use('/api/advertisements', advertsRoute);
 
 
 
