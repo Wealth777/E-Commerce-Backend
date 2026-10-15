@@ -84,7 +84,7 @@ const addProduct = new mongoose.Schema(
             default: null,
         },
         ratingSummary: {
-            averageRating: { type: Number, default: 0, min: 0, max: 5 },
+            averageRating: { type: Number, default: 0, min: 0, max: 1 },
             totalRatings: { type: Number, default: 0, min: 0 },
             breakdown: {
                 1: { type: Number, default: 0 },

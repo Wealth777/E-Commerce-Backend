@@ -16,7 +16,7 @@ const refreshProductRatingSummary = async (productId) => {
   const breakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let total = 0; let sum = 0;
   rows.forEach((row) => { breakdown[row._id] = row.count; total += row.count; sum += row._id * row.count; });
-  const averageRating = total ? Number((sum / total).toFixed(2)) : 0;
+  const averageRating = total ? Number((sum / (total * 5)).toFixed(4)) : 0;
   await Product.findByIdAndUpdate(productId, { $set: { ratingSummary: { averageRating, totalRatings: total, breakdown } } });
   return { averageRating, totalRatings: total, breakdown };
 };
@@ -36,8 +36,9 @@ const createRating = async ({ buyerId, productId, body }) => {
   if (canVerifyPurchase && !order) throw new AppError('You can only rate products from delivered orders', 403);
 
   const existing = await ProductRating.findOne({ buyer: buyerId, product: productId }).setOptions({ withDeleted: true });
-  if (existing && !existing.deleted) throw new AppError('You already rated this product. Update your rating instead.', 409);
+  if (existing) throw new AppError('You already rated this product. Update your rating instead.', 409);
 
+  if (!Number.isInteger(Number(body.rating)) || Number(body.rating) < 1 || Number(body.rating) > 5) throw new AppError('Rating must be an integer between 1 and 5', 400);
   const rating = await ProductRating.create({ product: productId, buyer: buyerId, vendor: product.vendor?._id || product.vendor, order: order?._id || body.orderId || null, rating: Number(body.rating), comment: body.comment, status: 'active' });
   await refreshProductRatingSummary(product._id);
   await AuditLog.create({ user: buyerId, userModel: 'Buyer', role: 'buyer', actor: buyerId, actorModel: 'Buyer', actorRole: 'buyer', action: 'RATING_CREATED', entity: 'ProductRating', entityId: rating._id, metadata: { product: productId, rating: rating.rating } });
@@ -47,7 +48,10 @@ const createRating = async ({ buyerId, productId, body }) => {
 const updateRating = async ({ buyerId, ratingId, body }) => {
   const rating = await ProductRating.findOne({ _id: ratingId, buyer: buyerId });
   if (!rating) throw new AppError('Rating not found', 404);
-  if (body.rating !== undefined) rating.rating = Number(body.rating);
+  if (body.rating !== undefined) {
+    if (!Number.isInteger(Number(body.rating)) || Number(body.rating) < 1 || Number(body.rating) > 5) throw new AppError('Rating must be an integer between 1 and 5', 400);
+    rating.rating = Number(body.rating);
+  }
   if (body.comment !== undefined) rating.comment = body.comment;
   rating.status = 'active';
   await rating.save();
@@ -87,7 +91,9 @@ const getBuyerRatings = (buyerId, query) => listRatings({ ...query, buyerId });
 const getVendorProductRatings = (vendorId, query) => listRatings({ ...query, vendorId });
 
 const getProductRatingSummary = async (productId) => {
-  const summary = await refreshProductRatingSummary(productId);
+  const product = await Product.findById(productId).select('ratingSummary').lean();
+  if (!product) throw new AppError('Product not found', 404);
+  const summary = product.ratingSummary;
   const latestRatings = await ProductRating.find({ product: productId, status: 'active' }).sort({ createdAt: -1 }).limit(5).populate('buyer', 'fullName username profilePhoto').lean();
   return { ...summary, latestRatings };
 };

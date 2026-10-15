@@ -85,6 +85,13 @@ const AuditLog = require('../models/auditLog.model');
 const AppError = require('./common/AppError');
 const { applyDateRange, paginate } = require('./common/query.service');
 
+const refreshProductReviewSummary = async (productId) => {
+  if (!productId) return null;
+  const totalReviews = await Review.countDocuments({ product: productId, status: 'active', deleted: { $ne: true } });
+  await Product.updateOne({ _id: productId }, { $set: { 'reviewSummary.totalReviews': totalReviews } });
+  return { totalReviews };
+};
+
 const verifyPurchase = ({ buyerId, productId, orderId }) => {
   const filter = { buyer: buyerId, status: 'delivered', 'items.productId': productId };
   if (orderId) filter._id = orderId;
@@ -97,7 +104,7 @@ const createReview = async ({ buyerId, productId, body }) => {
   const order = await verifyPurchase({ buyerId, productId, orderId: body.orderId });
   if (!order) throw new AppError('You can only review products from delivered orders', 403);
   const existing = await Review.findOne({ reviewer: buyerId, product: productId }).setOptions({ withDeleted: true });
-  if (existing && !existing.deleted) throw new AppError('You already reviewed this product. Update your review instead.', 409);
+  if (existing) throw new AppError('You already reviewed this product. Update your review instead.', 409);
   const rating = body.ratingId ? await ProductRating.findOne({ _id: body.ratingId, buyer: buyerId, product: productId }).lean() : null;
   const review = await Review.create({ reviewer: buyerId, reviewerModel: 'Buyer', reviewerRole: 'buyer', vendor: product.vendor, product: productId, order: order._id, rating: rating?._id || null, ratingValue: rating?.rating || body.ratingValue, comment: body.comment, status: 'active' });
   await AuditLog.create({ user: buyerId, userModel: 'Buyer', role: 'buyer', actor: buyerId, actorModel: 'Buyer', actorRole: 'buyer', action: 'REVIEW_CREATED', entity: 'Review', entityId: review._id, metadata: { product: productId } });
@@ -111,6 +118,7 @@ const updateOwnReview = async ({ userId, reviewId, body }) => {
   if (body.ratingValue !== undefined) review.ratingValue = body.ratingValue;
   review.status = 'active';
   await review.save();
+  await refreshProductReviewSummary(review.product);
   await AuditLog.create({ user: userId, userModel: 'Buyer', role: 'buyer', actor: userId, actorModel: 'Buyer', actorRole: 'buyer', action: 'REVIEW_UPDATED', entity: 'Review', entityId: review._id });
   return review;
 };
@@ -120,6 +128,7 @@ const deleteOwnReview = async ({ userId, reviewId }) => {
   if (!review) throw new AppError('Review not found', 404);
   review.status = 'deleted'; review.deleted = true; review.deletedAt = new Date(); review.deletedBy = userId; review.deletedByModel = 'Buyer';
   await review.save();
+  await refreshProductReviewSummary(review.product);
   await AuditLog.create({ user: userId, userModel: 'Buyer', role: 'buyer', actor: userId, actorModel: 'Buyer', actorRole: 'buyer', action: 'REVIEW_DELETED', entity: 'Review', entityId: review._id });
   return { deleted: true };
 };
@@ -150,8 +159,9 @@ const moderateReview = async ({ reviewId, actor, status, reason }) => {
   if (status === 'deleted') { review.deleted = true; review.deletedAt = new Date(); review.deletedBy = actor._id; review.deletedByModel = 'Founder'; }
   if (status === 'active') { review.deleted = false; review.deletedAt = null; }
   await review.save();
+  await refreshProductReviewSummary(review.product);
   await AuditLog.create({ user: actor._id, userModel: 'Founder', role: 'founder', actor: actor._id, actorModel: 'Founder', actorRole: 'founder', action: status === 'active' ? 'REVIEW_RESTORED' : status === 'hidden' ? 'REVIEW_HIDDEN' : 'REVIEW_SOFT_DELETED', entity: 'Review', entityId: review._id, reason });
   return review;
 };
 
-module.exports = { createReview, updateOwnReview, deleteOwnReview, listReviews, getProductReviews, getVendorReviews, getBuyerReviews, founderGetAllReviews, moderateReview };
+module.exports = { refreshProductReviewSummary, createReview, updateOwnReview, deleteOwnReview, listReviews, getProductReviews, getVendorReviews, getBuyerReviews, founderGetAllReviews, moderateReview };

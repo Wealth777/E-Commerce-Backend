@@ -1,131 +1,3 @@
-// const express = require("express");
-
-// const { loginUser, getUsersDetails, googleLogin } = require("../controllers/Founder/auth.controller");
-
-// const { getDashboardStatsController } = require("../controllers/Founder/dashboard.controller");
-
-// const { getAllBuyersController, getBuyerByIdController, lockBuyerController, unlockBuyerController, banBuyerController, deleteBuyerController, } = require("../controllers/Founder/buyer.controller");
-
-// const { getAllVendorController, getVendorByIdController, lockVendorController, unlockVendorController, banVendorController, deleteVendorController, } = require("../controllers/Founder/vendor.controller");
-
-// const { getPendingVendorApprovalsController, getVendorOnboardingDetailsController, approveVendorController, rejectVendorController, } = require("../controllers/Founder/vendorApproval.controller");
-
-// const { getAllOrders, getOrderById, getOrderStats } = require("../controllers/Founder/orders.controller")
-
-// const { getAllProducts, getProductById, getProductStats, updateProductVisibility } = require("../controllers/Founder/products.controller")
-
-// const { getActivities } = require("../controllers/Founder/activities.controller");
-
-// const { sendNotification, } = require("../controllers/Founder/notification.controller");
-
-// const { getContactMessages, getContactMessageById, markContactMessageAsRead, deleteContactMessage, resolveContactMessage } = require("../controllers/Founder/contactMessage.controller");
-
-// const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
-
-// const { founderOnly } = require("../middleware/founderAccess");
-// const { createAdvertisement, getAdvertisements, getAdvertisementById, updateAdvertisement, approveAdvertisement, rejectAdvertisement, pauseAdvertisement, resumeAdvertisement, submitAdvertisement, syncAdvertisementStatuses } = require("../controllers/Founder/adverts.controller");
-
-// const router = express.Router();
-
-// router.use(apiLimiter);
-
-
-// router.post("/auth/login", loginLimiter, loginUser);
-
-// router.post("/auth/google", loginLimiter, googleLogin);
-
-// router.get("/get/me", verifyUser, founderOnly, getUsersDetails );
-
-// router.get( "/profile/me", verifyUser, founderOnly, getUsersDetails );
-
-// router.get("/dashboard/stats", verifyUser, founderOnly, getDashboardStatsController);
-
-// router.get( "/buyers", verifyUser, founderOnly, getAllBuyersController );
-
-// router.get( "/vendors", verifyUser, founderOnly, getAllVendorController );
-
-// router.get("/vendors/approvals", verifyUser, founderOnly, getPendingVendorApprovalsController);
-
-// router.get('/orders', verifyUser, founderOnly, getAllOrders);
-
-// router.get('/orders/stats', verifyUser, founderOnly, getOrderStats);
-
-// router.get('/products', verifyUser, founderOnly, getAllProducts)
-
-// router.get('/products/stats', verifyUser, founderOnly, getProductById)
-
-// router.get('/activities', verifyUser, founderOnly, getActivities)
-
-// router.post("/notifications/send", verifyUser, founderOnly, sendNotification );
-
-// router.get('/contact/message', verifyUser, founderOnly, getContactMessages)
-
-// router.get("/contact/messages/:messageId", verifyUser, founderOnly, getContactMessageById);
-
-// router.patch("/contact/messages/:messageId/read", verifyUser, founderOnly, markContactMessageAsRead );
-
-// router.patch("/contact/messages/:messageId/resolve", verifyUser, founderOnly, resolveContactMessage);
-
-// router.delete("/contact/messages/:messageId", verifyUser, founderOnly, deleteContactMessage);
-
-// router.post('/advert/create', verifyUser, founderOnly, createAdvertisement)
-
-// router.get('/advert/', verifyUser, founderOnly, getAdvertisements)
-
-// router.get('/advert/:id', verifyUser, founderOnly, getAdvertisementById);
-
-// router.patch('/advert/:id/', verifyUser, founderOnly, updateAdvertisement);
-
-// // router.patch('/advert/:id/submit', verifyUser, submitAdvertisement); for admin
-
-// router.patch('/advert/:id/approve', verifyUser, founderOnly, approveAdvertisement);
-
-// router.patch('/advert/:id/reject', verifyUser, founderOnly, rejectAdvertisement);
-
-// router.patch('/advert/:id/pause', verifyUser, founderOnly, pauseAdvertisement);
-
-// router.patch('/advert/:id/resume', verifyUser, founderOnly, resumeAdvertisement);
-
-// router.patch('/advert/:id/resume', verifyUser, founderOnly, resumeAdvertisement);
-
-// router.patch('/advert/sync-statuses', verifyUser, founderOnly, syncAdvertisementStatuses);
-
-
-
-// router.get("/buyers/:buyerId", verifyUser, founderOnly, getBuyerByIdController );
-
-// router.patch("/buyers/:buyerId/lock", verifyUser, founderOnly, lockBuyerController );
-
-// router.patch("/buyers/:buyerId/unlock", verifyUser, founderOnly, unlockBuyerController );
-
-// router.patch("/buyers/:buyerId/ban", verifyUser, founderOnly, banBuyerController );
-
-// router.delete("/buyers/:buyerId", verifyUser, founderOnly, deleteBuyerController );
-
-// router.get("/vendors/:vendorId", verifyUser, founderOnly, getVendorByIdController );
-
-// router.patch("/vendors/:vendorId/lock", verifyUser, founderOnly, lockVendorController );
-
-// router.patch("/vendors/:vendorId/unlock", verifyUser, founderOnly, unlockVendorController );
-
-// router.patch("/vendors/:vendorId/ban", verifyUser, founderOnly, banVendorController );
-
-// router.delete("/vendors/:vendorId", verifyUser, founderOnly, deleteVendorController );
-
-// router.get("/vendors/:vendorId/onboarding", verifyUser, founderOnly, getVendorOnboardingDetailsController );
-
-// router.patch("/vendors/:vendorId/approve", verifyUser, founderOnly, approveVendorController );
-
-// router.patch("/vendors/:vendorId/reject", verifyUser, founderOnly, rejectVendorController );
-
-// router.get('/orders/:orderId', verifyUser, founderOnly, getOrderById);
-
-// router.get('/products/:productId/stats', verifyUser, founderOnly, getProductStats);
-
-// router.patch("/products/:productId/visibility", verifyUser, founderOnly, updateProductVisibility );
-
-// module.exports = router;
-
 const express = require("express");
 
 const { loginUser, getUsersDetails, googleLogin } = require("../controllers/Founder/auth.controller");
@@ -151,7 +23,6 @@ const { getContactMessages, getContactMessageById, markContactMessageAsRead, del
 const { verifyUser, loginLimiter, apiLimiter, } = require("../middleware/verifyUser");
 
 const { founderOnly } = require("../middleware/founderAccess");
-const { createAdvertisement, getAdvertisements, getAdvertisementById, updateAdvertisement, approveAdvertisement, rejectAdvertisement, pauseAdvertisement, resumeAdvertisement, submitAdvertisement, syncAdvertisementStatuses } = require("../controllers/Founder/adverts.controller");
 
 const router = express.Router();
 
@@ -195,26 +66,6 @@ router.patch("/contact/messages/:messageId/read", verifyUser, founderOnly, markC
 router.patch("/contact/messages/:messageId/resolve", verifyUser, founderOnly, resolveContactMessage);
 
 router.delete("/contact/messages/:messageId", verifyUser, founderOnly, deleteContactMessage);
-
-router.post('/advert/create', verifyUser, founderOnly, createAdvertisement)
-
-router.get('/advert/', verifyUser, founderOnly, getAdvertisements)
-
-router.get('/advert/:id', verifyUser, founderOnly, getAdvertisementById);
-
-router.patch('/advert/:id/', verifyUser, founderOnly, updateAdvertisement);
-
-router.patch('/advert/:id/submit', verifyUser, founderOnly, submitAdvertisement);
-
-router.patch('/advert/:id/approve', verifyUser, founderOnly, approveAdvertisement);
-
-router.patch('/advert/:id/reject', verifyUser, founderOnly, rejectAdvertisement);
-
-router.patch('/advert/:id/pause', verifyUser, founderOnly, pauseAdvertisement);
-
-router.patch('/advert/:id/resume', verifyUser, founderOnly, resumeAdvertisement);
-
-router.patch('/advert/sync-statuses', verifyUser, founderOnly, syncAdvertisementStatuses);
 
 
 

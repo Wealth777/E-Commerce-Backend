@@ -2429,3 +2429,9 @@
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-10-14T12:48:56.485Z"}
 {"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-10-14T12:48:56.491Z"}
 {"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-10-14T12:49:02.420Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-10-15T08:27:13.982Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-10-15T08:27:13.989Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-10-15T08:33:16.358Z"}
+{"level":"warn","service":"campustrade-backend","message":"Chat MongoDB disconnected","meta":null,"timestamp":"2026-10-15T08:33:16.367Z"}
+{"level":"warn","service":"campustrade-backend","message":"Main MongoDB disconnected","meta":null,"timestamp":"2026-10-15T08:38:49.830Z"}
+{"level":"warn","service":"campustrade-backend","message":"Active login session not found.","meta":{"userId":"6aa02543fd5341bd3c76b80d","role":"founder","sessionId":"dfe2d623-cb3d-4703-93fe-47cb0824ef88"},"timestamp":"2026-10-15T08:45:22.792Z"}
