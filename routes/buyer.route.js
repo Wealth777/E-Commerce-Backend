@@ -87,7 +87,8 @@ router.patch('/reviews/:reviewId', verifyUser, requireCompletedProfile, requireR
 
 router.delete('/reviews/:reviewId', verifyUser, requireCompletedProfile, requireRole(['buyer']), reviewController.deleteOwnReview);
 
-router.get('/products/:productId/reviews', requireCompletedProfile, requireRole(['buyer']), reviewController.getProductReviews);
+// router.get('/products/:productId/reviews', requireCompletedProfile, requireRole(['buyer']), reviewController.getProductReviews);
+router.get('/products/:productId/reviews', requireCompletedProfile, reviewController.getProductReviews);
 
 
 module.exports  = router;
