@@ -432,33 +432,69 @@ const getProductDetails = async ({ productId }) => {
     throw new AppError('Product not found', 404);
   }
 
-  const vendor = VendorDTO.publicProfile(product.vendor)
+  // const vendor = VendorDTO.publicProfile(product.vendor)
 
-  return {
-    product: {
-      id: product._id,
-      name: product.name,
-      description: product.description,
-      image: product.image,
-      category: product.category,
-      subCategory: product.subCategory,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      discount: product.originalPrice
-        ? Math.round(
-          ((product.originalPrice - product.price) /
-            product.originalPrice) *
-          100
-        )
-        : 0,
-      stock: product.stock,
-      status: product.status,
-      createdAt: product.createdAt,
-      updatedAt: product.updatedAt,
+  // return {
+  //   product: {
+  //     id: product._id,
+  //     name: product.name,
+  //     description: product.description,
+  //     image: product.image,
+  //     category: product.category,
+  //     subCategory: product.subCategory,
+  //     price: product.price,
+  //     originalPrice: product.originalPrice,
+  //     discount: product.originalPrice
+  //       ? Math.round(
+  //         ((product.originalPrice - product.price) /
+  //           product.originalPrice) *
+  //         100
+  //       )
+  //       : 0,
+  //     stock: product.stock,
+  //     ratingSummary: product.ratingSummary,
+  //     status: product.status,
+  //     createdAt: product.createdAt,
+  //     updatedAt: product.updatedAt,
+  //   },
+
+  //   vendor: VendorDTO.publicProfile(product.vendor),
+  // };
+
+  
+const vendor = VendorDTO.publicProfile(product.vendor);
+
+return {
+  product: {
+    id: product._id,
+    name: product.name,
+    description: product.description,
+    image: product.image,
+    category: product.category,
+    subCategory: product.subCategory,
+    price: product.price,
+    originalPrice: product.originalPrice,
+
+    // Include the product's rating data
+    ratingSummary: product.ratingSummary || {
+      averageRating: 0,
+      totalRatings: 0,
+      totalReviews: 0,
     },
 
-    vendor: VendorDTO.publicProfile(product.vendor),
-  };
+    discount: product.originalPrice
+      ? Math.round(
+          ((product.originalPrice - product.price) /
+            product.originalPrice) * 100
+        )
+      : 0,
+    stock: product.stock,
+    status: product.status,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  },
+  vendor,
+};
 };
 
 const getVendorProductsByCategory = async ({ vendorId, category }) => {

@@ -28,7 +28,7 @@ const verifyPurchase = async ({ buyerId, productId, orderId }) => {
 };
 
 const createRating = async ({ buyerId, productId, body }) => {
-  const product = await Product.findById(productId).populate('vendor', '_id fullName storeName').lean();
+  const product = await Product.findById(productId).populate('vendor', '_id fullName business').lean();
   if (!product) throw new AppError('Product not found', 404);
   if (String(product.vendor?._id || product.vendor) === String(buyerId)) throw new AppError('You cannot rate your own product', 403);
 
@@ -85,7 +85,7 @@ const buildFilter = (query = {}) => {
   return filter;
 };
 
-const listRatings = (query) => paginate({ model: ProductRating, filter: buildFilter(query), query, select: '-__v', populate: [{ path: 'buyer', select: 'fullName username profilePhoto' }, { path: 'product', select: 'name image price' }, { path: 'vendor', select: 'fullName storeName' }] });
+const listRatings = (query) => paginate({ model: ProductRating, filter: buildFilter(query), query, select: '-__v', populate: [{ path: 'buyer', select: 'fullName username profilePhoto' }, { path: 'product', select: 'name image price' }, { path: 'vendor', select: 'fullName business' }] });
 const getProductRatings = (productId, query) => listRatings({ ...query, productId, status: query.status || 'active' });
 const getBuyerRatings = (buyerId, query) => listRatings({ ...query, buyerId });
 const getVendorProductRatings = (vendorId, query) => listRatings({ ...query, vendorId });
